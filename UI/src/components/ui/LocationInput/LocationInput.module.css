@@ -1,0 +1,7 @@
+.locationInput::placeholder {
+	color: #1976d2a9;
+}
+
+.locationInputContainer:hover .locationInput {
+	background-color: #f6fafd;
+}
