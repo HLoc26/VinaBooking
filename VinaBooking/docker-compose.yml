@@ -1,0 +1,36 @@
+services:
+    db:
+        image: mysql:latest
+        env_file: .env
+        ports:
+            - "3306:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+    backend:
+        build: ./API
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./API:/app
+            - /app/node_modules
+        env_file: ./API/.env
+        depends_on:
+            db:
+                condition: service_healthy
+    frontend:
+        build: ./UI
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./UI:/app
+            - /app/node_modules
+        depends_on:
+            - backend
+
+volumes:
+    db_data:
