@@ -121,7 +121,7 @@ docker-compose down -v
 
 ### Access the Database
 
-You can connect to the MySQL database using a MySQL client (replace MYSQL_USER with the username in API/.env):
+You can connect to the MySQL database using a MySQL client (replace MYSQL_USER with the username in .env):
 
 ```bash
 mysql -h 127.0.0.1 -P 3306 -u MYSQL_USER -p
