@@ -2,6 +2,11 @@ import axiosInstance from "../../app/axios";
 
 export const loginApi = async (credentials) => {
 	const response = await axiosInstance.post("/auth/login", credentials);
-	console.log(response);
+	// console.log(response);
 	return response.data;
 };
+
+export const registerApi = async (information) => {
+	const response = await axiosInstance.post("/auth/register", information);
+	return response.data;
+}
