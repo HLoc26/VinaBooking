@@ -3,25 +3,23 @@
  * @class Accommodation
  */
 class Accommodation {
-	constructor(id, name, amenities, address, rooms, images) {
+	constructor(id, name, address, rooms) {
 		this.id = id;
 		this.name = name;
-		this.amenities = amenities;
 		this.address = address;
-		this.rooms = rooms;
-		this.images = images;
+		this.rooms = rooms; // Array of Room objects
 	}
 
 	getRoomCount() {
-		return this.rooms.length;
+		// Logic will be implemented later
 	}
 
 	getAvailableRooms(startDate, endDate) {
-		return this.rooms.filter((room) => room.isAvailable(startDate, endDate));
+		// Logic will be implemented later
 	}
 
 	getBookings() {
-		return this.rooms.flatMap((room) => room.getBookings());
+		// Logic will be implemented later
 	}
 }
 
