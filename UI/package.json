@@ -19,6 +19,7 @@
 		"@reduxjs/toolkit": "^2.6.1",
 		"axios": "^1.8.4",
 		"date-fns": "^4.1.0",
+		"mui-tel-input": "^8.0.1",
 		"react": "^19.0.0",
 		"react-date-range": "^2.0.1",
 		"react-dom": "^19.0.0",
@@ -38,4 +39,3 @@
 		"vite": "^6.2.0"
 	}
 }
-
