@@ -1,9 +1,8 @@
 import React from "react";
 import { Box, Typography, Container, Grid } from "@mui/material";
-import Navbar from "../../components/layout/NavBar/NavBar";
+import MainLayout from "../../components/layout/MainLayout/MainLayout";
 import SearchBar from "../../components/ui/SearchBar/SearchBar";
 import HotelCard from "../../components/ui/HotelCard/HotelCard";
-import Footer from "../../components/layout/Footer/Footer";
 
 function Landing() {
 	// Mock data for popular destinations and featured hotels
@@ -93,10 +92,7 @@ function Landing() {
 	};
 
 	return (
-		<Box>
-			{/* Navbar */}
-			<Navbar />
-
+		<MainLayout>
 			{/* Hero Section */}
 			<Box
 				sx={{
@@ -169,12 +165,7 @@ function Landing() {
 					</Grid>
 				</Container>
 			</Box>
-
-			{/* Footer */}
-			<Box sx={{ marginTop: 6 }}>
-				<Footer />
-			</Box>
-		</Box>
+		</MainLayout>
 	);
 }
 
