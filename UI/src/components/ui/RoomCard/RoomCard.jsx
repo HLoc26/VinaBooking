@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Paper, Grid, Typography, Box, IconButton, Button, List, ListItemText, Modal, Divider } from "@mui/material";
+import { Paper, Grid, Typography, Box, IconButton, Button, List, ListItemText, ImageListItemBar, Modal, Divider } from "@mui/material";
 import * as Icon from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice.js";
 
@@ -83,25 +83,15 @@ function RoomCard({ room }) {
 							)}
 
 							{/* Overlay with text */}
-							<Box
-								sx={{
-									position: "absolute",
-									bottom: 0,
-									left: 0,
-									right: 0,
-									backgroundColor: "rgba(0, 0, 0, 0.6)",
-									color: "white",
-									padding: 1,
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "center",
-								}}
-							>
-								<Icon.PhotoLibrary sx={{ mr: 1 }} />
-								<Typography variant="body2">
-									{images.length} {images.length === 1 ? "photo" : "photos"} - Click to view
-								</Typography>
-							</Box>
+							<ImageListItemBar
+								sx={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
+								title={
+									<Typography sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+										<Icon.PhotoLibrary fontSize="small" />
+										{images.length} {images.length === 1 ? "photo" : "photos"} - Click to view
+									</Typography>
+								}
+							/>
 						</Box>
 					</Grid>
 
