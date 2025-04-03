@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import CustomTabPanel from "../../components/ui/CustomTabPanel/CustomTabPanel";
 import MainLayout from "../../components/layout/MainLayout/MainLayout";
 import ReviewCard from "../../components/ui/ReviewCard/ReviewCard";
+import RoomCard from "../../components/ui/RoomCard/RoomCard";
 
 function AccommodationDetail() {
 	const { aid } = useParams();
@@ -86,6 +87,167 @@ function AccommodationDetail() {
 		},
 	];
 
+	// Mock data for rooms
+	const rooms = [
+		{
+			id: 1,
+			name: "Deluxe Twin City View",
+			maxCapacity: 2,
+			size: 25,
+			description: "A cozy room with a stunning city view, perfect for two guests.",
+			price: 1000000,
+			amenities: ["City view", "No smoking", "Blackout curtains", "Free Wi-Fi"],
+			images: [
+				{
+					img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
+					title: "Breakfast",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
+					title: "Burger",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
+					title: "Camera",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
+					title: "Coffee",
+				},
+			],
+		},
+		{
+			id: 2,
+			name: "Luxury Suite Ocean View",
+			maxCapacity: 4,
+			size: 50,
+			description: "A luxurious suite with breathtaking ocean views and premium amenities.",
+			price: 3000000,
+			amenities: ["Ocean view", "King-size bed", "Private balcony", "Jacuzzi"],
+			images: [
+				{
+					img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
+					title: "Breakfast",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
+					title: "Burger",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
+					title: "Camera",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
+					title: "Coffee",
+				},
+			],
+		},
+		{
+			id: 3,
+			name: "Standard Single Room",
+			maxCapacity: 1,
+			size: 15,
+			description: "A compact and affordable room for solo travelers.",
+			price: 500000,
+			amenities: {
+				basic: ["Elevator", "City view"],
+				bathroom: ["Bathtub", "Toothbrush", "Towel"],
+				facility: ["Balcony", "Mineral water", "Soda"],
+			},
+			images: [
+				{
+					img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
+					title: "Breakfast",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
+					title: "Burger",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
+					title: "Camera",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
+					title: "Coffee",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Bike",
+				},
+			],
+		},
+		{
+			id: 4,
+			name: "Family Room Garden View",
+			maxCapacity: 6,
+			size: 60,
+			description: "Spacious family room with a beautiful garden view, ideal for families.",
+			price: 2000000,
+			amenities: {
+				basic: ["Elevator", "City view"],
+			},
+			images: [
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Garden view",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Family room",
+				},
+			],
+		},
+		{
+			id: 5,
+			name: "Penthouse Suite",
+			maxCapacity: 8,
+			size: 120,
+			description: "An exclusive penthouse suite with panoramic views and luxurious amenities.",
+			price: 8000000,
+			amenities: ["Panoramic view", "Private pool", "Fully equipped kitchen", "Butler service"],
+			images: [
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Penthouse view",
+				},
+				{
+					img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
+					title: "Luxury living room",
+				},
+			],
+		},
+	];
+
 	return (
 		<MainLayout>
 			<Box sx={{ width: "100%" }}>
@@ -102,7 +264,9 @@ function AccommodationDetail() {
 					This is overview for room {aid}
 				</CustomTabPanel>
 				<CustomTabPanel value={activeTab} index={1}>
-					Rooms
+					{rooms.map((room, index) => (
+						<RoomCard key={index} room={room} />
+					))}
 				</CustomTabPanel>
 				<CustomTabPanel value={activeTab} index={2}>
 					Amenities
