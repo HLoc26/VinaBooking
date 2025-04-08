@@ -1,4 +1,4 @@
-import Amenity from "./Amenity";
+import Amenity from "./Amenity.js";
 
 /**
  * A room's single amenity. Room will contain a list of this class.
@@ -6,17 +6,17 @@ import Amenity from "./Amenity";
  * @extends {Amenity}
  */
 class RoomAmenity extends Amenity {
-    /**
-     * @param {number} id 
-     * @param {string} name 
-     * @param {number} roomId 
-     * @param {ERoomAmenityType} type
-     */
-    constructor(id, name, roomId, type) {
-        super(id, name);
-        this.roomId = roomId;
-        this.type = type;
-    }
+	/**
+	 * @param {number} id
+	 * @param {string} name
+	 * @param {number} roomId
+	 * @param {ERoomAmenityType} type
+	 */
+	constructor(id, name, roomId, type) {
+		super(id, name);
+		this.roomId = roomId;
+		this.type = type;
+	}
 }
 
 /**
@@ -25,9 +25,9 @@ class RoomAmenity extends Amenity {
  * @enum {string}
  */
 export const ERoomAmenityType = Object.freeze({
-    BASE: "base",
-    BATHROOM: "bathroom",
-    FACILITY: "facility"
+	BASE: "base",
+	BATHROOM: "bathroom",
+	FACILITY: "facility",
 });
 
 export default RoomAmenity;
