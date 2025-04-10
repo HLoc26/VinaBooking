@@ -27,7 +27,7 @@ export const EGender = Object.freeze({
 	MALE: "male",
 	FEMALE: "female",
 });
-
+//
 /**
  * Enum for user roles.
  * @readonly
