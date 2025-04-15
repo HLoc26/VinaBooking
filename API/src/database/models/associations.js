@@ -40,11 +40,20 @@ Accommodation.belongsToMany(User, {
 });
 Accommodation.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
 
-// AccommodationAmenity associations
-AccommodationAmenity.belongsTo(Accommodation, { foreignKey: "accommodationId" });
-
 // Address associations
 Address.belongsTo(Accommodation, { foreignKey: "accommodationId" });
+
+// Amenity associations
+Amenity.hasMany(RoomAmenity, { foreignKey: "id" });
+Amenity.hasMany(AccommodationAmenity, { foreignKey: "id" });
+
+// Amenity - Accommodation associations
+AccommodationAmenity.belongsTo(Accommodation, { foreignKey: "accommodationId" });
+AccommodationAmenity.belongsTo(Amenity, { foreignKey: "id" });
+
+// Amenity - Room associations
+RoomAmenity.belongsTo(Room, { foreignKey: "roomId" });
+RoomAmenity.belongsTo(Amenity, { foreignKey: "id" });
 
 // Booking associations
 Booking.belongsTo(Invoice, { foreignKey: "invoiceId" });
@@ -85,9 +94,6 @@ Room.belongsTo(Accommodation, { foreignKey: "accommodationId" });
 Room.hasMany(Booking, { foreignKey: "roomId" });
 Room.hasMany(Image, { foreignKey: "roomId" });
 Room.hasMany(RoomAmenity, { foreignKey: "roomId" });
-
-// RoomAmenity associations
-RoomAmenity.belongsTo(Room, { foreignKey: "roomId" });
 
 // SupportTicket associations
 SupportTicket.belongsTo(User, { foreignKey: "userId" });
