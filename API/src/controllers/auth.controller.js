@@ -1,9 +1,9 @@
-import { loginService } from "../services/auth.service.js";
+import authService from "../services/auth.service.js";
 
 export async function loginController(req, res) {
     const { email, password } = req.body;
     try {
-        const result = await loginService(email, password);
+        const result = await authService.login(email, password);
         if (!result.success) {
             return res.status(result.error.code).json({ success: false, error: result.error });
         }
