@@ -1,6 +1,9 @@
 import { Router } from "express";
+import accommodationRouter from "./accommodation.routes.js";
 
 const router = Router();
+
+router.use("/accommodation", accommodationRouter);
 
 router.get("/", (req, res) => {
 	res.json({ success: true, message: "Hello, welcome" });
