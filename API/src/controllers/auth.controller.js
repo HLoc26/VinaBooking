@@ -1,0 +1,19 @@
+import { loginService } from "../services/auth.service.js";
+
+export async function loginController(req, res) {
+    const { email, password } = req.body;
+    try {
+        const result = await loginService(email, password);
+        if (!result.success) {
+            return res.status(result.error.code).json({ success: false, error: result.error });
+        }
+        return res.json({
+            success: true,
+            message: "Login success",
+            payload: result.payload,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
+    }
+}
