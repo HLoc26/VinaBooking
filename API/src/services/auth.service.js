@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail } from "../database/dao/UserDAO.js";
+import { User } from "../database/models/index.js";
 
 export async function loginService(email, password) {
-    const user = await findUserByEmail(email);
+    const user = await User.findOne({ where: { email } });
     if (!user) {
         return { success: false, error: { code: 401, message: "Invalid email or password" } };
     }
