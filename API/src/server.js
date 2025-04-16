@@ -42,12 +42,6 @@ async function connectWithRetry(retries = MAX_RETRIES) {
 	try {
 		await sequelize.authenticate();
 		console.log("Database connection established successfully.");
-
-		// Sync database models
-		console.log("Syncing database models...");
-		await sequelize.sync({ alter: true, force: false }); // Use { force: true } to drop and recreate tables
-		console.log("Database models synchronized successfully.");
-
 		return true;
 	} catch (error) {
 		console.error("Unable to connect to the database:", error.message);
