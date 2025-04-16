@@ -1,14 +1,26 @@
 // controllers/auth.controller.js
 import authService from "../services/auth.service.js";
+import sendMail from "../services/email.service.js";
 export default {
 	async requestOTP(req, res) {
 		const { emailOrPhone } = req.body;
+
+		// Generate OTP using Redis
 		const otp = await authService.generateOTP(emailOrPhone);
 
-		// Normally send the OTP using a mail/SMS service
-		console.log(`Generated OTP for ${emailOrPhone}: ${otp}`);
+		try {
+			// Send OTP via email
+			await sendMail({
+				to: emailOrPhone,
+				subject: "Your OTP Code",
+				html: `<h3>Your OTP is:</h3><p style="font-size: 20px; font-weight: bold;">${otp}</p><p>This OTP will expire in 5 minutes.</p>`,
+			});
 
-		res.status(200).json({ message: "OTP sent successfully" });
+			res.status(200).json({ message: "OTP sent successfully to email." });
+		} catch (error) {
+			console.error("Failed to send OTP:", error);
+			res.status(500).json({ message: "Failed to send OTP email", error: error.message });
+		}
 	},
 
 	async confirmOTP(req, res) {
@@ -20,5 +32,23 @@ export default {
 		}
 
 		res.status(200).json({ message: result.message });
+	},
+
+	// ✉️ Mail test route logic
+	async testMail(req, res) {
+		const { to, subject, message } = req.body;
+
+		try {
+			await sendMail.send({
+				to: to, // Use a fixed email for testing
+				subject: subject || "Hello",
+				html: `<p>${message}</p>`,
+			});
+
+			res.status(200).json({ message: "Test email sent successfully!" });
+		} catch (error) {
+			console.error("Mail test error:", error);
+			res.status(500).json({ message: "Failed to send test email", error: error.message });
+		}
 	},
 };
