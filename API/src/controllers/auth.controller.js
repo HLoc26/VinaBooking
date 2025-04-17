@@ -1,17 +1,17 @@
 // controllers/auth.controller.js
 import authService from "../services/auth.service.js";
-import sendMail from "../services/email.service.js";
+import emailService from "../services/email.service.js";
 export default {
 	async requestOTP(req, res) {
-		const { emailOrPhone } = req.body;
+		const { email } = req.body;
 
 		// Generate OTP using Redis
-		const otp = await authService.generateOTP(emailOrPhone);
+		const otp = await authService.generateOTP(email);
 
 		try {
 			// Send OTP via email
-			await sendMail({
-				to: emailOrPhone,
+			await emailService.send({
+				to: email,
 				subject: "Your OTP Code",
 				html: `<h3>Your OTP is:</h3><p style="font-size: 20px; font-weight: bold;">${otp}</p><p>This OTP will expire in 5 minutes.</p>`,
 			});
@@ -24,8 +24,8 @@ export default {
 	},
 
 	async confirmOTP(req, res) {
-		const { emailOrPhone, otp } = req.body;
-		const result = await authService.validateOTP(emailOrPhone, otp);
+		const { email, otp } = req.body;
+		const result = await authService.validateOTP(email, otp);
 
 		if (!result.valid) {
 			return res.status(400).json({ message: result.message });
@@ -40,7 +40,7 @@ export default {
 
 		try {
 			await sendMail.send({
-				to: to, // Use a fixed email for testing
+				to: to || "example@gmail.com", // Use a fixed email for testing
 				subject: subject || "Hello",
 				html: `<p>${message}</p>`,
 			});
