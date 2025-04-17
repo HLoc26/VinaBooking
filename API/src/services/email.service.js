@@ -14,7 +14,7 @@ export default {
 	async send({ to, subject, html }) {
 		try {
 			const info = await transporter.sendMail({
-				from: `"No Reply" <${process.env.MAIL_USER}>`,
+				from: `"VinaBooking HCMUTE No-Reply" <${process.env.MAIL_USER}>`,
 				to,
 				subject,
 				html,
