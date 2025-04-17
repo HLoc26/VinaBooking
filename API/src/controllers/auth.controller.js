@@ -16,10 +16,10 @@ export default {
 				html: `<h3>Your OTP is:</h3><p style="font-size: 20px; font-weight: bold;">${otp}</p><p>This OTP will expire in 5 minutes.</p>`,
 			});
 
-			res.status(200).json({ message: "OTP sent successfully to email." });
+			res.status(200).json({ success: true, message: "OTP sent successfully to email." });
 		} catch (error) {
 			console.error("Failed to send OTP:", error);
-			res.status(500).json({ message: "Failed to send OTP email", error: error.message });
+			res.status(500).json({ success: false, message: "Failed to send OTP email", error: error.message });
 		}
 	},
 
@@ -28,10 +28,10 @@ export default {
 		const result = await authService.validateOTP(email, otp);
 
 		if (!result.valid) {
-			return res.status(400).json({ message: result.message });
+			return res.status(400).json({ success: false, message: result.message });
 		}
 
-		res.status(200).json({ message: result.message });
+		res.status(200).json({ success: true, message: result.message });
 	},
 
 	// ✉️ Mail test route logic
@@ -45,10 +45,10 @@ export default {
 				html: `<p>${message}</p>`,
 			});
 
-			res.status(200).json({ message: "Test email sent successfully!" });
+			res.status(200).json({ success: true, message: "Test email sent successfully!" });
 		} catch (error) {
 			console.error("Mail test error:", error);
-			res.status(500).json({ message: "Failed to send test email", error: error.message });
+			res.status(500).json({ success: false, message: "Failed to send test email", error: error.message });
 		}
 	},
 };
