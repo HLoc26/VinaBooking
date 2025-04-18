@@ -11,6 +11,14 @@ Booking.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		userId: {
+			type: DataTypes.INTEGER.UNSIGNED,
+			allowNull: false,
+			references: {
+			  model: 'User',
+			  key: 'id'
+			}
+		},
 		startDate: {
 			type: DataTypes.DATE,
 			allowNull: false,
@@ -36,5 +44,12 @@ Booking.init(
 		timestamps: true,
 	}
 );
+
+Booking.associate = function(models) {
+	models.Booking.belongsTo(models.User, {
+	  foreignKey: 'userId',
+	  as: 'user'
+	});
+};
 
 export default Booking;

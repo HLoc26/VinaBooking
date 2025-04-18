@@ -1,9 +1,10 @@
 import { Router } from "express";
+import bookingRouter from './booking.routes.js';
 
 const router = Router();
 
 router.get("/", (req, res) => {
-	res.json({ success: true, message: "Hello, welcome" });
+    res.json({ success: true, message: "Hello, welcome" });
 });
 
 // Testing
@@ -28,5 +29,7 @@ router.post("/auth/login", (req, res) => {
 		});
 	}
 });
+
+router.use('/booking', bookingRouter);
 
 export default router;
