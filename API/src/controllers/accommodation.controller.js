@@ -3,7 +3,7 @@ import AccommodationService from "../services/accommodation.service.js";
 export default {
 	async getAccommodationDetail(req, res) {
 		try {
-			const id = parseInt(req.params.id, 10);
+			const id = parseInt(req.query.id, 10);
 
 			if (isNaN(id)) {
 				return res.status(400).json({
