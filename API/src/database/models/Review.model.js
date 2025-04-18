@@ -10,6 +10,22 @@ Review.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		userId: {
+			type: DataTypes.INTEGER.UNSIGNED,
+			allowNull: false,
+			references: {
+				model: 'User',
+				key: 'id'
+			}
+		},
+		accommodationId: {
+			type: DataTypes.INTEGER.UNSIGNED,
+			allowNull: false,
+			references: {
+				model: 'Accommodation',
+				key: 'id'
+			}
+		},
 		star: {
 			type: DataTypes.FLOAT,
 			allowNull: false,
