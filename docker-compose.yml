@@ -22,6 +22,8 @@ services:
         depends_on:
             db:
                 condition: service_healthy
+            redis:
+                condition: service_healthy
     frontend:
         build: ./UI
         ports:
@@ -31,6 +33,18 @@ services:
             - /app/node_modules
         depends_on:
             - backend
+    redis:
+        image: redis:8.0-rc1-alpine
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
 volumes:
     db_data:
+    redis_data:
