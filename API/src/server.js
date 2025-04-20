@@ -6,6 +6,9 @@ import "./database/models/index.js";
 
 const app = express();
 
+// This line is important for parsing JSON request bodies!
+app.use(express.json());
+
 app.use(urlencoded({ extended: true }));
 
 app.use(
