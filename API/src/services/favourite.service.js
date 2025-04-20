@@ -1,19 +1,40 @@
-import { FavouriteList } from "../database/models/index.js";
+import { FavouriteList, Accommodation } from "../database/models/index.js";
 
 export default {
 	// Add an accommodation to the user's favourite list
-	// If the accommodation is already in the list, it won't be added again
 	async add(userId, accommodationId) {
 		try {
-			// Check if the accommodation is already in the user's favourite list
-			// If it is, return false (indicating it was not added)
-			const [favourite, created] = await FavouriteList.findOrCreate({
-				where: { user_id: userId, accommodation_id: accommodationId },
+			// Find the user's favourite list
+			let favouriteList = await FavouriteList.findOne({
+				where: { userId },
 			});
 
-			// If the accommodation was already in the list, created will be false
-			// If it was newly created, created will be true
-			return created;
+			// If the favourite list doesn't exist, create it and warn
+			if (!favouriteList) {
+				favouriteList = await FavouriteList.create({ userId });
+				console.warn(`FavouriteList not found for user ${userId}, created new one.`);
+			}
+
+			// Check if the accommodation exists
+			// If it doesn't exist, return false
+			const accommodation = await Accommodation.findByPk(accommodationId);
+			if (!accommodation) {
+				console.error(`Accommodation ${accommodationId} not found.`);
+				return false;
+			}
+
+			// Check if the accommodation is already in the user's favourite list
+			// If it is, return false to avoid duplicates
+			const alreadyAdded = await favouriteList.hasAccommodation(accommodation);
+			if (alreadyAdded) {
+				console.warn(`Accommodation ${accommodationId} is already in the user's favourite list.`);
+				return false;
+			}
+
+			// Add the accommodation to the user's favourite list
+			await favouriteList.addAccommodation(accommodation);
+
+			return true;
 		} catch (error) {
 			console.error("Error in FavouriteService.add:", error);
 			return false;
@@ -21,18 +42,31 @@ export default {
 	},
 
 	// Remove an accommodation from the user's favourite list
-	// If the accommodation is not in the list, it won't be removed
 	async remove(userId, accommodationId) {
 		try {
-			// Check if the accommodation is in the user's favourite list
-			// If it is, delete it from the list
-			const affectedRows = await FavouriteList.destroy({
-				where: { user_id: userId, accommodation_id: accommodationId },
+			// Find the user's favourite list
+			// If it doesn't exist, return false
+			const favouriteList = await FavouriteList.findOne({
+				where: { userId },
 			});
 
-			// If affectedRows is greater than 0, it means the accommodation was successfully removed
-			// If affectedRows is 0, it means the accommodation was not in the list
-			return affectedRows > 0;
+			// If the favourite list doesn't exist, notify and return false
+			if (!favouriteList) {
+				console.error(`FavouriteList for user ${userId} not found.`);
+				return false;
+			}
+
+			// Check if accommodation has been added to favorite list
+			const alreadyAdded = await favouriteList.hasAccommodation(accommodationId);
+			if (!alreadyAdded) {
+				console.warn(`Accommodation ${accommodationId} is not in FavouriteList of user ${userId}.`);
+				return false;
+			}
+
+			// Remove the accommodation to the user's favourite list
+			await favouriteList.removeAccommodation(accommodation);
+
+			return true;
 		} catch (error) {
 			console.error("Error in FavouriteService.remove:", error);
 			return false;
