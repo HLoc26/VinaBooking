@@ -1,33 +1,33 @@
 import authService from "../services/auth.service.js";
 import emailService from "../services/email.service.js";
 export default {
-  // Handles user authentication requests
-  async login(req, res) {
-      const { email, password } = req.body;
-      try {
-          const result = await authService.login(email, password);
-          if (!result.success) {
-              return res.status(result.error.code).json({ success: false, error: result.error });
-          }
-          return res.json({
-              success: true,
-              message: "Login success",
-              payload: result.payload,
-          });
-      } catch (err) {
-          console.error(err);
-          return res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
-      }
-  },
-  
-  // Handles requesting OTP
+	// Handles user authentication requests
+	async login(req, res) {
+		const { email, password } = req.body;
+		try {
+			const result = await authService.login(email, password);
+			if (!result.success) {
+				return res.status(result.error.code).json({ success: false, error: result.error });
+			}
+			return res.json({
+				success: true,
+				message: "Login success",
+				payload: result.payload,
+			});
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
+		}
+	},
+
+	// Handles requesting OTP
 	async requestOTP(req, res) {
 		const { email } = req.body;
 
 		try {
-      // Generate random OTP and save to Redis
-		  const otp = await authService.generateOTP(email);
-      
+			// Generate random OTP and save to Redis
+			const otp = await authService.generateOTP(email);
+
 			// Send OTP via email
 			await emailService.send({
 				to: email,
@@ -38,26 +38,25 @@ export default {
 			res.status(200).json({ success: true, message: "OTP sent successfully to email.", payload: null });
 		} catch (error) {
 			console.error("Failed to send OTP:", error);
-			res.status(500).json({ success: false, error: {code: 500, message: "Failed to send OTP email"}});
+			res.status(500).json({ success: false, error: { code: 500, message: "Failed to send OTP email" } });
 		}
 	},
 
-  // Handles OTP confirmation
+	// Handles OTP confirmation
 	async confirmOTP(req, res) {
 		const { email, otp } = req.body;
-    
-    try {
-      const result = await authService.validateOTP(email, otp);
 
-      if (!result.valid) {
-        return res.status(400).json({ success: false, error: {code: 400, message: result.message}});
-      }
-      res.status(200).json({ success: true, message: result.message, payload: null });
-    }
-    catch (error) {
-      console.error("Failed to confirm OTP:", error);
-			res.status(500).json({ success: false, error: {code: 500, message: "Failed to confirm OTP"}});
-    }
+		try {
+			const result = await authService.validateOTP(email, otp);
+
+			if (!result.valid) {
+				return res.status(400).json({ success: false, error: { code: 400, message: result.message } });
+			}
+			res.status(200).json({ success: true, message: result.message, payload: null });
+		} catch (error) {
+			console.error("Failed to confirm OTP:", error);
+			res.status(500).json({ success: false, error: { code: 500, message: "Failed to confirm OTP" } });
+		}
 	},
 
 	// Mail test route logic
@@ -74,7 +73,40 @@ export default {
 			res.status(200).json({ success: true, message: "Test email sent successfully!", payload: null });
 		} catch (error) {
 			console.error("Mail test error:", error);
-			res.status(500).json({ success: false, error: {code: 500, message: "Failed to send test email"}});
+			res.status(500).json({ success: false, error: { code: 500, message: "Failed to send test email" } });
+		}
+	},
+	async requestRegistration(req, res) {
+		const { name, phone, email, password, role, gender, dob, username, address, profilePicture } = req.body;
+		console.log("Received req.body:", req.body); // Add this line
+
+		// 🪵 Log the email for debugging
+		console.log("Received email:", email);
+
+		try {
+			const result = await authService.requestRegistration({ name, phone, email, password, role, gender, dob, username, address, profilePicture });
+
+			if (!result.success) {
+				return res.status(result.error.code).json({ success: false, error: result.error });
+			}
+			res.status(200).json({ success: true, message: "OTP sent to email. Please confirm to complete registration." });
+		} catch (error) {
+			console.error("Registration request failed:", error);
+			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
+		}
+	},
+
+	async confirmRegistration(req, res) {
+		const { email, otp } = req.body;
+		try {
+			const result = await authService.confirmRegistration(email, otp);
+			if (!result.success) {
+				return res.status(result.error.code).json({ success: false, error: result.error });
+			}
+			res.status(201).json({ success: true, message: "Account created successfully. You can now log in." });
+		} catch (error) {
+			console.error("Confirm registration failed:", error);
+			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
 		}
 	},
 };

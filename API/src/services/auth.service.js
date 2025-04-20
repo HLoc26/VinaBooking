@@ -1,75 +1,72 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-  
+
 import redis from "../config/redis.js";
 import { User } from "../database/models/index.js";
+import emailService from "./email.service.js";
 
 export default {
-  // Authenticates a user and generates a JWT token
-  async login(email, password) {
-      try {
-          const user = await User.findOne({ where: { email } });
-          if (!user) {
-              return { success: false, error: { code: 401, message: "Invalid email or password" } };
-          }
+	// Authenticates a user and generates a JWT token
+	async login(email, password) {
+		try {
+			const user = await User.findOne({ where: { email } });
+			if (!user) {
+				return { success: false, error: { code: 401, message: "Invalid email or password" } };
+			}
 
-          const isMatch = await bcrypt.compare(password, user.password);
-          if (!isMatch) {
-              return { success: false, error: { code: 401, message: "Invalid email or password" } };
-          }
+			const isMatch = await bcrypt.compare(password, user.password);
+			if (!isMatch) {
+				return { success: false, error: { code: 401, message: "Invalid email or password" } };
+			}
 
-          const token = this.generateToken(user);
+			const token = this.generateToken(user);
 
-          return {
-              success: true,
-              payload: {
-                  user: this.sanitizeUser(user),
-                  jwt: token,
-              }
-          };
-      } catch (error) {
-          return {
-              success: false,
-              error: { code: 500, message: "Authentication failed", details: error.message }
-          };
-      }
-  },
+			return {
+				success: true,
+				payload: {
+					user: this.sanitizeUser(user),
+					jwt: token,
+				},
+			};
+		} catch (error) {
+			return {
+				success: false,
+				error: { code: 500, message: "Authentication failed", details: error.message },
+			};
+		}
+	},
 
-  //Generates JWT token for a user
-  generateToken(user) {
-      const jwtSecret = process.env.JWT_SECRET;
-      if (!jwtSecret) throw new Error("Missing JWT_SECRET in environment variables"); // Throw error if env not set
-      return jwt.sign(
-          { id: user.id, email: user.email }, 
-          jwtSecret, 
-          { expiresIn: process.env.JWT_EXPIRES || "1d" }
-      );
-  },
+	//Generates JWT token for a user
+	generateToken(user) {
+		const jwtSecret = process.env.JWT_SECRET;
+		if (!jwtSecret) throw new Error("Missing JWT_SECRET in environment variables"); // Throw error if env not set
+		return jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn: process.env.JWT_EXPIRES || "1d" });
+	},
 
-  // Returns user data without sensitive information
-  sanitizeUser(user) {
-      return {
-          id: user.id,
-          username: user.name,
-          email: user.email,
-      };
-  },
+	// Returns user data without sensitive information
+	sanitizeUser(user) {
+		return {
+			id: user.id,
+			username: user.name,
+			email: user.email,
+		};
+	},
 
-  //Verifies if a token is valid
-  verifyToken(token) {
-      try {
-          const jwtSecret = process.env.JWT_SECRET;
-          if (!jwtSecret) throw new Error("Missing JWT_SECRET in environment variables"); // Throw error if env not set
-          const decoded = jwt.verify(token, jwtSecret);
-          return { success: true, payload: decoded };
-      } catch (error) {
-          return { 
-              success: false, 
-              error: { code: 401, message: "Invalid token", details: error.message } 
-          };
-      }
-  },
-  
+	//Verifies if a token is valid
+	verifyToken(token) {
+		try {
+			const jwtSecret = process.env.JWT_SECRET;
+			if (!jwtSecret) throw new Error("Missing JWT_SECRET in environment variables"); // Throw error if env not set
+			const decoded = jwt.verify(token, jwtSecret);
+			return { success: true, payload: decoded };
+		} catch (error) {
+			return {
+				success: false,
+				error: { code: 401, message: "Invalid token", details: error.message },
+			};
+		}
+	},
+
 	async generateOTP(identifier) {
 		const otp = Math.floor(100000 + Math.random() * 900000).toString();
 		await redis.setex(`otp:${identifier}`, 300, otp);
@@ -85,5 +82,35 @@ export default {
 
 		await redis.del(key);
 		return { valid: true, message: "OTP verified successfully" };
+	},
+	async requestRegistration(userData) {
+		const existing = await User.findOne({ where: { email: userData.email } });
+		if (existing) return { success: false, error: { code: 409, message: "Email already in use. Please try another one." } };
+
+		await redis.setex(`pending_user:${userData.email}`, 300, JSON.stringify(userData));
+
+		const otp = await this.generateOTP(userData.email);
+		await emailService.send({
+			to: userData.email,
+			subject: "Verify your email to complete registration",
+			html: `<h3>Your OTP is:</h3><p style="font-size: 20px; font-weight: bold;">${otp}</p><p>This OTP will expire in 5 minutes.</p>`,
+		});
+
+		return { success: true };
+	},
+
+	async confirmRegistration(email, otp) {
+		const validOtp = await this.validateOTP(email, otp);
+		if (!validOtp.valid) return { success: false, error: { code: 400, message: validOtp.message } };
+
+		const userDataStr = await redis.get(`pending_user:${email}`);
+		if (!userDataStr) return { success: false, error: { code: 410, message: "Pending registration expired or not found" } };
+
+		const userData = JSON.parse(userDataStr);
+		userData.password = await bcrypt.hash(userData.password, 10);
+		await User.create(userData);
+		await redis.del(`pending_user:${email}`);
+
+		return { success: true };
 	},
 };
