@@ -7,7 +7,7 @@ export default {
 		try {
 			// Extract accommodationId from request body
 			// The accommodationId is expected to be sent in the request body
-			const accommodationId = req.body.accommodationId;
+			const accommodationId = Number(req.body.accommodationId);
 
 			// Extract userId from request object (or use a default for testing)
 			// In a real application, you would get the userId from the authenticated user session
@@ -64,7 +64,7 @@ export default {
 		try {
 			// Extract accommodationId from request body
 			// The accommodationId is expected to be sent in the request body
-			const { accommodationId } = req.body;
+			const accommodationId = Number(req.body.accommodationId);
 
 			// Extract userId from request object
 			// In a real application, you would get the userId from the authenticated user session
