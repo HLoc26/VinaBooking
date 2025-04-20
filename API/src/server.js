@@ -7,6 +7,8 @@ import "./database/models/associations.js";
 const app = express();
 
 app.use(urlencoded({ extended: true }));
+app.use(express.json());
+// ======================= CORS =========================
 
 app.use(
 	cors({
