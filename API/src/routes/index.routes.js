@@ -1,8 +1,13 @@
 import { Router } from "express";
 import accommodationRouter from "./accommodation.routes.js";
 import authRouter from "./auth.routes.js";
+import favouriteRouter from "./favourite.routes.js";
+import authMiddleware from "../middlewares/auth.mdw.js";
 
 const router = Router();
+
+router.use("/accommodation", accommodationRouter);
+router.use("/favourite", authMiddleware, favouriteRouter);
 
 router.get("/", (req, res) => {
 	res.json({ success: true, message: "Hello, welcome" });
