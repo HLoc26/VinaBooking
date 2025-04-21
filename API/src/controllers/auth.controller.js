@@ -77,14 +77,14 @@ export default {
 		}
 	},
 	async requestRegistration(req, res) {
-		const { name, phone, email, password, role, gender, dob, username, address, profilePicture } = req.body;
+		const { name, phone, email, password, role, gender, dob, username, address } = req.body;
 		console.log("Received req.body:", req.body); // Add this line
 
 		// 🪵 Log the email for debugging
 		console.log("Received email:", email);
 
 		try {
-			const result = await authService.requestRegistration({ name, phone, email, password, role, gender, dob, username, address, profilePicture });
+			const result = await authService.requestRegistration({ name, phone, email, password, role, gender, dob, username, address });
 
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
