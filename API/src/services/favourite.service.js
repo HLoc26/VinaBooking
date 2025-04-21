@@ -1,6 +1,30 @@
 import { FavouriteList, Accommodation } from "../database/models/index.js";
 
 export default {
+	// Find favourite list by user id
+	async findByUserId(userId) {
+		try {
+			const favouriteList = await FavouriteList.findOne({
+				where: { user_id: userId },
+				include: {
+					model: Accommodation,
+					through: {
+						attributes: [],
+					},
+				},
+			});
+			// If the favourite list doesn't exist, create it and warn
+			if (!favouriteList) {
+				favouriteList = await FavouriteList.create({ userId });
+				console.warn(`FavouriteList not found for user ${userId}, created new one.`);
+			}
+			return favouriteList;
+		} catch (error) {
+			console.error(error.message);
+			return null;
+		}
+	},
+
 	// Add an accommodation to the user's favourite list
 	async add(userId, accommodationId) {
 		try {
@@ -64,7 +88,7 @@ export default {
 			}
 
 			// Remove the accommodation to the user's favourite list
-			await favouriteList.removeAccommodation(accommodation);
+			await favouriteList.removeAccommodation(accommodationId);
 
 			return true;
 		} catch (error) {
