@@ -1,13 +1,14 @@
-FROM node:22
+FROM node:22-alpine
 
 WORKDIR /app
 
 # Install dependencies required for bcrypt compilation
-RUN apt-get update && apt-get install -y \
-    build-essential \
+# Alpine uses apk instead of apt-get
+RUN apk add --no-cache \
     python3 \
     make \
-    g++
+    g++ \
+    build-base
 
 COPY package*.json ./
 
