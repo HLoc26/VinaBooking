@@ -28,7 +28,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/src ./src
 
 # Set environment to production
-ENV NODE_ENV=production
+ENV NODE_ENV=develop
 
 EXPOSE 3000
 
