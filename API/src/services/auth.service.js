@@ -70,19 +70,40 @@ export default {
 	async generateOTP(identifier) {
 		const otp = Math.floor(100000 + Math.random() * 900000).toString();
 		await redis.setex(`otp:${identifier}`, 300, otp);
+		await redis.setex(`otp_attempts:${identifier}`, 600, 0);
 		return otp;
 	},
 
 	async validateOTP(identifier, submittedOtp) {
-		const key = `otp:${identifier}`;
-		const storedOtp = await redis.get(key);
+		const otpKey = `otp:${identifier}`;
+		const attemptsKey = `otp_attempts:${identifier}`;
 
+		const storedOtp = await redis.get(otpKey);
 		if (!storedOtp) return { valid: false, message: "OTP expired or not found" };
-		if (storedOtp !== submittedOtp) return { valid: false, message: "Incorrect OTP" };
 
-		await redis.del(key);
+		// Get current attempt count (default to 0)
+		let attempts = parseInt(await redis.get(attemptsKey)) || 0;
+
+		// Too many attempts
+		if (attempts >= 5) {
+			await redis.del(otpKey); // Optional: delete OTP when locked
+			await redis.del(attemptsKey);
+			return { valid: false, message: "Too many incorrect attempts. OTP has been invalidated." };
+		}
+
+		// Check OTP match
+		if (storedOtp !== submittedOtp) {
+			await redis.set(attemptsKey, attempts + 1, "EX", 600); // reset expiry too
+			return { valid: false, message: `Incorrect OTP. Attempts remaining: ${4 - attempts}` };
+		}
+
+		// Success - delete OTP and attempts key
+		await redis.del(otpKey);
+		await redis.del(attemptsKey);
+
 		return { valid: true, message: "OTP verified successfully" };
 	},
+
 	async requestRegistration(userData) {
 		const existing = await User.findOne({ where: { email: userData.email } });
 		if (existing) return { success: false, error: { code: 409, message: "Email already in use. Please try another one." } };
