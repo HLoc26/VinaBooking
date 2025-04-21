@@ -1,6 +1,16 @@
-# VinaBooking - Docker Setup
+# VinaBooking - Hotel Booking Platform
 
-This guide explains how to set up and run the **VinaBooking** app using Docker. The app consists of four main services: **Frontend**, **Backend**, **Database**, and **Redis**.
+![VinaBooking Logo](https://via.placeholder.com/150x50?text=VinaBooking)
+
+VinaBooking is a comprehensive hotel booking platform designed to connect travelers with a wide range of accommodations across Vietnam. This application provides an intuitive interface for users to search, compare, and book hotels, while offering accommodation owners a platform to list and manage their properties.
+
+## Project Overview
+
+The system is built using a modern microservices architecture with the following components:
+- **Frontend**: React.js with Material UI
+- **Backend**: Node.js with Express
+- **Database**: MySQL for persistent storage
+- **Cache**: Redis for session management and OTP storage
 
 ## Prerequisites
 
@@ -8,6 +18,31 @@ Before running the app, ensure you have the following installed:
 
 -   **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
 -   **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
+-   **Git**: [Install Git](https://git-scm.com/downloads) (for cloning the repository)
+
+---
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/HLoc26/VinaBooking.git
+cd VinaBooking
+
+# Set up environment variables
+cp .env.example .env
+cp API/.env.example API/.env
+
+# Start the services
+docker-compose up -d
+
+# Initialize the database (first time only)
+docker compose exec backend node src/scripts/sync-db.js
+```
+
+Once all services are running, access:
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- Backend API: [http://localhost:3000/api](http://localhost:3000/api)
 
 ---
 
@@ -35,11 +70,12 @@ Before running the app, ensure you have the following installed:
    - In the `API/.env` file (additional variables):
      - `JWT_SECRET`: Secret key for JWT authentication
      - `MAIL_USER`: Email for sending notifications
-     - `MAIL_PASS`: Email app password
+     - `MAIL_PASS`: Email app password (for Gmail, see [create & use App Passwords](https://support.google.com/accounts/answer/185833))
+     - `JWT_EXPIRES`: Token expiration time (default: 1d)
 
 ---
 
-## Running the App
+## Detailed Installation
 
 1. **Clone the Repository**:
 
@@ -52,7 +88,11 @@ Before running the app, ensure you have the following installed:
    Use Docker Compose to build and start all services:
 
     ```bash
-    docker-compose up --build
+    # Build and start all services in detached mode
+    docker-compose up -d --build
+    
+    # View logs while services are starting
+    docker-compose logs -f
     ```
 
 3. **Initialize the Database** (first time setup):
@@ -81,6 +121,29 @@ Before running the app, ensure you have the following installed:
     ```bash
     docker-compose down
     ```
+
+---
+
+## Project Features
+
+### User Features
+- **Hotel Search**: Search accommodations by location, dates, and occupancy
+- **Advanced Filtering**: Filter results by price range, amenities, and ratings
+- **Booking Management**: View, modify, and cancel bookings
+- **User Accounts**: Register, log in, and manage profile information
+- **Reviews and Ratings**: Read and write reviews for accommodations
+
+### Accommodation Owner Features
+- **Property Management**: Add, edit, and manage property listings
+- **Room Management**: Configure room types, prices, and availability
+- **Booking Overview**: View and manage incoming bookings
+- **Analytics Dashboard**: Track performance metrics for properties
+
+### Technical Features
+- **JWT Authentication**: Secure authentication system
+- **Email Notifications**: OTP verification and booking notifications
+- **Responsive Design**: Optimized for mobile and desktop devices
+- **Redis Caching**: Improved performance with data caching
 
 ---
 
@@ -124,25 +187,18 @@ The app uses environment variables for configuration. These are defined in the f
 
 ---
 
-## API Features
-
-- **Authentication**: JWT-based authentication system
-- **OTP Verification**: Email-based OTP for account verification
-- **Accommodation Management**: Create and manage accommodation listings
-- **Booking System**: Reserve and manage bookings
-
----
-
 ## Troubleshooting
 
 ### 1. **Database Connection Issues**:
 
 -   Ensure the database service is running and healthy.
 -   Check the `MYSQL_*` environment variables in .env.
+-   Verify database logs: `docker compose logs db`
 
 ### 2. **CORS Errors**:
 
 -   Ensure the backend allows requests from the frontend's origin (`http://localhost:5173`).
+-   Check browser console for specific error messages.
 
 ### 3. **Rebuilding Services**:
 
