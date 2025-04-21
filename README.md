@@ -1,7 +1,5 @@
 # VinaBooking - Hotel Booking Platform
 
-![VinaBooking Logo](https://via.placeholder.com/150x50?text=VinaBooking)
-
 VinaBooking is a comprehensive hotel booking platform designed to connect travelers with a wide range of accommodations across Vietnam. This application provides an intuitive interface for users to search, compare, and book hotels, while offering accommodation owners a platform to list and manage their properties.
 
 ## Project Overview
