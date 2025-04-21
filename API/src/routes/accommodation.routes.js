@@ -3,6 +3,6 @@ import accommodationController from "../controllers/accommodation.controller.js"
 
 const accommodationRouter = Router();
 
-accommodationRouter.get("/detail", accommodationController.getAccommodationDetail);
+accommodationRouter.get("/:id", accommodationController.getAccommodationDetail);
 
 export default accommodationRouter;
