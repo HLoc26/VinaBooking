@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
 	res.json({ success: true, message: "Hello, welcome" });
 });
 
-router.use("/accommodation", accommodationRouter);
+router.use("/accommodations", accommodationRouter);
 
 router.use("/auth", authRouter);
 
