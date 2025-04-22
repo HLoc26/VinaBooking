@@ -88,7 +88,8 @@ export default {
 				const rooms = (await roomRepo.findByAccommodationId(accommId))
 					.filter((room) => !bookedRoomsIds.includes(room.id)) // Get room that are available
 					.map((room) => room.get({ plain: true })); // Convert to plain object
-				return { ...plainAccomm, rooms: rooms };
+
+				return rooms.length > 0 ? { ...plainAccomm, rooms: rooms } : null;
 			})
 		);
 
