@@ -104,23 +104,19 @@ export default {
 		return { valid: true, message: "OTP verified successfully" };
 	},
 
-	async requestRegistration(userData) {
+	async initiateRegistration(userData) {
 		const existing = await User.findOne({ where: { email: userData.email } });
 		if (existing) return { success: false, error: { code: 409, message: "Email already in use. Please try another one." } };
 
 		await redis.setex(`pending_user:${userData.email}`, 300, JSON.stringify(userData));
 
 		const otp = await this.generateOTP(userData.email);
-		await emailService.send({
-			to: userData.email,
-			subject: "Verify your email to complete registration",
-			html: `<h3>Your OTP is:</h3><p style="font-size: 20px; font-weight: bold;">${otp}</p><p>This OTP will expire in 5 minutes.</p>`,
-		});
+		await emailService.sendOTP(userData.email, otp);
 
 		return { success: true };
 	},
 
-	async confirmRegistration(email, otp) {
+	async completeRegistration(email, otp) {
 		const validOtp = await this.validateOTP(email, otp);
 		if (!validOtp.valid) return { success: false, error: { code: 400, message: validOtp.message } };
 
@@ -129,6 +125,7 @@ export default {
 
 		const userData = JSON.parse(userDataStr);
 		userData.password = await bcrypt.hash(userData.password, 10);
+
 		await User.create(userData);
 		await redis.del(`pending_user:${email}`);
 
