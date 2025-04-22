@@ -1,4 +1,4 @@
-import AccommodationService from "../services/accommodation.service.js";
+import accommodationService from "../services/accommodation.service.js";
 
 export default {
 	async getAccommodationDetail(req, res) {
@@ -15,7 +15,7 @@ export default {
 				});
 			}
 
-			const accommodation = await AccommodationService.findById(id);
+			const accommodation = await accommodationService.findById(id);
 
 			if (!accommodation) {
 				return res.status(404).json({
