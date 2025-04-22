@@ -105,30 +105,37 @@ export default {
 	},
 
 	async initiateRegistration(userData) {
-		const existing = await User.findOne({ where: { email: userData.email } });
-		if (existing) return { success: false, error: { code: 409, message: "Email already in use. Please try another one." } };
+		try {
+			const existing = await User.findOne({ where: { email: userData.email } });
+			if (existing) return { success: false, error: { code: 409, message: "Email already in use. Please try another one." } };
+			await redis.setex(`pending_user:${userData.email}`, 300, JSON.stringify(userData));
 
-		await redis.setex(`pending_user:${userData.email}`, 300, JSON.stringify(userData));
+			const otp = await this.generateOTP(userData.email);
+			await emailService.sendOTP(userData.email, otp);
 
-		const otp = await this.generateOTP(userData.email);
-		await emailService.sendOTP(userData.email, otp);
-
-		return { success: true };
+			return { success: true };
+		} catch (error) {
+			return { success: false, error: { code: 500, message: "Registration failed", details: error.message } };
+		}
 	},
 
 	async completeRegistration(email, otp) {
-		const validOtp = await this.validateOTP(email, otp);
-		if (!validOtp.valid) return { success: false, error: { code: 400, message: validOtp.message } };
+		try {
+			const validOtp = await this.validateOTP(email, otp);
+			if (!validOtp.valid) return { success: false, error: { code: 400, message: validOtp.message } };
 
-		const userDataStr = await redis.get(`pending_user:${email}`);
-		if (!userDataStr) return { success: false, error: { code: 410, message: "Pending registration expired or not found" } };
+			const userDataStr = await redis.get(`pending_user:${email}`);
+			if (!userDataStr) return { success: false, error: { code: 410, message: "Pending registration expired or not found" } };
 
-		const userData = JSON.parse(userDataStr);
-		userData.password = await bcrypt.hash(userData.password, 10);
+			const userData = JSON.parse(userDataStr);
+			userData.password = await bcrypt.hash(userData.password, 10);
 
-		await User.create(userData);
-		await redis.del(`pending_user:${email}`);
+			await User.create(userData);
+			await redis.del(`pending_user:${email}`);
 
-		return { success: true };
+			return { success: true };
+		} catch (error) {
+			return { success: false, error: { code: 500, message: "Registration failed", details: error.message } };
+		}
 	},
 };
