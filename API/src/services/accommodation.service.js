@@ -81,17 +81,22 @@ export default {
 		const matchedAccomm = await accommodationRepo.findByAddress({ city, state, postalCode, country });
 
 		// 3. Filter all the accommodation's rooms to select all the available rooms
-		const matchedAccommWithRooms = await Promise.all(
-			matchedAccomm.map(async (accomm) => {
-				const plainAccomm = accomm.get({ plain: true });
-				const accommId = accomm.id;
-				const rooms = (await roomRepo.findByAccommodationId(accommId))
-					.filter((room) => !bookedRoomsIds.includes(room.id)) // Get room that are available
-					.map((room) => room.get({ plain: true })); // Convert to plain object
+		const matchedAccommWithRooms = (
+			await Promise.all(
+				matchedAccomm.map(async (accomm) => {
+					const plainAccomm = accomm.get({ plain: true });
+					const accommId = accomm.id;
+					const rooms = (await roomRepo.findByAccommodationId(accommId))
+						// Get room that are available and have enough capacity
+						.filter((room) => !bookedRoomsIds.includes(room.id) && room.maxCapacity >= adultCount)
+						.map((room) => room.get({ plain: true })); // Convert to plain object
 
-				return rooms.length > 0 ? { ...plainAccomm, rooms: rooms } : null;
-			})
-		);
+					console.log(accomm.id, rooms.length);
+
+					return rooms.length >= roomCount ? { ...plainAccomm, rooms: rooms } : null;
+				})
+			)
+		).filter(Boolean); // Make sure there are no null field
 
 		return matchedAccommWithRooms;
 	},
