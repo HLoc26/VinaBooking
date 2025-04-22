@@ -45,4 +45,36 @@ export default {
 			});
 		}
 	},
+
+	async search(req, res) {
+		try {
+			const { city, state, postalCode, country, startDate, endDate, roomCount, adultCount } = req.query;
+
+			const ret = await accommodationService.search({
+				city,
+				state,
+				postalCode,
+				country,
+				startDate,
+				endDate,
+				roomCount,
+				adultCount,
+			});
+
+			res.status(200).json({
+				success: true,
+				message: `Successfully found ${ret.length} results.`,
+				payload: ret,
+			});
+		} catch (error) {
+			console.log("Search accommodation error", error);
+			res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
+			});
+		}
+	},
 };
