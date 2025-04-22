@@ -1,19 +1,9 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-	host: "smtp.gmail.com",
-	port: 587,
-	secure: false,
-	auth: {
-		user: process.env.MAIL_USER,
-		pass: process.env.MAIL_PASS,
-	},
-});
+import mailTransporter from "../config/nodemailer.js";
 
 export default {
 	async sendOTP(to, otp) {
 		try {
-			const info = await transporter.sendMail({
+			const info = await mailTransporter.sendMail({
 				from: `"VinaBooking HCMUTE No-Reply" <${process.env.MAIL_USER}>`,
 				to,
 				subject: "Your OTP Code",
