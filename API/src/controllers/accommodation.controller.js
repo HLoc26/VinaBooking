@@ -67,7 +67,7 @@ export default {
 				payload: ret,
 			});
 		} catch (error) {
-			console.log("Search accommodation error", error);
+			console.error("Search accommodation error", error);
 			res.status(500).json({
 				success: false,
 				error: {
