@@ -72,7 +72,7 @@ export default {
 		return plain;
 	},
 
-	async search({ city, state, postalCode, country, startDate, endDate, roomCount, adultCount }) {
+	async search({ city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax }) {
 		// 1. Find all rooms that are not available from startDate to endDate (status != CANCELED)
 		const bookedRooms = await bookingRepo.findBetweenDate(startDate, endDate);
 		const bookedRoomsIds = bookedRooms.map((room) => +room.roomId);
@@ -89,6 +89,8 @@ export default {
 					const rooms = (await roomRepo.findByAccommodationId(accommId))
 						// Get room that are available and have enough capacity
 						.filter((room) => !bookedRoomsIds.includes(room.id) && room.maxCapacity >= adultCount)
+						// Filter rooms by price
+						.filter((room) => room.price >= priceMin && room.price <= priceMax)
 						.map((room) => room.get({ plain: true })); // Convert to plain object
 
 					console.log(accomm.id, rooms.length);
