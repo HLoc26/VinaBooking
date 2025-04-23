@@ -48,7 +48,8 @@ export default {
 
 	async search(req, res) {
 		try {
-			const { city, state, postalCode, country, startDate, endDate, roomCount, adultCount } = req.query;
+			// Assume that we use VND for price
+			const { city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax } = req.query;
 
 			const ret = await accommodationService.search({
 				city,
@@ -59,6 +60,8 @@ export default {
 				endDate,
 				roomCount,
 				adultCount,
+				priceMin,
+				priceMax,
 			});
 
 			res.status(200).json({
