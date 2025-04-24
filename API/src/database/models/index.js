@@ -4,6 +4,8 @@ import Accommodation from "./Accommodation.model.js";
 import Address from "./Address.model.js";
 import Booking from "./Booking.model.js";
 import Amenity from "./Amenity.model.js";
+import AccommodationAmenity from "./AccommodationAmenity.model.js";
+import RoomAmenity from "./RoomAmenity.model.js";
 import Review from "./Review.model.js";
 import Policy from "./Policy.model.js";
 import Invoice from "./Invoice.model.js";
@@ -25,6 +27,8 @@ export {
     Address,
     Booking,
     Amenity,
+    AccommodationAmenity,
+    RoomAmenity,
     Review,
     Policy,
     Invoice,

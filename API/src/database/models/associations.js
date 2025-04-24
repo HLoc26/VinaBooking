@@ -33,18 +33,26 @@ Accommodation.hasMany(Image, { foreignKey: "accommodationId" });
 Accommodation.hasMany(Review, { foreignKey: "accommodationId" });
 Accommodation.hasMany(Room, { foreignKey: "accommodationId" });
 Accommodation.hasOne(Policy, { foreignKey: "accommodationId" });
-Accommodation.belongsToMany(User, {
-	through: FavouriteList,
-	foreignKey: "accommodationId",
-	otherKey: "userId",
-});
 Accommodation.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
-
-// AccommodationAmenity associations
-AccommodationAmenity.belongsTo(Accommodation, { foreignKey: "accommodationId" });
-
+Accommodation.belongsToMany(FavouriteList, {
+	through: "FavouriteItem",
+	foreignKey: "accommodation_id",
+	otherKey: "favourite_list_id",
+});
 // Address associations
 Address.belongsTo(Accommodation, { foreignKey: "accommodationId" });
+
+// Amenity associations
+Amenity.hasMany(RoomAmenity, { foreignKey: "id" });
+Amenity.hasMany(AccommodationAmenity, { foreignKey: "id" });
+
+// Amenity - Accommodation associations
+AccommodationAmenity.belongsTo(Accommodation, { foreignKey: "accommodationId" });
+AccommodationAmenity.belongsTo(Amenity, { foreignKey: "id" });
+
+// Amenity - Room associations
+RoomAmenity.belongsTo(Room, { foreignKey: "roomId" });
+RoomAmenity.belongsTo(Amenity, { foreignKey: "id" });
 
 // Booking associations
 Booking.belongsTo(Invoice, { foreignKey: "invoiceId" });
@@ -53,6 +61,11 @@ Booking.belongsTo(User, { foreignKey: "userId" });
 
 // FavouriteList associations
 FavouriteList.belongsTo(User, { foreignKey: "userId" });
+FavouriteList.belongsToMany(Accommodation, {
+	through: "FavouriteItem",
+	foreignKey: "favourite_list_id",
+	otherKey: "accommodation_id",
+});
 
 // Image associations
 Image.belongsTo(Accommodation, { foreignKey: "accommodationId" });
@@ -85,9 +98,6 @@ Room.belongsTo(Accommodation, { foreignKey: "accommodationId" });
 Room.hasMany(Booking, { foreignKey: "roomId" });
 Room.hasMany(Image, { foreignKey: "roomId" });
 Room.hasMany(RoomAmenity, { foreignKey: "roomId" });
-
-// RoomAmenity associations
-RoomAmenity.belongsTo(Room, { foreignKey: "roomId" });
 
 // SupportTicket associations
 SupportTicket.belongsTo(User, { foreignKey: "userId" });
