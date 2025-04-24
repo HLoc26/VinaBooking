@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { Accommodation, Address } from "../models/index.js";
+import { Accommodation, AccommodationAmenity, Address, Image, Room, RoomAmenity, Amenity } from "../models/index.js";
 
 export default {
 	async findByAddress({ city, state, postalCode }) {
@@ -23,5 +23,34 @@ export default {
 				attributes: [],
 			},
 		});
+	},
+
+	async getFullInfo(accommId) {
+		const accommodation = await Accommodation.findOne({
+			where: { id },
+			include: [
+				{
+					model: AccommodationAmenity,
+					include: [{ model: Amenity }],
+				},
+				{
+					model: Address,
+				},
+				{
+					model: Room,
+					include: [
+						{ model: Image },
+						{
+							model: RoomAmenity,
+							include: [{ model: Amenity }],
+						},
+					],
+				},
+				{
+					model: Image,
+				},
+			],
+		});
+		return accommodation;
 	},
 };
