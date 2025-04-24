@@ -46,6 +46,8 @@ export default {
 	},
 
 	async search({ city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax }) {
+		priceMin = Math.max(priceMin ?? 0, 0);
+		priceMax = priceMax ?? Infinity;
 		// 1. Find all rooms that are not available from startDate to endDate (status != CANCELED)
 		const bookedRooms = await bookingRepo.findBetweenDate(startDate, endDate);
 		const bookedRoomsIds = bookedRooms.map((room) => +room.roomId);
