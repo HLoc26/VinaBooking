@@ -1,35 +1,8 @@
-import { Accommodation, AccommodationAmenity, Address, Image, Room, RoomAmenity, Amenity } from "../database/models/index.js";
-import accommodationRepo from "../database/repository/accommodation.repo.js";
-import bookingRepo from "../database/repository/booking.repo.js";
-import roomRepo from "../database/repository/room.repo.js";
+import { accommodationRepo, roomRepo, bookingRepo } from "../database/repository/index.js";
 
 export default {
 	async findById(id) {
-		const accommodation = await Accommodation.findOne({
-			where: { id },
-			include: [
-				{
-					model: AccommodationAmenity,
-					include: [{ model: Amenity }],
-				},
-				{
-					model: Address,
-				},
-				{
-					model: Room,
-					include: [
-						{ model: Image },
-						{
-							model: RoomAmenity,
-							include: [{ model: Amenity }],
-						},
-					],
-				},
-				{
-					model: Image,
-				},
-			],
-		});
+		const accommodation = accommodationRepo.getFullInfo(id);
 
 		if (!accommodation) return null;
 
