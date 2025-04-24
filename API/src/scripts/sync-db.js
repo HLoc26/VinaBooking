@@ -1,4 +1,5 @@
 import sequelize from "../config/sequelize.js";
+import "../database/models/index.js";
 
 const args = process.argv.slice(2);
 const useAlter = args.includes("--alter");
@@ -15,6 +16,7 @@ const run = async () => {
 		await sequelize.sync({
 			alter: useAlter,
 			force: useForce,
+			logging: console.log, // This will show the SQL queries being executed
 		});
 
 		console.log("Database synced successfully.");
@@ -25,4 +27,4 @@ const run = async () => {
 	}
 };
 
-run();
+await run();

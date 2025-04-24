@@ -1,28 +1,18 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-	host: "smtp.gmail.com",
-	port: 587,
-	secure: false,
-	auth: {
-		user: process.env.MAIL_USER,
-		pass: process.env.MAIL_PASS,
-	},
-});
+import mailTransporter from "../config/nodemailer.js";
 
 export default {
-	async send({ to, subject, html }) {
+	async sendOTP(to, otp) {
 		try {
-			const info = await transporter.sendMail({
+			const info = await mailTransporter.sendMail({
 				from: `"VinaBooking HCMUTE No-Reply" <${process.env.MAIL_USER}>`,
 				to,
-				subject,
-				html,
+				subject: "Your OTP Code",
+				html: `<h3>Your OTP is:</h3><p style="font-size: 20px; font-weight: bold;">${otp}</p><p>This OTP will expire in 5 minutes.</p>`,
 			});
-			console.log("📨 Email sent:", info.messageId);
+			console.log("Email sent:", info.messageId);
 			return { success: true, info };
 		} catch (error) {
-			console.error("❌ Failed to send email:", error);
+			console.error("Failed to send email:", error);
 			throw error;
 		}
 	},

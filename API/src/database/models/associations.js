@@ -33,13 +33,12 @@ Accommodation.hasMany(Image, { foreignKey: "accommodationId" });
 Accommodation.hasMany(Review, { foreignKey: "accommodationId" });
 Accommodation.hasMany(Room, { foreignKey: "accommodationId" });
 Accommodation.hasOne(Policy, { foreignKey: "accommodationId" });
-Accommodation.belongsToMany(User, {
-	through: FavouriteList,
-	foreignKey: "accommodationId",
-	otherKey: "userId",
-});
 Accommodation.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
-
+Accommodation.belongsToMany(FavouriteList, {
+	through: "FavouriteItem",
+	foreignKey: "accommodation_id",
+	otherKey: "favourite_list_id",
+});
 // Address associations
 Address.belongsTo(Accommodation, { foreignKey: "accommodationId" });
 
@@ -62,6 +61,11 @@ Booking.belongsTo(User, { foreignKey: "userId" });
 
 // FavouriteList associations
 FavouriteList.belongsTo(User, { foreignKey: "userId" });
+FavouriteList.belongsToMany(Accommodation, {
+	through: "FavouriteItem",
+	foreignKey: "favourite_list_id",
+	otherKey: "accommodation_id",
+});
 
 // Image associations
 Image.belongsTo(Accommodation, { foreignKey: "accommodationId" });
