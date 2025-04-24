@@ -4,8 +4,8 @@ export default {
 	// Find favourite list by user id
 	async findByUserId(userId) {
 		try {
-			const favouriteList = await FavouriteList.findOne({
-				where: { user_id: userId },
+			let favouriteList = await FavouriteList.findOne({
+				where: { userId: userId },
 				include: {
 					model: Accommodation,
 					through: {
