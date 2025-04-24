@@ -63,7 +63,7 @@ export default {
 						// Get room that are available and have enough capacity
 						.filter((room) => !bookedRoomsIds.includes(room.id) && room.maxCapacity >= adultCount)
 						// Filter rooms by price
-						.filter((room) => room.price >= priceMin && room.price <= priceMax)
+						.filter((room) => room.price >= priceMin && room.price <= priceMax && room.isActive)
 						.map((room) => room.get({ plain: true })); // Convert to plain object
 
 					console.log(accomm.id, rooms.length);
