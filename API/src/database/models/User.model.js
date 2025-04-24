@@ -52,4 +52,11 @@ User.init(
 	}
 );
 
+User.associate = function(models) {
+	models.User.hasMany(models.Booking, {
+	  foreignKey: 'userId',
+	  as: 'bookings'
+	});
+};
+
 export default User;
