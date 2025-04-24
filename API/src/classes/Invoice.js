@@ -3,14 +3,12 @@
  * @class Invoice
  */
 class Invoice {
-    constructor(id, bookings) {
-        this.id = id;
-        this.bookings = bookings;
-    }
+	constructor(id, bookings) {
+		this.id = id;
+		this.bookings = bookings;
+	}
 
-    calculateTotalPrice() {
-        
-    }
+	calculateTotalPrice() {}
 }
 
 export default Invoice;
