@@ -6,9 +6,6 @@ import authMiddleware from "../middlewares/auth.mdw.js";
 
 const router = Router();
 
-router.use("/accommodation", accommodationRouter);
-router.use("/favourite", authMiddleware, favouriteRouter);
-
 router.get("/", (req, res) => {
 	res.json({ success: true, message: "Hello, welcome" });
 });
@@ -16,5 +13,7 @@ router.get("/", (req, res) => {
 router.use("/accommodations", accommodationRouter);
 
 router.use("/auth", authRouter);
+
+router.use("/favourite", authMiddleware.decodeJwt, favouriteRouter);
 
 export default router;

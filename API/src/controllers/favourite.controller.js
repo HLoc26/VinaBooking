@@ -1,6 +1,39 @@
 import FavouriteService from "../services/favourite.service.js";
 
 export default {
+	async getFavouriteList(req, res) {
+		try {
+			const userId = req.user?.id;
+			if (!userId) return res.status(401).json({ success: false, error: { message: "Unauthorized" } });
+
+			const favList = await FavouriteService.findByUserId(userId);
+
+			if (!favList) {
+				res.json({
+					success: false,
+					error: {
+						code: 500,
+						message: "FavouriteList is null",
+					},
+				});
+			}
+			res.json({
+				success: true,
+				message: "Successfully retrieved user favourite list",
+				payload: favList.toJSON(),
+			});
+		} catch (error) {
+			console.error(error.message);
+			res.json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Unknown error",
+				},
+			});
+		}
+	},
+
 	async addToFavourite(req, res) {
 		try {
 			// Extract and validate userId from request object
