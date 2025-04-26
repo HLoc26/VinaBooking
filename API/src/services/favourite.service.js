@@ -59,7 +59,7 @@ export default {
 			}
 
 			// Remove the accommodation to the user's favourite list
-			await favouriteList.removeAccommodation(accommodationId);
+			favouriteList.removeAccommodation(accommodationId);
 
 			await FavouriteRepository.save(favouriteList);
 			return true;
