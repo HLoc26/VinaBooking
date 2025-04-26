@@ -2,7 +2,7 @@ import { Booking } from "../models/index.js";
 import { EBookingStatus } from "../../classes/index.js";
 import { Op } from "sequelize";
 
-export default {
+export const BookingRepository = {
 	// Find bookings from startDate to endDate
 	async findBetweenDate(startDate, endDate) {
 		const bookings = await Booking.findAll({
