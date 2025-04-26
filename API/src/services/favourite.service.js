@@ -36,7 +36,7 @@ export default {
 			// Add the accommodation to the user's favourite list
 			favouriteList.addAccommodation(accommodation);
 
-			FavouriteRepository.save(favouriteList);
+			await FavouriteRepository.save(favouriteList);
 
 			return true;
 		} catch (error) {
