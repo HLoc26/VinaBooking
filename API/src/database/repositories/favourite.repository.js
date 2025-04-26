@@ -32,24 +32,15 @@ export const FavouriteRepository = {
 		});
 	},
 
-	async remove(favList, accommodation) {
+	async save(favList) {
 		try {
 			const favListModel = await FavouriteListModel.findByPk(favList.id);
 			if (!favListModel) throw new Error("FavouriteList not found");
 
-			await favListModel.removeAccommodation(accommodation.id);
-		} catch (error) {
-			console.error(error);
-			throw new Error(error.message);
-		}
-	},
+			const accommodationIds = favList.accommodations.map((a) => a.id);
+			console.log(accommodationIds);
 
-	async add(favList, accommodation) {
-		try {
-			const favListModel = await FavouriteListModel.findByPk(favList.id);
-			if (!favListModel) throw new Error("FavouriteList not found");
-
-			await favListModel.addAccommodation(accommodation.id);
+			await favListModel.setAccommodation(accommodationIds);
 		} catch (error) {
 			console.error(error);
 			throw new Error(error.message);

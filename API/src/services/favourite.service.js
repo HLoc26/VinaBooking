@@ -36,7 +36,7 @@ export default {
 			// Add the accommodation to the user's favourite list
 			favouriteList.addAccommodation(accommodation);
 
-			FavouriteRepository.add(favouriteList, accommodation);
+			FavouriteRepository.save(favouriteList);
 
 			return true;
 		} catch (error) {
@@ -51,7 +51,6 @@ export default {
 			const favouriteList = await FavouriteRepository.findByUser(userId);
 
 			const accommodation = new Accommodation({ id: accommodationId });
-			console.log(favouriteList.accommodations.find((a) => a.id === accommodation.id));
 
 			// Check if accommodation has been added to favorite list
 			const alreadyAdded = favouriteList.hasAccommodation(accommodation);
@@ -60,9 +59,9 @@ export default {
 			}
 
 			// Remove the accommodation to the user's favourite list
-			favouriteList.removeAccommodation(accommodation.id);
+			favouriteList.removeAccommodation(accommodation);
 
-			await FavouriteRepository.remove(favouriteList, accommodation);
+			await FavouriteRepository.save(favouriteList);
 			return true;
 		} catch (error) {
 			console.error("Error in FavouriteService.remove:", error);

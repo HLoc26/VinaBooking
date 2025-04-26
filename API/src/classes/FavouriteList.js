@@ -21,7 +21,7 @@ class FavouriteList {
 	}
 
 	removeAccommodation(accommodation) {
-		this.accommodations.filter((a) => a.id !== accommodation.id);
+		this.accommodations = this.accommodations.filter((a) => a.id !== accommodation.id);
 	}
 }
 
