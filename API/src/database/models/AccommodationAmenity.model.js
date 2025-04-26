@@ -1,6 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../../config/sequelize.js";
-import { EAccommodationAmenityType } from "../../classes/index.js";
+import { EAccommodationAmenityType } from "../../classes/AccommodationAmenity.js";
 
 class AccommodationAmenity extends Model {}
 
