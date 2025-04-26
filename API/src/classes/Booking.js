@@ -16,6 +16,11 @@ class Booking {
 	calculatePrice() {}
 }
 
+/**
+ * Enum for accommodation amenity types.
+ * @readonly
+ * @enum {string}
+ */
 export const EBookingStatus = Object.freeze({
 	BOOKED: "BOOKED",
 	RESERVED: "RESERVED",
