@@ -37,7 +37,7 @@ export const AccommodationRepository = {
 		}
 		// Do not search by country, the data could be huge
 
-		return await Accommodation.findAll({
+		return await AccommodationModel.findAll({
 			where: conditions,
 			include: {
 				model: AddressModel,
@@ -47,8 +47,8 @@ export const AccommodationRepository = {
 	},
 
 	async getFullInfo(accommId) {
-		const accommodation = await Accommodation.findOne({
-			where: { id },
+		const accommodation = await AccommodationModel.findOne({
+			where: { id: accommId },
 			include: [
 				{
 					model: AccommodationAmenityModel,
