@@ -1,3 +1,6 @@
+import { RoomRepository } from "../database/repositories/room.repository.js";
+import Room from "./Room.js";
+
 /**
  * Accommodation class
  * @class Accommodation
@@ -11,16 +14,45 @@ class Accommodation {
 		this.isActive = isActive;
 	}
 
+	static fromModel(model) {
+		return new Accommodation({
+			id: model.id,
+			name: model.name,
+			address: model.address,
+			rooms: model.rooms,
+			isActive: model.isActive,
+		});
+	}
+
+	async loadRooms() {
+		const roomModels = await RoomRepository.findByAccommodationId(this.id);
+		this.rooms = roomModels.map((roomModel) => Room.fromModel(roomModel));
+	}
+
+	getAvailableRooms({ bookedRoomIds, adultCount, priceMin, priceMax }) {
+		// prettier-ignore
+		const a = this.rooms.filter(
+			(room) => (
+				room.isAvailable(bookedRoomIds) &&
+				room.canHost(adultCount) &&
+				room.inPriceRange(priceMin, priceMax)
+			)
+		);
+		return a;
+	}
+
 	getRoomCount() {
 		return this.rooms.length;
 	}
 
-	getAvailableRooms(startDate, endDate) {
-		// Logic will be implemented later
-	}
-
-	getBookings() {
-		// Logic will be implemented later
+	toPlainWithRooms(rooms) {
+		return {
+			id: this.id,
+			name: this.name,
+			address: this.address,
+			rooms: rooms.map((room) => room.toPlain()),
+			isActive: this.isActive,
+		};
 	}
 }
 
