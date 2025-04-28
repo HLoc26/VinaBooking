@@ -1,3 +1,4 @@
+import { EBookingStatus } from "../../classes/Booking.js";
 import { Room as RoomModel, Booking as BookingModel } from "../models/index.js";
 import { Op } from "sequelize";
 
@@ -14,7 +15,7 @@ export const RoomRepository = {
 		const bookings = await BookingModel.findOne({
 			where: {
 				roomId,
-				status: { [Op.ne]: "CANCELED" }, // Exclude canceled bookings
+				status: { [Op.ne]: EBookingStatus.CANCELED }, // Exclude canceled bookings
 				[Op.or]: [
 					{
 						startDate: { [Op.between]: [startDate, endDate] },
