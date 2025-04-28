@@ -27,7 +27,7 @@ class Room {
 		});
 	}
 
-	isAvailable(bookedRoomIds) {
+	inBookedRooms(bookedRoomIds) {
 		return !bookedRoomIds.has(this.id) && this.isActive;
 	}
 

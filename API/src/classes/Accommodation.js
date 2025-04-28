@@ -33,7 +33,7 @@ class Accommodation {
 		// prettier-ignore
 		const a = this.rooms.filter(
 			(room) => (
-				room.isAvailable(bookedRoomIds) &&
+				room.inBookedRooms(bookedRoomIds) &&
 				room.canHost(adultCount) &&
 				room.inPriceRange(priceMin, priceMax)
 			)
