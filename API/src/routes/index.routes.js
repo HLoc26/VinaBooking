@@ -1,5 +1,6 @@
 import { Router } from "express";
 import accommodationRouter from "./accommodation.routes.js";
+import bookingRouter from "./booking.routes.js";
 import authRouter from "./auth.routes.js";
 import favouriteRouter from "./favourite.routes.js";
 import authMiddleware from "../middlewares/auth.mdw.js";
@@ -13,6 +14,8 @@ router.get("/", (req, res) => {
 router.use("/accommodations", accommodationRouter);
 
 router.use("/auth", authRouter);
+
+router.use("/booking", authMiddleware.decodeJwt, bookingRouter);
 
 router.use("/favourite", authMiddleware.decodeJwt, favouriteRouter);
 
