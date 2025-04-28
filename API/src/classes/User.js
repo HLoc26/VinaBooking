@@ -3,7 +3,8 @@
  * @class User
  */
 class User {
-	constructor(name, phone, email, password, role, gender, dob) {
+	constructor({ id, name, phone, email, password, role, gender, dob, isActive = true }) {
+		this.id = id;
 		this.name = name;
 		this.phone = phone;
 		this.email = email;

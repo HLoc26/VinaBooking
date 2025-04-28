@@ -3,7 +3,7 @@
  * @class Booking
  */
 class Booking {
-	constructor(id, room, guest, startDate, endDate, guestCount, status) {
+	constructor({ id, room, guest, startDate, endDate, guestCount, status = EBookingStatus.BOOKED }) {
 		this.id = id;
 		this.room = room;
 		this.guest = guest;
