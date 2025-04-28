@@ -35,12 +35,12 @@ class Room {
 		Object.assign(this, instance);
 	}
 
-	isAvailable(startDate, endDate, adultCount) {
-		return this.canHost(adultCount) && this.isEmptyBetween(startDate, endDate) && this.isActive;
+	async isAvailable(startDate, endDate, adultCount) {
+		return this.canHost(adultCount) && (await this.isEmptyBetween(startDate, endDate)) && this.isActive;
 	}
 
-	isEmptyBetween(startDate, endDate) {
-		return RoomRepository.isEmptyBetween(this.id, startDate, endDate);
+	async isEmptyBetween(startDate, endDate) {
+		return await RoomRepository.isEmptyBetween(this.id, startDate, endDate);
 	}
 
 	inBookedRooms(bookedRoomIds) {
