@@ -16,4 +16,10 @@ export const BookingRepository = {
 		});
 		return bookings;
 	},
+
+	async createNew(booking) {
+		booking = { ...booking, roomId: booking.room.id, userId: booking.guest.id };
+		const bookingId = await BookingModel.create(booking);
+		return bookingId;
+	},
 };
