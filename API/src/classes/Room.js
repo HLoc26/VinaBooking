@@ -1,3 +1,5 @@
+import { RoomRepository } from "../database/repositories/room.repository.js";
+
 /**
  * @class Room
  */
@@ -25,6 +27,20 @@ class Room {
 			amenities: model.amenities,
 			isActive: model.isActive,
 		});
+	}
+
+	async loadInfo() {
+		const roomInfo = await RoomRepository.findById(this.id);
+		const instance = Room.fromModel(roomInfo);
+		Object.assign(this, instance);
+	}
+
+	isAvailable(startDate, endDate, adultCount) {
+		return this.canHost(adultCount) && this.isEmptyBetween(startDate, endDate) && this.isActive;
+	}
+
+	isEmptyBetween(startDate, endDate) {
+		return RoomRepository.isEmptyBetween(this.id, startDate, endDate);
 	}
 
 	inBookedRooms(bookedRoomIds) {
