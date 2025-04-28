@@ -13,7 +13,29 @@ class Booking {
 		this.status = status;
 	}
 
-	calculatePrice() {}
+	calculatePrice() {
+		return this.room.price * this.getDayCount();
+	}
+
+	getDayCount() {
+		let start = new Date(this.startDate);
+		let end = new Date(this.endDate);
+		let timeDifference = end - start;
+		let daysDifference = timeDifference / (1000 * 3600 * 24);
+		return daysDifference;
+	}
+
+	toPlain() {
+		return {
+			id: this.id,
+			room: this.room,
+			guest: this.guest,
+			startDate: this.startDate,
+			endDate: this.endDate,
+			guestCount: this.guestCount,
+			status: this.status,
+		};
+	}
 }
 
 /**
