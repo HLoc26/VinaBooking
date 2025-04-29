@@ -2,6 +2,7 @@ import { Router } from "express";
 import accommodationRouter from "./accommodation.routes.js";
 import authRouter from "./auth.routes.js";
 import favouriteRouter from "./favourite.routes.js";
+import bookingRouter from "./booking.routes.js";
 import authMiddleware from "../middlewares/auth.mdw.js";
 
 const router = Router();
