@@ -17,4 +17,6 @@ router.use("/auth", authRouter);
 
 router.use("/favourite", authMiddleware.decodeJwt, favouriteRouter);
 
+router.use("/bookings", authMiddleware.decodeJwt, bookingRouter);
+
 export default router;

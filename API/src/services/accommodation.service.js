@@ -1,4 +1,4 @@
-import { accommodationRepo, roomRepo, bookingRepo } from "../database/repository/index.js";
+import { accommodationRepo, roomRepo, bookingRepo } from "../database/repositories/index.js";
 
 export default {
 	async findById(id) {
