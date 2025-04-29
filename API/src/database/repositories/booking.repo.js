@@ -17,21 +17,22 @@ export default {
 		return bookings;
 	},
 
+	// Find all bookings for a specific user
 	async findAll(userId) {
 		return await Booking.findAll({
-			where: { userId },
+			where: { userId }, // Filter bookings by user ID
 			include: [
 				{
 					model: Room,
 					include: [
 						{
-							model: Accommodation,
-							include: [Address],
+							model: Accommodation, // Include associated Accommodation model
+							include: [Address], // Include associated Address model
 						},
 					],
 				},
 			],
-			order: [["createdAt", "DESC"]],
+			order: [["createdAt", "DESC"]], // Order the results by creation date in descending order
 		});
 	},
 };
