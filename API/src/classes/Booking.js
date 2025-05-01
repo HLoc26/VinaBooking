@@ -3,9 +3,9 @@
  * @class Booking
  */
 class Booking {
-	constructor(id, room, guest, startDate, endDate, guestCount, status) {
+	constructor(id, bookingItems, guest, startDate, endDate, guestCount, status) {
 		this.id = id;
-		this.room = room;
+		this.bookingItems = bookingItems;
 		this.guest = guest;
 		this.startDate = startDate;
 		this.endDate = endDate;
