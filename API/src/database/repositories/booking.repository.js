@@ -1,4 +1,4 @@
-import { Booking as BookingModel } from "../models/index.js";
+import { Booking as BookingModel, BookingItem as BookingItemModel } from "../models/index.js";
 import { EBookingStatus } from "../../classes/index.js";
 import { Op } from "sequelize";
 
@@ -18,8 +18,16 @@ export const BookingRepository = {
 	},
 
 	async createNew(booking) {
-		booking = { ...booking, roomId: booking.room.id, userId: booking.guest.id };
+		booking = { ...booking, userId: booking.guest.id };
 		const bookingId = await BookingModel.create(booking);
 		return bookingId;
+	},
+
+	async createBookingItem({ bookingId, roomId, count }) {
+		return await BookingItemModel.create({
+			bookingId,
+			roomId,
+			count,
+		});
 	},
 };
