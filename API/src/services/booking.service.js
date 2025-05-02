@@ -59,11 +59,13 @@ export default {
 				await bookingItem.save(bookingRecord.id, transaction);
 			}
 
+			// Return the booking record with associated booking items
+			const returnObject = await Booking.fromModel(bookingRecord);
+
 			// Commit the transaction if everything succeeds
 			await transaction.commit();
 
-			// Return the booking record with associated booking items
-			return bookingRecord;
+			return returnObject;
 		} catch (error) {
 			// Rollback the transaction if any error occurs
 			await transaction.rollback();

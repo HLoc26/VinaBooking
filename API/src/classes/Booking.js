@@ -15,6 +15,36 @@ class Booking {
 		this.status = status;
 	}
 
+	static async fromModel(model) {
+		const guest = new User({ id: model.userId });
+		await guest.loadInfo();
+
+		const bookingItemRecords = await BookingRepository.findBookingItems(model.id);
+
+		const bookingItems = await Promise.all(
+			bookingItemRecords.map(async (itemRecord) => {
+				const roomRecord = new Room({ id: itemRecord.roomId });
+				await roomRecord.loadInfo();
+				const room = Room.fromModel(roomRecord);
+				return new BookingItem({
+					id: itemRecord.id,
+					room: room,
+					count: itemRecord.count,
+				});
+			})
+		);
+
+		return new Booking({
+			id: model.id,
+			bookingItems: bookingItems,
+			guest: guest.toPlain(),
+			startDate: model.startDate,
+			endDate: model.endDate,
+			guestCount: model.guestCount,
+			status: model.status,
+		});
+	}
+
 	getDayCount() {
 		let start = new Date(this.startDate);
 		let end = new Date(this.endDate);
@@ -35,18 +65,5 @@ class Booking {
 		};
 	}
 }
-
-/**
- * Enum for accommodation amenity types.
- * @readonly
- * @enum {string}
- */
-export const EBookingStatus = Object.freeze({
-	BOOKED: "BOOKED",
-	RESERVED: "RESERVED",
-	CHECKED_IN: "CHECKED_IN",
-	COMPLETED: "COMPLETED",
-	CANCELED: "CANCELED",
-});
 
 export default Booking;
