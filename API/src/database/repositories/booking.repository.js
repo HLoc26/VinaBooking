@@ -1,5 +1,5 @@
 import { Booking as BookingModel, BookingItem as BookingItemModel } from "../models/index.js";
-import { EBookingStatus } from "../../classes/index.js";
+import EBookingStatus from "../../classes/EBookingStatus.js";
 import { Op } from "sequelize";
 
 export const BookingRepository = {

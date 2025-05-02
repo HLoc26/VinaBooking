@@ -1,4 +1,4 @@
-import { EBookingStatus } from "../../classes/Booking.js";
+import EBookingStatus from "../../classes/EBookingStatus.js";
 import { Room as RoomModel, Booking as BookingModel, BookingItem as BookingItemModel } from "../models/index.js";
 import { Op } from "sequelize";
 

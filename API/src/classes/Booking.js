@@ -1,3 +1,5 @@
+import { BookingRepository } from "../database/repositories/booking.repository.js";
+import { User, BookingItem, Room } from "./index.js";
 /**
  * Contains information about a booking.
  * @class Booking
