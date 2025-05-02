@@ -2,10 +2,10 @@ import BookingService from "../services/booking.service.js";
 export default {
 	async bookRoom(req, res) {
 		try {
-			const { roomId, startDate, endDate, guestCount } = req.body;
+			const { rooms, startDate, endDate, guestCount } = req.body;
 			const guest = req.user;
 
-			const result = await BookingService.bookRoom({ roomId, guestId: guest.id, startDate, endDate, guestCount });
+			const result = await BookingService.bookRoom({ rooms, guestId: guest.id, startDate, endDate, guestCount });
 			return res.status(200).json({
 				success: true,
 				message: "Successfully booked",
@@ -14,6 +14,7 @@ export default {
 				},
 			});
 		} catch (error) {
+			console.error(error);
 			if (error.message === "RoomNotFound") {
 				return res.status(404).json({
 					success: false,
