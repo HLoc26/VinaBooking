@@ -5,7 +5,7 @@
 class Booking {
 	constructor({ id, room, guest, startDate, endDate, guestCount, status = EBookingStatus.BOOKED }) {
 		this.id = id;
-		this.room = room;
+		this.bookingItems = bookingItems;
 		this.guest = guest;
 		this.startDate = startDate;
 		this.endDate = endDate;
