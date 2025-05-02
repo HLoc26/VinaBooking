@@ -19,11 +19,10 @@ export const loginApi = async (credentials) => {
 		const response = await axiosInstance.post("/auth/login", payload);
 		console.log("Login response:", response.data); // Debug log
 
-		// Make sure we're returning the expected data format
+		// Now only return user, JWT is in cookie
 		if (response.data && response.data.success) {
 			return {
 				user: response.data.payload.user,
-				jwt: response.data.payload.jwt,
 			};
 		}
 

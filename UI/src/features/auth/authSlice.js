@@ -13,10 +13,7 @@ export const login = createAsyncThunk("auth/login", async (credentials, { reject
 		const data = await loginApi(credentials);
 		console.log("Login succeeded:", data);
 
-		// Store the JWT token in localStorage
-		if (data.jwt) {
-			localStorage.setItem("jwt", data.jwt);
-		}
+		// No longer store JWT in localStorage
 
 		return data;
 	} catch (error) {
@@ -40,7 +37,6 @@ const authSlice = createSlice({
 			state.user = null;
 			state.jwt = "";
 			state.error = null;
-			localStorage.removeItem("jwt");
 		},
 		clearErrors: (state) => {
 			state.error = null;

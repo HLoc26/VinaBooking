@@ -17,10 +17,22 @@ export default {
 			}
 
 			console.log(`[LOGIN] Success for user: ${email}`);
+
+			// Set JWT as HTTP-only cookie
+			const token = result.payload.jwt;
+			res.cookie("jwt", token, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
+				sameSite: "lax",
+				maxAge: 24 * 60 * 60 * 1000, // 1 day
+			});
+
+			// Remove JWT from payload before sending to client
+			const { jwt, ...payloadWithoutJwt } = result.payload;
 			return res.json({
 				success: true,
 				message: "Login success",
-				payload: result.payload,
+				payload: payloadWithoutJwt,
 			});
 		} catch (err) {
 			console.error(`[LOGIN] Error for email ${email}:`, err);
