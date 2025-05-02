@@ -25,6 +25,7 @@ export const login = createAsyncThunk("auth/login", async (credentials, { reject
 const initialState = {
 	user: null,
 	jwt: "",
+	rememberMe: false,
 	loading: false,
 	error: null,
 };
@@ -51,7 +52,8 @@ const authSlice = createSlice({
 			.addCase(login.fulfilled, (state, action) => {
 				state.loading = false;
 				state.user = action.payload.user;
-				state.jwt = action.payload.jwt;
+				state.rememberMe = action.payload.rememberMe || false;
+				state.jwt = action.payload.jwt || "";
 			})
 			.addCase(login.rejected, (state, action) => {
 				state.loading = false;

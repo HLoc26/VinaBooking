@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, TextField, Button, Typography, Container, Link, CircularProgress } from "@mui/material";
+import { Box, TextField, Button, Typography, Container, Link, CircularProgress, FormControlLabel, Checkbox } from "@mui/material";
 import { login } from "../../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ function Login() {
 	const { loading, error, user } = useSelector((state) => state.auth);
 	const [email, setEmail] = React.useState("");
 	const [password, setPassword] = React.useState("");
+	const [rememberMe, setRememberMe] = React.useState(false);
 
 	// Redirect if user is already logged in
 	useEffect(() => {
@@ -32,6 +33,7 @@ function Login() {
 		const credentials = {
 			email: email,
 			password: password,
+			rememberMe: rememberMe, // Include the rememberMe option
 		};
 
 		console.log("Dispatching login"); // Removed credentials from log
@@ -57,29 +59,25 @@ function Login() {
 				<Typography variant="h4" fontWeight="bold" gutterBottom>
 					Login
 				</Typography>
-				<TextField 
-					fullWidth 
-					label="Email" 
-					variant="outlined" 
-					margin="normal" 
-					name="email" 
-					value={email} 
-					onChange={(e) => setEmail(e.target.value)} 
-					required 
+				<TextField fullWidth label="Email" variant="outlined" margin="normal" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={loading} />
+				<TextField
+					fullWidth
+					label="Password"
+					type="password"
+					variant="outlined"
+					margin="normal"
+					name="password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					required
 					disabled={loading}
 				/>
-				<TextField 
-					fullWidth 
-					label="Password" 
-					type="password" 
-					variant="outlined" 
-					margin="normal" 
-					name="password" 
-					value={password} 
-					onChange={(e) => setPassword(e.target.value)} 
-					required 
-					disabled={loading}
-				/>
+
+				{/* Remember Me Checkbox */}
+				<Box sx={{ width: "100%", display: "flex", justifyContent: "flex-start", mt: 1 }}>
+					<FormControlLabel control={<Checkbox checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} color="primary" disabled={loading} />} label="Remember me" />
+				</Box>
+
 				<Button fullWidth variant="contained" color="primary" sx={{ marginTop: 2 }} type="submit" disabled={loading}>
 					{loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
 				</Button>

@@ -3,10 +3,10 @@ import emailService from "../services/email.service.js";
 export default {
 	// Handles user authentication requests
 	async login(req, res) {
-		const { email, password } = req.body;
+		const { email, password, rememberMe } = req.body;
 
 		try {
-			const result = await authService.login(email, password);
+			const result = await authService.login(email, password, rememberMe);
 
 			if (!result.success) {
 				console.log(`[LOGIN] Authentication failed`);
@@ -17,11 +17,17 @@ export default {
 
 			// Set JWT as HTTP-only cookie
 			const token = result.payload.jwt;
+
+			// Set cookie expiration based on rememberMe flag
+			const maxAge = rememberMe
+				? 30 * 24 * 60 * 60 * 1000 // 30 days for "Remember Me"
+				: 24 * 60 * 60 * 1000; // 1 day for normal login
+
 			res.cookie("jwt", token, {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
 				sameSite: "lax",
-				maxAge: 24 * 60 * 60 * 1000, // 1 day
+				maxAge: maxAge,
 			});
 
 			// Remove JWT from payload before sending to client

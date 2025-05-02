@@ -14,6 +14,7 @@ export const loginApi = async (credentials) => {
 		const payload = {
 			email: credentials.email,
 			password: credentials.password,
+			rememberMe: credentials.rememberMe || false, // Include rememberMe flag
 		};
 
 		const response = await axiosInstance.post("/auth/login", payload);
@@ -23,6 +24,7 @@ export const loginApi = async (credentials) => {
 		if (response.data && response.data.success) {
 			return {
 				user: response.data.payload.user,
+				rememberMe: response.data.payload.rememberMe,
 			};
 		}
 
