@@ -30,12 +30,14 @@ export default {
 				maxAge: maxAge,
 			});
 
-			// Remove JWT from payload before sending to client
-			const { jwt, ...payloadWithoutJwt } = result.payload;
+			// Only send user info in payload, not the JWT token
 			return res.json({
 				success: true,
 				message: "Login success",
-				payload: payloadWithoutJwt,
+				payload: {
+					user: result.payload.user,
+					rememberMe
+				},
 			});
 		} catch (err) {
 			console.error(`[LOGIN] Server error during authentication`);
