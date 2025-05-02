@@ -1,5 +1,5 @@
 import { AccommodationRepository } from "../database/repositories/accommodation.repository.js";
-import { BookingRepository } from "../database/repositories/booking.repository.js";
+import { RoomRepository } from "../database/repositories/room.repository.js";
 
 import { Accommodation } from "../classes/index.js";
 
@@ -57,23 +57,38 @@ export default {
 			priceMin = 0, priceMax = Infinity
 		} = criteria;
 
-		// 1. Find all rooms that are not available from startDate to endDate (status != CANCELED)
-		const bookedRooms = await BookingRepository.findBetweenDate(startDate, endDate);
-		const bookedRoomIds = new Set(bookedRooms.map((room) => +room.roomId));
+		// Validate input
+		if (!startDate || !endDate) {
+			throw new Error("startDate and endDate are required.");
+		}
 
-		// 2. Find all accommodation in the location and their rooms
-		const accModels = await AccommodationRepository.findByAddress({ city, state, postalCode, country });
+		// 1. Retrieve accommodations based on location
+		const accommodations = await AccommodationRepository.findByAddress({ city, state, postalCode, country });
 
-		// 3. Filter all the accommodation's rooms to select all the available rooms
+		// 2. Filter accommodations and their rooms
 		const results = [];
-		for (const accModel of accModels) {
-			const acc = Accommodation.fromModel(accModel);
-			await acc.loadRooms();
+		for (const accommodationModel of accommodations) {
+			const accommodation = Accommodation.fromModel(accommodationModel);
+			await accommodation.loadRooms();
 
-			const availableRooms = acc.getAvailableRooms({ bookedRoomIds, adultCount, priceMin, priceMax });
+			// Filter available rooms in the accommodation
+			const availableRooms = [];
+			for (const room of accommodation.rooms) {
+				const bookedCount = await RoomRepository.getBookedCount(room.id, startDate, endDate);
+				const availableCount = room.count - bookedCount;
 
-			if (availableRooms.length >= roomCount) {
-				results.push(acc.toPlainWithRooms(availableRooms));
+				if (
+					availableCount >= roomCount && // Check if enough rooms are available
+					room.canHost(adultCount) && // Check if the room can host the required number of adults
+					room.inPriceRange(priceMin, priceMax) // Check if the room is within the price range
+				) {
+					availableRooms.push(room);
+				}
+			}
+
+			// Add accommodation to results if it has enough available rooms
+			if (availableRooms.length > 0) {
+				results.push(accommodation.toPlainWithRooms(availableRooms));
 			}
 		}
 
