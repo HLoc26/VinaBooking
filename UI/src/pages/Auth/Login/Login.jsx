@@ -57,8 +57,29 @@ function Login() {
 				<Typography variant="h4" fontWeight="bold" gutterBottom>
 					Login
 				</Typography>
-				<TextField fullWidth label="Email" variant="outlined" margin="normal" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-				<TextField fullWidth label="Password" type="password" variant="outlined" margin="normal" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+				<TextField 
+					fullWidth 
+					label="Email" 
+					variant="outlined" 
+					margin="normal" 
+					name="email" 
+					value={email} 
+					onChange={(e) => setEmail(e.target.value)} 
+					required 
+					disabled={loading}
+				/>
+				<TextField 
+					fullWidth 
+					label="Password" 
+					type="password" 
+					variant="outlined" 
+					margin="normal" 
+					name="password" 
+					value={password} 
+					onChange={(e) => setPassword(e.target.value)} 
+					required 
+					disabled={loading}
+				/>
 				<Button fullWidth variant="contained" color="primary" sx={{ marginTop: 2 }} type="submit" disabled={loading}>
 					{loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
 				</Button>
