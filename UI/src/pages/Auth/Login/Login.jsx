@@ -2,12 +2,22 @@ import * as React from "react";
 import { Box, TextField, Button, Typography, Container, Link, CircularProgress } from "@mui/material";
 import { login } from "../../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function Login() {
 	const dispatch = useDispatch();
-	const { loading, error } = useSelector((state) => state.auth);
+	const navigate = useNavigate();
+	const { loading, error, user } = useSelector((state) => state.auth);
 	const [email, setEmail] = React.useState("");
 	const [password, setPassword] = React.useState("");
+
+	// Redirect if user is already logged in
+	useEffect(() => {
+		if (user) {
+			navigate("/");
+		}
+	}, [user, navigate]);
 
 	const handleLogin = (e) => {
 		// Prevent default if this is in a form
