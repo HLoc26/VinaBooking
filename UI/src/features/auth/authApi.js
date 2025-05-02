@@ -2,11 +2,11 @@ import axiosInstance from "../../app/axios";
 
 export const loginApi = async (credentials) => {
 	try {
-		console.log("Sending login request with:", credentials); // Debug log
+		console.log("Attempting login"); // Removed credentials from log
 
 		// Check if credentials are valid
 		if (!credentials || !credentials.email || !credentials.password) {
-			console.error("Missing credentials:", credentials);
+			console.error("Missing credentials"); // Removed specific missing fields
 			throw new Error("Email and password are required");
 		}
 
@@ -17,7 +17,7 @@ export const loginApi = async (credentials) => {
 		};
 
 		const response = await axiosInstance.post("/auth/login", payload);
-		console.log("Login response:", response.data); // Debug log
+		console.log("Login request completed"); // Removed response data from log
 
 		// Now only return user, JWT is in cookie
 		if (response.data && response.data.success) {
@@ -28,7 +28,7 @@ export const loginApi = async (credentials) => {
 
 		throw new Error(response.data?.error?.message || "Login failed");
 	} catch (error) {
-		console.error("Login API error:", error);
+		console.error("Login API error occurred"); // Removed error details
 		throw error;
 	}
 };

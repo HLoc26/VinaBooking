@@ -3,7 +3,7 @@ import { loginApi } from "./authApi";
 
 export const login = createAsyncThunk("auth/login", async (credentials, { rejectWithValue }) => {
 	try {
-		console.log("Auth slice login thunk called with:", credentials);
+		console.log("Auth slice login thunk called"); // Removed credentials from log
 
 		// Validate credentials
 		if (!credentials || !credentials.email || !credentials.password) {
@@ -11,13 +11,13 @@ export const login = createAsyncThunk("auth/login", async (credentials, { reject
 		}
 
 		const data = await loginApi(credentials);
-		console.log("Login succeeded:", data);
+		console.log("Login succeeded"); // Removed data from log
 
 		// No longer store JWT in localStorage
 
 		return data;
 	} catch (error) {
-		console.error("Login failed:", error);
+		console.error("Login failed"); // Removed error details
 		return rejectWithValue(error.response?.data?.error?.message || error.message || "Login failed");
 	}
 });

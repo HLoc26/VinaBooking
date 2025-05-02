@@ -4,19 +4,16 @@ export default {
 	// Handles user authentication requests
 	async login(req, res) {
 		const { email, password } = req.body;
-		console.log(`[LOGIN] Attempt for email: ${email}`);
 
 		try {
-			console.log(`[LOGIN] Calling auth service for email: ${email}`);
 			const result = await authService.login(email, password);
-			console.log(`[LOGIN] Auth service result:`, JSON.stringify(result, null, 2));
 
 			if (!result.success) {
-				console.log(`[LOGIN] Failed: ${result.error.message}`);
+				console.log(`[LOGIN] Authentication failed`);
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
 
-			console.log(`[LOGIN] Success for user: ${email}`);
+			console.log(`[LOGIN] Authentication successful`);
 
 			// Set JWT as HTTP-only cookie
 			const token = result.payload.jwt;
@@ -35,8 +32,7 @@ export default {
 				payload: payloadWithoutJwt,
 			});
 		} catch (err) {
-			console.error(`[LOGIN] Error for email ${email}:`, err);
-			console.error(`[LOGIN] Error stack:`, err.stack);
+			console.error(`[LOGIN] Server error during authentication`);
 			return res.status(500).json({
 				success: false,
 				error: {
@@ -51,9 +47,6 @@ export default {
 
 	async initiateRegistration(req, res) {
 		const { name, phone, email, password, role, gender, dob, username, address } = req.body;
-		console.log("Received req.body:", req.body);
-
-		console.log("Received email:", email);
 
 		try {
 			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob, username, address });
@@ -63,7 +56,7 @@ export default {
 			}
 			res.status(200).json({ success: true, message: "OTP sent to email. Please confirm to complete registration." });
 		} catch (error) {
-			console.error("Registration request failed:", error);
+			console.error("Registration initiation failed");
 			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
 		}
 	},
@@ -77,7 +70,7 @@ export default {
 			}
 			res.status(201).json({ success: true, message: "Account created successfully. You can now log in." });
 		} catch (error) {
-			console.error("Confirm registration failed:", error);
+			console.error("Registration confirmation failed");
 			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
 		}
 	},

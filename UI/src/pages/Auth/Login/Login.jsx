@@ -34,7 +34,7 @@ function Login() {
 			password: password,
 		};
 
-		console.log("Dispatching login with:", credentials);
+		console.log("Dispatching login"); // Removed credentials from log
 		dispatch(login(credentials));
 	};
 
