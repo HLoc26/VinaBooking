@@ -21,12 +21,9 @@ export default {
 	},
 
 	async initiateRegistration(req, res) {
-		const { name, phone, email, password, role, gender, dob, username, address } = req.body;
-		console.log("Received req.body:", req.body);
-
-		console.log("Received email:", email);
-
 		try {
+			const { name, phone, email, password, role, gender, dob, username, address } = req.body;
+
 			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob, username, address });
 
 			if (!result.success) {
@@ -40,9 +37,11 @@ export default {
 	},
 
 	async completeRegistration(req, res) {
-		const { email, otp } = req.body;
 		try {
+			const { email, otp } = req.body;
+
 			const result = await authService.completeRegistration(email, otp);
+
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
