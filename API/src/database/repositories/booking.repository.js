@@ -30,4 +30,8 @@ export const BookingRepository = {
 			count,
 		});
 	},
+
+	async findBookingItems(bookingId) {
+		return await BookingItemModel.findAll({ where: { bookingId: bookingId } });
+	},
 };
