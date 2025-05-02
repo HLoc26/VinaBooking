@@ -3,7 +3,7 @@
  * @class Booking
  */
 class Booking {
-	constructor({ id, room, guest, startDate, endDate, guestCount, status = EBookingStatus.BOOKED }) {
+	constructor({ id, bookingItems, guest, startDate, endDate, guestCount, status = EBookingStatus.BOOKED }) {
 		this.id = id;
 		this.bookingItems = bookingItems;
 		this.guest = guest;
@@ -11,10 +11,6 @@ class Booking {
 		this.endDate = endDate;
 		this.guestCount = guestCount;
 		this.status = status;
-	}
-
-	calculatePrice() {
-		return this.room.price * this.getDayCount();
 	}
 
 	getDayCount() {
@@ -28,7 +24,7 @@ class Booking {
 	toPlain() {
 		return {
 			id: this.id,
-			room: this.room,
+			bookingItems: this.bookingItems,
 			guest: this.guest,
 			startDate: this.startDate,
 			endDate: this.endDate,
