@@ -4,7 +4,7 @@ import { RoomRepository } from "../database/repositories/room.repository.js";
  * @class Room
  */
 class Room {
-	constructor({ id, name, maxCapacity, size, description, price, amenities, images, isActive }) {
+	constructor({ id, name, maxCapacity, size, description, price, amenities, images, isActive, count }) {
 		this.id = id;
 		this.name = name;
 		this.maxCapacity = maxCapacity;
@@ -14,6 +14,7 @@ class Room {
 		this.amenities = amenities;
 		this.images = images;
 		this.isActive = isActive;
+		this.count = count;
 	}
 
 	static fromModel(model) {
@@ -26,6 +27,7 @@ class Room {
 			price: +model.price,
 			amenities: model.amenities,
 			isActive: model.isActive,
+			count: model.count,
 		});
 	}
 
@@ -33,6 +35,14 @@ class Room {
 		const roomInfo = await RoomRepository.findById(this.id);
 		const instance = Room.fromModel(roomInfo);
 		Object.assign(this, instance);
+	}
+
+	async isAvailableForCount(startDate, endDate, requiredCount) {
+		const bookedCount = await RoomRepository.getBookedCount(this.id, startDate, endDate);
+		console.log(`BOOKED ${this.id}: ${bookedCount}`);
+		const remain = this.count - bookedCount;
+		console.log(`REMAIN FOR ${this.id}: ${remain}`);
+		return remain >= requiredCount;
 	}
 
 	async isAvailable(startDate, endDate, adultCount) {
@@ -65,6 +75,7 @@ class Room {
 			price: this.price,
 			amenities: this.amenities,
 			isActive: this.isActive,
+			count: this.count,
 		};
 	}
 }
