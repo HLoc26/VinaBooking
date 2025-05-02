@@ -1,32 +1,8 @@
-import { Accommodation, AccommodationAmenity, Address, Image, Room, RoomAmenity, Amenity } from "../database/models/index.js";
+import { accommodationRepo, roomRepo, bookingRepo } from "../database/repository/index.js";
 
 export default {
 	async findById(id) {
-		const accommodation = await Accommodation.findOne({
-			where: { id },
-			include: [
-				{
-					model: AccommodationAmenity,
-					include: [{ model: Amenity }],
-				},
-				{
-					model: Address,
-				},
-				{
-					model: Room,
-					include: [
-						{ model: Image },
-						{
-							model: RoomAmenity,
-							include: [{ model: Amenity }],
-						},
-					],
-				},
-				{
-					model: Image,
-				},
-			],
-		});
+		const accommodation = accommodationRepo.getFullInfo(id);
 
 		if (!accommodation) return null;
 
@@ -67,5 +43,38 @@ export default {
 		});
 
 		return plain;
+	},
+
+	async search({ city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax }) {
+		priceMin = Math.max(priceMin ?? 0, 0);
+		priceMax = priceMax ?? Infinity;
+		// 1. Find all rooms that are not available from startDate to endDate (status != CANCELED)
+		const bookedRooms = await bookingRepo.findBetweenDate(startDate, endDate);
+		const bookedRoomsIds = bookedRooms.map((room) => +room.roomId);
+
+		// 2. Find all accommodation in the location and their rooms
+		const matchedAccomm = await accommodationRepo.findByAddress({ city, state, postalCode, country });
+
+		// 3. Filter all the accommodation's rooms to select all the available rooms
+		const matchedAccommWithRooms = (
+			await Promise.all(
+				matchedAccomm.map(async (accomm) => {
+					const plainAccomm = accomm.get({ plain: true });
+					const accommId = accomm.id;
+					const rooms = (await roomRepo.findByAccommodationId(accommId))
+						// Get room that are available and have enough capacity
+						.filter((room) => !bookedRoomsIds.includes(room.id) && room.maxCapacity >= adultCount)
+						// Filter rooms by price
+						.filter((room) => room.price >= priceMin && room.price <= priceMax && room.isActive)
+						.map((room) => room.get({ plain: true })); // Convert to plain object
+
+					console.log(accomm.id, rooms.length);
+
+					return rooms.length >= roomCount ? { ...plainAccomm, rooms: rooms } : null;
+				})
+			)
+		).filter(Boolean); // Make sure there are no null field
+
+		return matchedAccommWithRooms;
 	},
 };
