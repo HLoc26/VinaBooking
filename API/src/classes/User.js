@@ -36,6 +36,15 @@ class User {
 		});
 	}
 
+	toPlain() {
+		return {
+			id: this.id,
+			name: this.name,
+			email: this.email,
+			isActive: this.isActive,
+		};
+	}
+
 	validateAccount(username, password) {
 		// Validate using UserDAO (sequelize)
 	}
