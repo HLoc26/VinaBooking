@@ -24,7 +24,7 @@ export default {
 					},
 				});
 			}
-			if (error.message == "RoomNotAvailable") {
+			if (error.message == "NotEnoughRoom") {
 				return res.status(400).json({
 					success: false,
 					error: {

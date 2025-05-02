@@ -46,7 +46,7 @@ export default {
 
 				// Check if the required number of rooms are available
 				if (!(await room.isAvailableForCount(startDate, endDate, count))) {
-					throw new Error(`NotEnoughRoom${room.id}`);
+					throw new Error(`NotEnoughRoom`);
 				}
 
 				// Create a BookingItem for the room type

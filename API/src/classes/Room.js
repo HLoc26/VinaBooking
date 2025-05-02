@@ -39,9 +39,7 @@ class Room {
 
 	async isAvailableForCount(startDate, endDate, requiredCount) {
 		const bookedCount = await RoomRepository.getBookedCount(this.id, startDate, endDate);
-		console.log(`BOOKED ${this.id}: ${bookedCount}`);
 		const remain = this.count - bookedCount;
-		console.log(`REMAIN FOR ${this.id}: ${remain}`);
 		return remain >= requiredCount;
 	}
 
