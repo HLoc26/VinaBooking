@@ -1,5 +1,7 @@
 import authService from "../services/auth.service.js";
 import emailService from "../services/email.service.js";
+import User from "../classes/User.js";
+
 export default {
 	// Handles user authentication requests
 	async login(req, res) {
