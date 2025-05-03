@@ -1,7 +1,8 @@
 import { AccommodationRepository } from "../database/repositories/accommodation.repository.js";
 import { RoomRepository } from "../database/repositories/room.repository.js";
+import { ReviewRepository } from "../database/repositories/review.repository.js";
 
-import { Accommodation, Address } from "../classes/index.js";
+import { Accommodation, Review } from "../classes/index.js";
 
 export default {
 	async findById(id) {
@@ -97,33 +98,29 @@ export default {
 
 	async findPopular() {
 		// Fetch accommodations with their booking counts (already sorted desc by bookingCount)
-		const accommodations = await AccommodationRepository.findPopular();
+		const accommodationModels = await AccommodationRepository.findPopular();
 
-		if (!accommodations || accommodations.length === 0) {
+		if (!accommodationModels || accommodationModels.length === 0) {
 			throw new Error("No accommodations found.");
 		}
 
-		// Convert to plain objects if they aren't already
-		const plain = accommodations.map((acc) => (acc.get ? acc.get({ plain: true }) : acc));
+		const accommodationInstances = accommodationModels.map((model) => Accommodation.fromModel(model.dataValues));
 
-		// Process each accommodation to simplify amenities
-		const processedAccommodations = plain.map((accommodation) => {
-			// Create a simplified amenities array of strings
-			const amenities = accommodation.AccommodationAmenities?.map((item) => item.Amenity?.name).filter(Boolean) || [];
+		// Process each accommodation using class methods
+		const processedAccommodations = await Promise.all(
+			accommodationInstances.map(async (accommodation) => {
+				const reviewModels = await ReviewRepository.findByAccommodationId(accommodation.id);
 
-			// Location string built from accommodation.Address
-			const location = `${accommodation.Address.city}, ${accommodation.Address.state}, ${accommodation.Address.country}`;
+				const stars = reviewModels.map((review) => Review.fromModel(review).getStar());
 
-			// Return the accommodation with simplified amenities
-			return {
-				...accommodation,
-				amenities, // Add the new amenities array
-				location, // New location string
-				AccommodationAmenities: undefined, // Remove the original complex structure
-				Reviews: undefined,
-				Address: undefined,
-			};
-		});
+				const avgStar = stars.reduce((acc, val) => acc + val, 0) / stars.length;
+
+				return {
+					...accommodation.toPlain(),
+					rating: avgStar,
+				};
+			})
+		);
 
 		// Sort by averageStar in descending order
 		processedAccommodations.sort((a, b) => (parseFloat(b.averageStar) || 0) - (parseFloat(a.averageStar) || 0));
