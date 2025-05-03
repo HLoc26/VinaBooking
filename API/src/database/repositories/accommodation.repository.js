@@ -120,7 +120,7 @@ export const AccommodationRepository = {
 			include: [
 				{
 					model: AddressModel,
-					attributes: [["address_line", "addressLine"], "city", "state", ["postal_code", "postalCode"], "country"],
+					attributes: [["id", "addressId"], ["address_line", "addressLine"], "city", "state", ["postal_code", "postalCode"], "country"],
 					required: true,
 				},
 				{
