@@ -8,6 +8,7 @@ import {
 	Room as RoomModel,
 	RoomAmenity as RoomAmenityModel,
 	Amenity as AmenityModel,
+	Review as ReviewModel,
 } from "../models/index.js";
 
 export const AccommodationRepository = {
@@ -84,8 +85,37 @@ export const AccommodationRepository = {
 				"name",
 				["is_active", "isActive"],
 				// This could be changed to sequelize query
-				[literal("(SELECT MIN(price) FROM Room WHERE Room.accommodation_id = Accommodation.id)"), "minPrice"],
-				[literal("(SELECT COUNT(*) FROM BookingItem JOIN Room ON BookingItem.room_id = Room.id WHERE Room.accommodation_id = Accommodation.id)"), "bookingCount"],
+				[
+					literal(`(
+							SELECT MIN(price)
+							FROM Room
+							WHERE Room.accommodation_id = Accommodation.id
+						)`),
+					"minPrice",
+				],
+				// TODO: Remove the "--" for real product
+				[
+					literal(`(
+							SELECT COUNT(DISTINCT Booking.id)
+							FROM Booking
+							JOIN BookingItem ON BookingItem.booking_id = Booking.id
+							JOIN Room ON Room.id = BookingItem.room_id
+							WHERE Room.accommodation_id = Accommodation.id
+							-- AND Booking.status = 'COMPLETED'
+						)`),
+					"bookingCount",
+				],
+				[
+					literal(`
+					ROUND(
+						COALESCE((
+							SELECT AVG(star)
+							FROM Review
+							WHERE Review.accommodation_id = Accommodation.id),
+						0),
+					1)`),
+					"averageStar",
+				],
 			],
 			include: [
 				{
@@ -93,9 +123,16 @@ export const AccommodationRepository = {
 					attributes: [["address_line", "addressLine"], "city", "state", ["postal_code", "postalCode"], "country"],
 					required: true,
 				},
+				{
+					model: ImageModel,
+					attributes: [["id", "imageId"], "filename"],
+				},
+				{
+					model: ReviewModel,
+					attributes: [["id", "reviewId"], "star"],
+				},
 			],
 			where: {
-				// Add any needed filters here
 				is_active: true, // Optional: only include active accommodations
 			},
 			order: [[literal("bookingCount"), "DESC"]],
