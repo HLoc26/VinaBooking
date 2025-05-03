@@ -126,10 +126,17 @@ export const AccommodationRepository = {
 				{
 					model: ImageModel,
 					attributes: [["id", "imageId"], "filename"],
+					required: false,
 				},
 				{
 					model: ReviewModel,
 					attributes: [["id", "reviewId"], "star"],
+					required: false,
+				},
+				{
+					model: AccommodationAmenityModel,
+					include: [{ model: AmenityModel }],
+					required: false,
 				},
 			],
 			where: {
