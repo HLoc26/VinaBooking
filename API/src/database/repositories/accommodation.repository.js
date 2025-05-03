@@ -1,5 +1,5 @@
 import { Accommodation } from "../../classes/index.js";
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
 import {
 	Accommodation as AccommodationModel,
 	AccommodationAmenity as AccommodationAmenityModel,
@@ -73,5 +73,34 @@ export const AccommodationRepository = {
 			],
 		});
 		return accommodation;
+	},
+
+	// Find all with booking counts and min price
+	async findPopular() {
+		// Use a more efficient subquery approach
+		return await AccommodationModel.findAll({
+			attributes: [
+				["id", "accommodationId"],
+				"name",
+				["is_active", "isActive"],
+				// This could be changed to sequelize query
+				[literal("(SELECT MIN(price) FROM Room WHERE Room.accommodation_id = Accommodation.id)"), "minPrice"],
+				[literal("(SELECT COUNT(*) FROM BookingItem JOIN Room ON BookingItem.room_id = Room.id WHERE Room.accommodation_id = Accommodation.id)"), "bookingCount"],
+			],
+			include: [
+				{
+					model: AddressModel,
+					attributes: [["address_line", "addressLine"], "city", "state", ["postal_code", "postalCode"], "country"],
+					required: true,
+				},
+			],
+			where: {
+				// Add any needed filters here
+				is_active: true, // Optional: only include active accommodations
+			},
+			order: [[literal("bookingCount"), "DESC"]],
+			limit: 10,
+			subQuery: false, // Important for performance with complex queries
+		});
 	},
 };

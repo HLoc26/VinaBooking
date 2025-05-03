@@ -94,4 +94,16 @@ export default {
 
 		return results;
 	},
+
+	async findPopular() {
+		// Fetch accommodations with their booking counts (already sorted desc)
+		const accommodations = await AccommodationRepository.findPopular();
+
+		if (!accommodations || accommodations.length === 0) {
+			throw new Error("No accommodations found.");
+		}
+
+		// Return the most popular accommodation
+		return accommodations;
+	},
 };

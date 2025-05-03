@@ -80,4 +80,23 @@ export default {
 			});
 		}
 	},
+
+	async getPopular(_, res) {
+		try {
+			const accommodations = await accommodationService.findPopular();
+			res.status(200).json({
+				success: true,
+				message: `Found ${accommodations.length} result`,
+				payload: accommodations,
+			});
+		} catch (error) {
+			res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
+			});
+		}
+	},
 };
