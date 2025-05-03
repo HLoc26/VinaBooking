@@ -3,9 +3,9 @@
  * @class Address
  */
 class Address {
-	constructor({ id, street, city, state, postalCode, country, latitude, longitude }) {
+	constructor({ id, addressLine, city, state, postalCode, country, latitude, longitude }) {
 		this.id = id;
-		this.street = street;
+		this.addressLine = addressLine;
 		this.city = city;
 		this.state = state;
 		this.postalCode = postalCode;
@@ -16,8 +16,8 @@ class Address {
 
 	static fromModel(model) {
 		return new Address({
-			id: model.id,
-			street: model.street,
+			id: model.addressId || model.id,
+			addressLine: model.addressLine,
 			city: model.city,
 			state: model.state,
 			postalCode: model.postalCode,
