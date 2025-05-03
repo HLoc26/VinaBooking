@@ -6,8 +6,8 @@ This guide explains how to set up and run the **VinaBooking** app using Docker. 
 
 Before running the app, ensure you have the following installed:
 
--   **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
--   **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
+- **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
+- **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 ---
 
@@ -45,23 +45,23 @@ Before running the app, ensure you have the following installed:
 
 ### 1. **Database (MySQL)**:
 
--   **Image**: `mysql:latest`
--   **Ports**: `3306:3306`
--   **Environment Variables**: Configured in .env
--   **Volumes**: Data is persisted in the `db_data` volume.
+- **Image**: `mysql:latest`
+- **Ports**: `3306:3306`
+- **Environment Variables**: Configured in .env
+- **Volumes**: Data is persisted in the `db_data` volume.
 
 ### 2. **Backend (API)**:
 
--   **Build Context**: API
--   **Ports**: `3000:3000`
--   **Environment Variables**: Configured in /API/.env
--   **Depends On**: The database service must be healthy before the backend starts.
+- **Build Context**: API
+- **Ports**: `3000:3000`
+- **Environment Variables**: Configured in /API/.env
+- **Depends On**: The database service must be healthy before the backend starts.
 
 ### 3. **Frontend (UI)**:
 
--   **Build Context**: UI
--   **Ports**: `5173:5173`
--   **Depends On**: The backend service must be running.
+- **Build Context**: UI
+- **Ports**: `5173:5173`
+- **Depends On**: The backend service must be running.
 
 ---
 
@@ -69,8 +69,8 @@ Before running the app, ensure you have the following installed:
 
 The app uses environment variables for configuration. These are defined in the following files:
 
--   **Backend**: /API/.env
--   **Database**: .env
+- **Backend**: /API/.env
+- **Database**: .env
 
 ---
 
@@ -78,12 +78,12 @@ The app uses environment variables for configuration. These are defined in the f
 
 ### 1. **Database Connection Issues**:
 
--   Ensure the database service is running and healthy.
--   Check the `MYSQL_*` environment variables in .env.
+- Ensure the database service is running and healthy.
+- Check the `MYSQL_*` environment variables in .env.
 
 ### 2. **CORS Errors**:
 
--   Ensure the backend allows requests from the frontend's origin (`http://localhost:5173`).
+- Ensure the backend allows requests from the frontend's origin (`http://localhost:5173`).
 
 ### 3. **Rebuilding Services**:
 

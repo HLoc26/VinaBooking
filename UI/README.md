@@ -4,26 +4,26 @@ This is the frontend of the Hotel Booking App, built with React and Vite. It pro
 
 ## Features
 
--   **Responsive Design:** Optimized for mobile, tablet, and desktop devices.
--   **Authentication:** Login and register functionality with JWT-based authentication.
--   **Search and Filter:** Search for hotels and filter by amenities, price, and location.
--   **State Management:** Powered by Redux Toolkit for managing authentication and app state.
--   **API Integration:** Communicates with the backend API for data fetching and user authentication.
+- **Responsive Design:** Optimized for mobile, tablet, and desktop devices.
+- **Authentication:** Login and register functionality with JWT-based authentication.
+- **Search and Filter:** Search for hotels and filter by amenities, price, and location.
+- **State Management:** Powered by Redux Toolkit for managing authentication and app state.
+- **API Integration:** Communicates with the backend API for data fetching and user authentication.
 
 ## Tech Stack
 
--   **React**: Frontend library for building user interfaces.
--   **Vite**: Fast development server and build tool.
--   **Material-UI**: Component library for consistent and modern UI design.
--   **Redux Toolkit**: State management for authentication and global state.
--   **Axios**: HTTP client for API requests.
+- **React**: Frontend library for building user interfaces.
+- **Vite**: Fast development server and build tool.
+- **Material-UI**: Component library for consistent and modern UI design.
+- **Redux Toolkit**: State management for authentication and global state.
+- **Axios**: HTTP client for API requests.
 
 ## Getting Started
 
 ### Prerequisites
 
--   Node.js (v16 or higher)
--   npm or yarn
+- Node.js (v16 or higher)
+- npm or yarn
 
 ### Installation
 
@@ -89,4 +89,3 @@ The app communicates with the backend API hosted at `http://localhost:3000/api`.
 ## License
 
 This project is licensed under the MIT License.
-

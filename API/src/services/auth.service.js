@@ -7,7 +7,7 @@ import emailService from "./email.service.js";
 
 export default {
 	// Authenticates a user and generates a JWT token
-	async login(email, password) {
+	async login(email, password, rememberMe = false) {
 		try {
 			const user = await User.findOne({ where: { email } });
 			if (!user) {
@@ -19,13 +19,14 @@ export default {
 				return { success: false, error: { code: 401, message: "Invalid email or password" } };
 			}
 
-			const token = this.generateToken(user);
+			const token = this.generateToken(user, rememberMe);
 
 			return {
 				success: true,
 				payload: {
 					user: this.sanitizeUser(user),
 					jwt: token,
+					rememberMe,
 				},
 			};
 		} catch (error) {
@@ -37,10 +38,14 @@ export default {
 	},
 
 	//Generates JWT token for a user
-	generateToken(user) {
+	generateToken(user, rememberMe = false) {
 		const jwtSecret = process.env.JWT_SECRET;
 		if (!jwtSecret) throw new Error("Missing JWT_SECRET in environment variables"); // Throw error if env not set
-		return jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn: process.env.JWT_EXPIRES || "1d" });
+
+		// Set longer expiration for "Remember Me"
+		const expiresIn = rememberMe ? process.env.JWT_REMEMBER_EXPIRES || "30d" : process.env.JWT_EXPIRES || "1d";
+
+		return jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn });
 	},
 
 	// Returns user data without sensitive information
