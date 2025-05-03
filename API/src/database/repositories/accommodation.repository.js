@@ -144,7 +144,7 @@ export const AccommodationRepository = {
 			},
 			order: [[literal("bookingCount"), "DESC"]],
 			limit: 10,
-			subQuery: false, // Important for performance with complex queries
+			subQuery: true, // Important for performance with complex queries
 		});
 	},
 };
