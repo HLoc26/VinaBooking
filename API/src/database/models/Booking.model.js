@@ -1,6 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../../config/sequelize.js";
-import { EBookingStatus } from "../../classes/Booking.js";
+import EBookingStatus from "../../classes/EBookingStatus.js";
 
 class Booking extends Model {}
 

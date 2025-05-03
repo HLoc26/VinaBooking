@@ -1,8 +1,11 @@
-import { accommodationRepo, roomRepo, bookingRepo } from "../database/repository/index.js";
+import { AccommodationRepository } from "../database/repositories/accommodation.repository.js";
+import { RoomRepository } from "../database/repositories/room.repository.js";
+
+import { Accommodation } from "../classes/index.js";
 
 export default {
 	async findById(id) {
-		const accommodation = accommodationRepo.getFullInfo(id);
+		const accommodation = AccommodationRepository.getFullInfo(id);
 
 		if (!accommodation) return null;
 
@@ -45,36 +48,50 @@ export default {
 		return plain;
 	},
 
-	async search({ city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax }) {
-		priceMin = Math.max(priceMin ?? 0, 0);
-		priceMax = priceMax ?? Infinity;
-		// 1. Find all rooms that are not available from startDate to endDate (status != CANCELED)
-		const bookedRooms = await bookingRepo.findBetweenDate(startDate, endDate);
-		const bookedRoomsIds = bookedRooms.map((room) => +room.roomId);
+	async search(criteria) {
+		// prettier-ignore
+		const {
+			city, state, postalCode, country,
+			startDate, endDate,
+			roomCount, adultCount,
+			priceMin = 0, priceMax = Infinity
+		} = criteria;
 
-		// 2. Find all accommodation in the location and their rooms
-		const matchedAccomm = await accommodationRepo.findByAddress({ city, state, postalCode, country });
+		// Validate input
+		if (!startDate || !endDate) {
+			throw new Error("startDate and endDate are required.");
+		}
 
-		// 3. Filter all the accommodation's rooms to select all the available rooms
-		const matchedAccommWithRooms = (
-			await Promise.all(
-				matchedAccomm.map(async (accomm) => {
-					const plainAccomm = accomm.get({ plain: true });
-					const accommId = accomm.id;
-					const rooms = (await roomRepo.findByAccommodationId(accommId))
-						// Get room that are available and have enough capacity
-						.filter((room) => !bookedRoomsIds.includes(room.id) && room.maxCapacity >= adultCount)
-						// Filter rooms by price
-						.filter((room) => room.price >= priceMin && room.price <= priceMax && room.isActive)
-						.map((room) => room.get({ plain: true })); // Convert to plain object
+		// 1. Retrieve accommodations based on location
+		const accommodations = await AccommodationRepository.findByAddress({ city, state, postalCode, country });
 
-					console.log(accomm.id, rooms.length);
+		// 2. Filter accommodations and their rooms
+		const results = [];
+		for (const accommodationModel of accommodations) {
+			const accommodation = Accommodation.fromModel(accommodationModel);
+			await accommodation.loadRooms();
 
-					return rooms.length >= roomCount ? { ...plainAccomm, rooms: rooms } : null;
-				})
-			)
-		).filter(Boolean); // Make sure there are no null field
+			// Filter available rooms in the accommodation
+			const availableRooms = [];
+			for (const room of accommodation.rooms) {
+				const bookedCount = await RoomRepository.getBookedCount(room.id, startDate, endDate);
+				const availableCount = room.count - bookedCount;
 
-		return matchedAccommWithRooms;
+				if (
+					availableCount >= roomCount && // Check if enough rooms are available
+					room.canHost(adultCount) && // Check if the room can host the required number of adults
+					room.inPriceRange(priceMin, priceMax) // Check if the room is within the price range
+				) {
+					availableRooms.push(room);
+				}
+			}
+
+			// Add accommodation to results if it has enough available rooms
+			if (availableRooms.length > 0) {
+				results.push(accommodation.toPlainWithRooms(availableRooms));
+			}
+		}
+
+		return results;
 	},
 };

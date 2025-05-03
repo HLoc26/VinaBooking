@@ -1,5 +1,4 @@
 import Accommodation from "../classes/Accommodation.js";
-import { Accommodation as AccommodationModel } from "../database/models/index.js";
 import { AccommodationRepository } from "../database/repositories/accommodation.repository.js";
 import { FavouriteRepository } from "../database/repositories/favourite.repository.js";
 
@@ -59,7 +58,7 @@ export default {
 			}
 
 			// Remove the accommodation to the user's favourite list
-			favouriteList.removeAccommodation(accommodation);
+			favouriteList.removeAccommodation(accommodationId);
 
 			await FavouriteRepository.save(favouriteList);
 			return true;
