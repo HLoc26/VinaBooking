@@ -90,6 +90,7 @@ export default {
 				payload: accommodations,
 			});
 		} catch (error) {
+			console.error(error);
 			res.status(500).json({
 				success: false,
 				error: {
