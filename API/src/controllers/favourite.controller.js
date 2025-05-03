@@ -20,7 +20,7 @@ export default {
 			res.json({
 				success: true,
 				message: "Successfully retrieved user favourite list",
-				payload: favList.toJSON(),
+				payload: favList,
 			});
 		} catch (error) {
 			console.error(error.message);
@@ -65,7 +65,7 @@ export default {
 					success: false,
 					error: {
 						code: 400,
-						message: "Failed to add to favourites",
+						message: `Failed to add to favourites`,
 					},
 				});
 			}
@@ -75,7 +75,7 @@ export default {
 				success: false,
 				error: {
 					code: 500,
-					message: "Internal Server Error",
+					message: error.message,
 				},
 			});
 		}

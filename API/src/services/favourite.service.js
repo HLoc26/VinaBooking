@@ -1,23 +1,13 @@
-import { FavouriteList, Accommodation } from "../database/models/index.js";
+import Accommodation from "../classes/Accommodation.js";
+import { Accommodation as AccommodationModel } from "../database/models/index.js";
+import { AccommodationRepository } from "../database/repositories/accommodation.repository.js";
+import { FavouriteRepository } from "../database/repositories/favourite.repository.js";
 
 export default {
 	// Find favourite list by user id
 	async findByUserId(userId) {
 		try {
-			let favouriteList = await FavouriteList.findOne({
-				where: { userId: userId },
-				include: {
-					model: Accommodation,
-					through: {
-						attributes: [],
-					},
-				},
-			});
-			// If the favourite list doesn't exist, create it and warn
-			if (!favouriteList) {
-				favouriteList = await FavouriteList.create({ userId });
-				console.warn(`FavouriteList not found for user ${userId}, created new one.`);
-			}
+			let favouriteList = await FavouriteRepository.findByUser(userId);
 			return favouriteList;
 		} catch (error) {
 			console.error(error.message);
@@ -29,67 +19,49 @@ export default {
 	async add(userId, accommodationId) {
 		try {
 			// Find the user's favourite list
-			let favouriteList = await FavouriteList.findOne({
-				where: { userId },
-			});
-
-			// If the favourite list doesn't exist, create it and warn
-			if (!favouriteList) {
-				favouriteList = await FavouriteList.create({ userId });
-				console.warn(`FavouriteList not found for user ${userId}, created new one.`);
-			}
+			const favouriteList = await FavouriteRepository.findByUser(userId);
 
 			// Check if the accommodation exists
-			// If it doesn't exist, return false
-			const accommodation = await Accommodation.findByPk(accommodationId);
+			const accommodation = await AccommodationRepository.findById(accommodationId);
 			if (!accommodation) {
-				console.error(`Accommodation ${accommodationId} not found.`);
-				return false;
+				throw new Error(`Accommodation ${accommodationId} not found.`);
 			}
 
 			// Check if the accommodation is already in the user's favourite list
-			// If it is, return false to avoid duplicates
-			const alreadyAdded = await favouriteList.hasAccommodation(accommodation);
+			const alreadyAdded = favouriteList.hasAccommodation(accommodation);
 			if (alreadyAdded) {
-				console.warn(`Accommodation ${accommodationId} is already in the user's favourite list.`);
-				return false;
+				throw new Error(`Accommodation ${accommodationId} is already in the user's favourite list.`);
 			}
 
 			// Add the accommodation to the user's favourite list
-			await favouriteList.addAccommodation(accommodation);
+			favouriteList.addAccommodation(accommodation);
+
+			await FavouriteRepository.save(favouriteList);
 
 			return true;
 		} catch (error) {
 			console.error("Error in FavouriteService.add:", error);
-			return false;
+			throw new Error(error.message);
 		}
 	},
 
 	// Remove an accommodation from the user's favourite list
 	async remove(userId, accommodationId) {
 		try {
-			// Find the user's favourite list
-			// If it doesn't exist, return false
-			const favouriteList = await FavouriteList.findOne({
-				where: { userId },
-			});
+			const favouriteList = await FavouriteRepository.findByUser(userId);
 
-			// If the favourite list doesn't exist, notify and return false
-			if (!favouriteList) {
-				console.error(`FavouriteList for user ${userId} not found.`);
-				return false;
-			}
+			const accommodation = new Accommodation({ id: accommodationId });
 
 			// Check if accommodation has been added to favorite list
-			const alreadyAdded = await favouriteList.hasAccommodation(accommodationId);
+			const alreadyAdded = favouriteList.hasAccommodation(accommodation);
 			if (!alreadyAdded) {
-				console.warn(`Accommodation ${accommodationId} is not in FavouriteList of user ${userId}.`);
-				return false;
+				throw new Error(`Accommodation ${accommodation.id} is not in FavouriteList of user ${userId}.`);
 			}
 
 			// Remove the accommodation to the user's favourite list
-			await favouriteList.removeAccommodation(accommodationId);
+			favouriteList.removeAccommodation(accommodation);
 
+			await FavouriteRepository.save(favouriteList);
 			return true;
 		} catch (error) {
 			console.error("Error in FavouriteService.remove:", error);

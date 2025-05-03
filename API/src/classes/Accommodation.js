@@ -3,15 +3,16 @@
  * @class Accommodation
  */
 class Accommodation {
-	constructor(id, name, address, rooms) {
+	constructor({ id, name, address, rooms = [], isActive = true }) {
 		this.id = id;
 		this.name = name;
 		this.address = address;
 		this.rooms = rooms; // Array of Room objects
+		this.isActive = isActive;
 	}
 
 	getRoomCount() {
-		// Logic will be implemented later
+		return this.rooms.length;
 	}
 
 	getAvailableRooms(startDate, endDate) {
