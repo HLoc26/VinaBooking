@@ -27,13 +27,13 @@ export const AccommodationRepository = {
 	async findByAddress({ city, state, postalCode }) {
 		const conditions = {};
 
-		if (city) {
+		if (city !== null && city !== "null") {
 			conditions[`$${AddressModel.name}.city$`] = { [Op.like]: `%${city}%` };
 		}
-		if (state) {
+		if (state !== null && state !== "null") {
 			conditions[`$${AddressModel.name}.state$`] = { [Op.like]: `%${state}%` };
 		}
-		if (postalCode) {
+		if (postalCode !== null && state !== "null") {
 			conditions[`$${AddressModel.name}.postal_code$`] = { [Op.like]: `%${postalCode}%` };
 		}
 		// Do not search by country, the data could be huge
@@ -42,7 +42,7 @@ export const AccommodationRepository = {
 			where: conditions,
 			include: {
 				model: AddressModel,
-				attributes: [],
+				attributes: [["id", "addressId"], ["address_line", "addressLine"], "city", "state", ["postal_code", "postalCode"], "country"],
 			},
 		});
 	},
