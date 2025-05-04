@@ -8,7 +8,10 @@ import {
 	Room as RoomModel,
 	RoomAmenity as RoomAmenityModel,
 	Amenity as AmenityModel,
+	Policy as PolicyModel,
 	Review as ReviewModel,
+	ReviewReply as ReviewReplyModel,
+	User as UserModel,
 } from "../models/index.js";
 
 export const AccommodationRepository = {
@@ -88,6 +91,25 @@ export const AccommodationRepository = {
 				},
 				{
 					model: ImageModel,
+				},
+				{
+					model: PolicyModel,
+				},
+				{
+					model: ReviewModel,
+					include: [
+						{
+							model: UserModel,
+							as: "reviewer",
+						},
+						{
+							model: ImageModel,
+						},
+						{
+							model: ReviewReplyModel,
+							include: [{ model: UserModel }],
+						},
+					],
 				},
 			],
 		});
