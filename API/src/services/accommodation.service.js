@@ -113,11 +113,17 @@ export default {
 
 				const stars = reviewModels.map((review) => Review.fromModel(review).getStar());
 
-				const avgStar = stars.reduce((acc, val) => acc + val, 0) / stars.length;
+				const avgStar = (stars.reduce((acc, val) => acc + val, 0) / stars.length).toFixed(1);
+
+				await accommodation.loadRooms();
+
+				const minPrice = accommodation.getMinPrice();
 
 				return {
 					...accommodation.toPlain(),
+					rooms: undefined, // Does not need to get rooms
 					rating: avgStar,
+					minPrice,
 				};
 			})
 		);
