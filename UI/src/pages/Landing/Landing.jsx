@@ -4,6 +4,7 @@ import Navbar from "../../components/layout/NavBar/NavBar";
 import SearchBar from "../../components/ui/SearchBar/SearchBar";
 import HotelCard from "../../components/ui/HotelCard/HotelCard";
 import Footer from "../../components/layout/Footer/Footer";
+import axiosInstance from "../../app/axios";
 
 function Landing() {
 	// Mock data for popular destinations and featured hotels
@@ -14,78 +15,15 @@ function Landing() {
 		{ name: "Ha Noi", image: "https://placehold.co/300x200", description: "Vietnamese's capital" },
 	];
 
-	const featuredHotels = [
-		{
-			name: "Luxury Hotel",
-			location: "Paris, France",
-			amenities: ["Free WiFi", "Pool", "Spa"],
-			minPrice: 2000000,
-			rating: 4.8,
-		},
-		{
-			name: "Comfort Stay",
-			location: "New York, USA",
-			amenities: ["Breakfast Included", "Gym", "Parking"],
-			minPrice: 1500000,
-			rating: 4.5,
-		},
-		{
-			name: "Modern Inn",
-			location: "Tokyo, Japan",
-			amenities: ["Free WiFi", "Restaurant", "Bar"],
-			minPrice: 1800000,
-			rating: 4.7,
-		},
-		{
-			name: "Ocean View Resort",
-			location: "Maldives",
-			amenities: ["Private Beach", "Infinity Pool", "Snorkeling"],
-			minPrice: 3000000,
-			rating: 4.9,
-		},
-		{
-			name: "Mountain Retreat",
-			location: "Swiss Alps, Switzerland",
-			amenities: ["Skiing", "Spa", "Mountain View"],
-			minPrice: 2500000,
-			rating: 4.6,
-		},
-		{
-			name: "Urban Escape",
-			location: "Singapore",
-			amenities: ["Rooftop Pool", "City View", "Free Breakfast"],
-			minPrice: 2200000,
-			rating: 4.7,
-		},
-		{
-			name: "Desert Oasis",
-			location: "Dubai, UAE",
-			amenities: ["Luxury Suites", "Desert Safari", "Fine Dining"],
-			minPrice: 2800000,
-			rating: 4.8,
-		},
-		{
-			name: "Tropical Paradise",
-			location: "Bali, Indonesia",
-			amenities: ["Beachfront", "Yoga Classes", "Spa"],
-			minPrice: 1700000,
-			rating: 4.6,
-		},
-		{
-			name: "Historic Charm",
-			location: "Rome, Italy",
-			amenities: ["Free WiFi", "Breakfast Included", "City Tours"],
-			minPrice: 1900000,
-			rating: 4.5,
-		},
-		{
-			name: "Cultural Haven",
-			location: "Kyoto, Japan",
-			amenities: ["Traditional Rooms", "Tea Ceremony", "Garden View"],
-			minPrice: 1600000,
-			rating: 4.7,
-		},
-	];
+	const [featuredHotels, setFeaturedHotels] = React.useState([]);
+
+	React.useEffect(() => {
+		axiosInstance.get("/accommodations/popular").then((response) => {
+			if (response.data.success) {
+				setFeaturedHotels(response.data.payload);
+			}
+		});
+	}, []);
 
 	const handleSearch = (searchData) => {
 		console.log("Search data:", searchData);
@@ -163,7 +101,7 @@ function Landing() {
 					<Grid container spacing={3} sx={{ justifyContent: "space-between" }}>
 						{featuredHotels.map((hotel, index) => (
 							<Grid key={index} sx={{ width: { xs: "100%", md: "48%" } }}>
-								<HotelCard {...hotel} />
+								<HotelCard name={hotel.name} amenities={hotel.amenities} location={hotel.address} minPrice={hotel.minPrice} rating={hotel.rating} />
 							</Grid>
 						))}
 					</Grid>
