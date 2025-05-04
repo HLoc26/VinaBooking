@@ -24,9 +24,9 @@ export default {
 
 	async initiateRegistration(req, res) {
 		try {
-			const { name, phone, email, password, role, gender, dob, username, address } = req.body;
+			const { name, phone, email, password, role, gender, dob } = req.body;
 
-			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob, username, address });
+			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob });
 
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
