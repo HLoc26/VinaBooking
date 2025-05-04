@@ -25,10 +25,34 @@ function Landing() {
 		});
 	}, []);
 
-	const handleSearch = (searchData) => {
+	const handleSearch = React.useCallback(async (searchData) => {
 		console.log("Search data:", searchData);
 		// Implement search functionality here
-	};
+		const address = searchData.location.address;
+
+		const location = {
+			city: address.city || address.town || address.village || null,
+			state: address.state || null,
+			country: address.country || null,
+			postalCode: address.postcode || null,
+		};
+
+		const startDate = new Date(searchData.dateRange.startDate).toISOString().split("T")[0];
+		const endDate = new Date(searchData.dateRange.endDate).toISOString().split("T")[0];
+
+		const roomCount = searchData.occupancy.rooms;
+		const adultCount = searchData.occupancy.adults;
+
+		const response = await axiosInstance.get(
+			`/accommodations/search?city=${location.city}&state=${location.state}&postalCode=${location.postalCode}&country=${location.country}&startDate=${startDate}&endDate=${endDate}&roomCount=${roomCount}&adultCount=${adultCount}`
+		);
+
+		if (response.data.success) {
+			console.log(response.data.payload);
+		} else {
+			console.log(response.data.payload.error);
+		}
+	}, []);
 
 	return (
 		<Box>
@@ -59,7 +83,7 @@ function Landing() {
 				<SearchBar onSearch={handleSearch} />
 			</Container>
 
-			{/* Popular Destinations */}
+			{/* Popular Destinations
 			<Box sx={{ marginTop: 6 }}>
 				<Container>
 					<Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -90,7 +114,7 @@ function Landing() {
 						))}
 					</Grid>
 				</Container>
-			</Box>
+			</Box> */}
 
 			{/* Featured Hotels */}
 			<Box sx={{ marginTop: 6 }}>
