@@ -17,12 +17,9 @@ function Register() {
 	const [errorModalMessage, setErrorModalMessage] = useState("");
 	const [isNextLoading, setIsNextLoading] = useState(false);
 
-	// Form fields
 	const [name, setName] = useState("");
 	const [dob, setDob] = useState("");
 	const [gender, setGender] = useState("");
-	const [username, setUsername] = useState("");
-	const [address, setAddress] = useState("");
 	const [role, setRole] = useState("registered user");
 	const [phone, setPhone] = useState("");
 	const [email, setEmail] = useState("");
@@ -41,7 +38,7 @@ function Register() {
 	const handleOTP = async () => {
 		try {
 			const response = await axios.post("/auth/register", {
-				name, phone, email, password, role, gender, dob, username, address
+				name, phone, email, password, role, gender, dob
 			});
 			console.log(response);
 			stepErrors[2] = false;
@@ -58,8 +55,12 @@ function Register() {
 		} catch (error) {
 			stepErrors[2] = true;
 			setStepErrors(stepErrors);
-			handleOpenErrorModal(error.response?.data?.error?.message || "Failed to send OTP.");
-			console.log(error);
+
+			if (error.response?.data?.error?.message === "Email already exists") {
+				navigate("/login");
+			} else {
+				handleOpenErrorModal(error.response?.data?.error?.message || "Failed to send OTP.");
+			}
 		}
 	};
 
@@ -69,7 +70,7 @@ function Register() {
 
 		switch (activeStep) {
 			case 0:
-				if (!name || !dob || !gender || !address) {
+				if (!name || !dob || !gender) {
 					errors[0] = true;
 					setStepErrors(errors);
 					handleOpenErrorModal("Please fill in all personal information fields.");
@@ -88,7 +89,7 @@ function Register() {
 				break;
 
 			case 1:
-				if (!username || !email || !phone || !password || !retypePassword) {
+				if (!email || !phone || !password || !retypePassword) {
 					errors[1] = true;
 					setStepErrors(errors);
 					handleOpenErrorModal("Please fill in all account fields.");
@@ -153,13 +154,11 @@ function Register() {
 							<MenuItem value="male">Male</MenuItem>
 							<MenuItem value="female">Female</MenuItem>
 						</TextField>
-						<TextField required fullWidth label="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
 					</Box>
 				);
 			case 1:
 				return (
 					<Box>
-						<TextField required fullWidth label="Username" value={username} onChange={(e) => setUsername(e.target.value)} sx={{ mb: 2 }} />
 						<MuiTelInput defaultCountry="VN" value={phone} onChange={(value) => setPhone(value)} sx={{ width: "100%", mb: 2 }} />
 						<TextField required fullWidth label="Email" value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
 						<TextField required fullWidth label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
@@ -177,8 +176,6 @@ function Register() {
 						<Typography><strong>Name:</strong> {name}</Typography>
 						<Typography><strong>Date of Birth:</strong> {dob}</Typography>
 						<Typography><strong>Gender:</strong> {gender}</Typography>
-						<Typography><strong>Address:</strong> {address}</Typography>
-						<Typography><strong>Username:</strong> {username}</Typography>
 						<Typography><strong>Email:</strong> {email}</Typography>
 						<Typography><strong>Phone:</strong> {phone}</Typography>
 						<Typography><strong>Role:</strong> {role}</Typography>
@@ -189,11 +186,6 @@ function Register() {
 					<Box>
 						<Typography variant="body1">Enter the OTP sent to your email:</Typography>
 						<OTPInput length={6} value={otp} onChange={(newOtp) => setOtp(newOtp)} />
-						<Box display="flex" justifyContent="flex-end" mt={2}>
-							<Button variant="contained" color="primary" onClick={handleVerifyOtp}>
-								Confirm
-							</Button>
-						</Box>
 					</Box>
 				);
 			default:
@@ -203,6 +195,15 @@ function Register() {
 
 	return (
 		<Container maxWidth="md">
+			{/* Top right Return to Login */}
+			{activeStep > 0 && (
+				<Box sx={{ position: "absolute", top: 24, right: 24 }}>
+					<Button onClick={() => navigate("/login")} color="primary" variant="text">
+						Return to Login
+					</Button>
+				</Box>
+			)}
+
 			<Modal open={openErrorModal} onClose={handleCloseErrorModal}>
 				<Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 400, bgcolor: "background.paper", border: "2px solid red", boxShadow: 24, p: 4, borderRadius: 2 }}>
 					<Typography variant="h6" sx={{ color: "red", fontWeight: "bold" }}>
@@ -215,10 +216,11 @@ function Register() {
 				</Box>
 			</Modal>
 
-			<Box sx={{ mt: 8, display: "flex", flexDirection: "column", alignItems: "center", boxShadow: 3, p: 4, borderRadius: 2, bgcolor: "#fff" }}>
+			<Box sx={{ mt: 8, display: "flex", flexDirection: "column", alignItems: "center", boxShadow: 3, p: 4, borderRadius: 2, bgcolor: "#fff", position: "relative" }}>
 				<Typography variant="h4" fontWeight="bold" gutterBottom>
 					Register
 				</Typography>
+
 				<Stepper activeStep={activeStep} sx={{ width: "100%", mb: 4 }}>
 					{steps.map((label, index) => (
 						<Step key={index}>
@@ -226,22 +228,25 @@ function Register() {
 						</Step>
 					))}
 				</Stepper>
+
 				{renderStepContent(activeStep)}
-				{activeStep !== steps.length - 1 && (
-					<Box sx={{ display: "flex", justifyContent: "space-between", mt: 4, width: "100%" }}>
-						<Button onClick={handleBack} variant="outlined" color="primary">
-							{activeStep === 0 ? "Return to Login" : "Back"}
-						</Button>
-						<Button
-							onClick={handleNext}
-							variant="contained"
-							color="primary"
-							disabled={isNextLoading}
-						>
+
+				{/* Navigation Buttons */}
+				<Box sx={{ display: "flex", justifyContent: "space-between", mt: 4, width: "100%" }}>
+					<Button onClick={handleBack} variant="outlined" color="primary">
+						{activeStep === 0 ? "Return to Login" : "Back"}
+					</Button>
+
+					{activeStep !== steps.length - 1 ? (
+						<Button onClick={handleNext} variant="contained" color="primary" disabled={isNextLoading}>
 							{isNextLoading ? "Loading..." : "Next"}
 						</Button>
-					</Box>
-				)}
+					) : (
+						<Button onClick={handleVerifyOtp} variant="contained" color="primary">
+							Confirm
+						</Button>
+					)}
+				</Box>
 			</Box>
 		</Container>
 	);
