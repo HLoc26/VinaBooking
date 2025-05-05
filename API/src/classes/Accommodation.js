@@ -1,6 +1,8 @@
 import { RoomRepository } from "../database/repositories/room.repository.js";
+import { ReviewRepository } from "../database/repositories/review.repository.js";
 import Address from "./Address.js";
 import Room from "./Room.js";
+import Review from "./Review.js";
 import AccommodationAmenity from "./AccommodationAmenity.js";
 
 /**
@@ -67,6 +69,16 @@ class Accommodation {
 
 	getSimplifiedAmenities() {
 		return this.amenities?.map((amenity) => amenity.name).filter(Boolean) || [];
+	}
+
+	async getAvgRating() {
+		const reviewModels = await ReviewRepository.findByAccommodationId(this.id);
+
+		const stars = reviewModels.map((review) => Review.fromModel(review).getStar());
+
+		const avgStar = (stars.reduce((acc, val) => acc + val, 0) / stars.length).toFixed(1);
+
+		return avgStar;
 	}
 
 	toPlain() {
