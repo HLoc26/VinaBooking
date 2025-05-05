@@ -8,14 +8,6 @@ import Footer from "../../components/layout/Footer/Footer";
 import axiosInstance from "../../app/axios";
 
 function Landing() {
-	// Mock data for popular destinations and featured hotels
-	const popularDestinations = [
-		{ name: "Paris", image: "https://placehold.co/300x200", description: "The city of lights." },
-		{ name: "New York", image: "https://placehold.co/300x200", description: "The city that never sleeps." },
-		{ name: "Tokyo", image: "https://placehold.co/300x200", description: "A blend of tradition and technology." },
-		{ name: "Ha Noi", image: "https://placehold.co/300x200", description: "Vietnamese's capital" },
-	];
-
 	const navigate = useNavigate();
 
 	const [featuredHotels, setFeaturedHotels] = React.useState([]);
@@ -89,39 +81,6 @@ function Landing() {
 			<Container sx={{ marginTop: 4 }}>
 				<SearchBar onSearch={handleSearch} />
 			</Container>
-
-			{/* Popular Destinations
-			<Box sx={{ marginTop: 6 }}>
-				<Container>
-					<Typography variant="h4" fontWeight="bold" gutterBottom>
-						Popular Destinations
-					</Typography>
-					<Grid container spacing={3} sx={{ justifyContent: "center" }}>
-						{popularDestinations.slice(0, 4).map((destination, index) => (
-							<Grid key={index} sx={{ width: { xs: "100%", md: "23%" } }}>
-								<Box
-									sx={{
-										borderRadius: 2,
-										overflow: "hidden",
-										boxShadow: 3,
-										backgroundColor: "#fff",
-									}}
-								>
-									<img src={destination.image} alt={destination.name} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
-									<Box sx={{ padding: 2 }}>
-										<Typography variant="h6" fontWeight="bold">
-											{destination.name}
-										</Typography>
-										<Typography variant="body2" color="text.secondary">
-											{destination.description}
-										</Typography>
-									</Box>
-								</Box>
-							</Grid>
-						))}
-					</Grid>
-				</Container>
-			</Box> */}
 
 			{/* Featured Hotels */}
 			<Box sx={{ marginTop: 6 }}>
