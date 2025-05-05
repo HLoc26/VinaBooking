@@ -30,6 +30,7 @@ function Search() {
 		occupancy: {
 			rooms: parseInt(searchParams.get("roomCount"), 10) || 1,
 			adults: parseInt(searchParams.get("adultCount"), 10) || 1,
+			children: parseInt(searchParams.get("childrenCount"), 10) || 0,
 		},
 	};
 

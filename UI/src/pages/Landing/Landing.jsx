@@ -39,6 +39,7 @@ function Landing() {
 
 			const roomCount = searchData.occupancy.rooms;
 			const adultCount = searchData.occupancy.adults;
+			const childrenCount = searchData.occupancy.children;
 
 			const queryParams = new URLSearchParams({
 				city: location.city,
@@ -50,6 +51,7 @@ function Landing() {
 				endDate,
 				roomCount,
 				adultCount,
+				childrenCount,
 			}).toString();
 
 			navigate(`/search?${queryParams}`);
