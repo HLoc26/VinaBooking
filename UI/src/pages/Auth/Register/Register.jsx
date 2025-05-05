@@ -15,6 +15,7 @@ function Register() {
 	const [otpTimer, setOtpTimer] = useState(0);
 	const [openErrorModal, setOpenErrorModal] = useState(false);
 	const [errorModalMessage, setErrorModalMessage] = useState("");
+	const [openSuccessModal, setOpenSuccessModal] = useState(false);
 	const [isNextLoading, setIsNextLoading] = useState(false);
 
 	const [name, setName] = useState("");
@@ -136,8 +137,10 @@ function Register() {
 		try {
 			const response = await axios.post("/auth/register/complete", { email, otp: enteredOtp });
 			console.log(response);
-			alert("Registration Successful!");
-			navigate("/login");
+			setOpenSuccessModal(true); // Open success modal
+			setTimeout(() => {
+				navigate("/login");
+			},20000); // Redirect after 2 seconds
 		} catch (error) {
 			handleOpenErrorModal(error.response?.data?.error?.message || "Invalid OTP.");
 		}
@@ -230,7 +233,35 @@ function Register() {
 				</Stepper>
 
 				{renderStepContent(activeStep)}
-
+				<Modal open={openSuccessModal} onClose={() => setOpenSuccessModal(false)}>
+    <Box
+        sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid green",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+        }}
+    >
+        <Typography variant="h6" sx={{ color: "green", fontWeight: "bold" }}>
+            ✅ Success
+        </Typography>
+        <Typography sx={{ mt: 2 }}>Registration Successful!</Typography>
+        <Button
+            variant="contained"
+            color="success"
+            onClick={() => navigate("/login")} // Redirect on button click
+            sx={{ mt: 2, width: "100%" }}
+        >
+            OK
+        </Button>
+    </Box>
+</Modal>
 				{/* Navigation Buttons */}
 				<Box sx={{ display: "flex", justifyContent: "space-between", mt: 4, width: "100%" }}>
 					<Button onClick={handleBack} variant="outlined" color="primary">
