@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Typography, Container, Grid } from "@mui/material";
 import Navbar from "../../components/layout/NavBar/NavBar";
 import SearchBar from "../../components/ui/SearchBar/SearchBar";
@@ -15,6 +16,8 @@ function Landing() {
 		{ name: "Ha Noi", image: "https://placehold.co/300x200", description: "Vietnamese's capital" },
 	];
 
+	const navigate = useNavigate();
+
 	const [featuredHotels, setFeaturedHotels] = React.useState([]);
 
 	React.useEffect(() => {
@@ -25,34 +28,38 @@ function Landing() {
 		});
 	}, []);
 
-	const handleSearch = React.useCallback(async (searchData) => {
-		console.log("Search data:", searchData);
-		// Implement search functionality here
-		const address = searchData.location.address;
+	const handleSearch = React.useCallback(
+		(searchData) => {
+			const address = searchData.location.address;
 
-		const location = {
-			city: address.city || address.town || address.village || null,
-			state: address.state || null,
-			country: address.country || null,
-			postalCode: address.postcode || null,
-		};
+			const location = {
+				city: address.city || address.town || address.village || null,
+				state: address.state || null,
+				country: address.country || null,
+				postalCode: address.postcode || null,
+			};
 
-		const startDate = new Date(searchData.dateRange.startDate).toISOString().split("T")[0];
-		const endDate = new Date(searchData.dateRange.endDate).toISOString().split("T")[0];
+			const startDate = new Date(searchData.dateRange.startDate).toISOString().split("T")[0];
+			const endDate = new Date(searchData.dateRange.endDate).toISOString().split("T")[0];
 
-		const roomCount = searchData.occupancy.rooms;
-		const adultCount = searchData.occupancy.adults;
+			const roomCount = searchData.occupancy.rooms;
+			const adultCount = searchData.occupancy.adults;
 
-		const response = await axiosInstance.get(
-			`/accommodations/search?city=${location.city}&state=${location.state}&postalCode=${location.postalCode}&country=${location.country}&startDate=${startDate}&endDate=${endDate}&roomCount=${roomCount}&adultCount=${adultCount}`
-		);
+			const queryParams = new URLSearchParams({
+				city: location.city,
+				state: location.state,
+				postalCode: location.postalCode,
+				country: location.country,
+				startDate,
+				endDate,
+				roomCount,
+				adultCount,
+			}).toString();
 
-		if (response.data.success) {
-			console.log(response.data.payload);
-		} else {
-			console.log(response.data.payload.error);
-		}
-	}, []);
+			navigate(`/search?${queryParams}`);
+		},
+		[navigate]
+	);
 
 	return (
 		<Box>
