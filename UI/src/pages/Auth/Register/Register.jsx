@@ -138,9 +138,6 @@ function Register() {
 			const response = await axios.post("/auth/register/complete", { email, otp: enteredOtp });
 			console.log(response);
 			setOpenSuccessModal(true); // Open success modal
-			setTimeout(() => {
-				navigate("/login");
-			},20000); // Redirect after 2 seconds
 		} catch (error) {
 			handleOpenErrorModal(error.response?.data?.error?.message || "Invalid OTP.");
 		}
