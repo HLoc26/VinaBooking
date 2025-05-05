@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 function Search() {
 	const [searchResults, setSearchResults] = useState([]);
+	const [filteredResults, setFilteredResults] = useState([]);
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate(); // Initialize useNavigate
 
@@ -49,6 +50,25 @@ function Search() {
 
 		fetchSearchResults();
 	}, [searchParams]);
+
+	useEffect(() => {
+		const fetchSearchResults = async () => {
+			const query = searchParams.toString();
+			const response = await axiosInstance.get(`/accommodations/search?${query}`);
+			if (response.data.success) {
+				setSearchResults(response.data.payload);
+				setFilteredResults(response.data.payload); // Initialize filtered results
+			} else {
+				console.error(response.data.error);
+			}
+		};
+
+		fetchSearchResults();
+	}, [searchParams]);
+
+	const handleFilterChange = (filtered) => {
+		setFilteredResults(filtered);
+	};
 
 	const handleSearch = React.useCallback(
 		(searchData) => {
@@ -106,25 +126,25 @@ function Search() {
 			<Container sx={{ marginTop: 4, display: "flex", gap: 4 }}>
 				{/* Filter Box */}
 				<Box sx={{ flex: 1, maxWidth: "300px" }}>
-					<FilterBox />
+					<FilterBox results={searchResults} onFilterChange={handleFilterChange} />
 				</Box>
 
 				{/* Search Results */}
 				<Box sx={{ flex: 3 }}>
 					<Typography variant="h4" fontWeight="bold" gutterBottom>
-						Search Results
+						Search Results ({filteredResults.length})
 					</Typography>
-					{searchResults.length > 0 ? (
-						<Grid container spacing={3} direction="column">
-							{searchResults.map((result, index) => (
-								<Grid key={index}>
+					{filteredResults.length > 0 ? (
+						<Grid container spacing={3} direction={"column"}>
+							{filteredResults.map((result, index) => (
+								<Grid item xs={12} key={index}>
 									<HotelCard name={result.name} amenities={result.amenities} location={result.address} minPrice={result.minPrice} rating={result.rating} />
 								</Grid>
 							))}
 						</Grid>
 					) : (
 						<Typography variant="body1" color="text.secondary">
-							No results found. Please try a different search.
+							No results found matching your filters.
 						</Typography>
 					)}
 				</Box>
