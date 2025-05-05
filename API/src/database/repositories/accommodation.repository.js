@@ -33,7 +33,7 @@ export const AccommodationRepository = {
 		if (state !== null && state !== "null") {
 			conditions[`$${AddressModel.name}.state$`] = { [Op.like]: `%${state}%` };
 		}
-		if (postalCode !== null && state !== "null") {
+		if (postalCode !== null && postalCode !== "null") {
 			conditions[`$${AddressModel.name}.postal_code$`] = { [Op.like]: `%${postalCode}%` };
 		}
 		// Do not search by country, the data could be huge
