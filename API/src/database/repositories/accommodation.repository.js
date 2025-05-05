@@ -40,10 +40,28 @@ export const AccommodationRepository = {
 
 		return await AccommodationModel.findAll({
 			where: conditions,
-			include: {
-				model: AddressModel,
-				attributes: [["id", "addressId"], ["address_line", "addressLine"], "city", "state", ["postal_code", "postalCode"], "country"],
-			},
+			include: [
+				{
+					model: AddressModel,
+					attributes: [["id", "addressId"], ["address_line", "addressLine"], "city", "state", ["postal_code", "postalCode"], "country"],
+					required: true,
+				},
+				{
+					model: ImageModel,
+					attributes: [["id", "imageId"], "filename"],
+					required: false,
+				},
+				{
+					model: ReviewModel,
+					attributes: [["id", "reviewId"], "star"],
+					required: false,
+				},
+				{
+					model: AccommodationAmenityModel,
+					include: [{ model: AmenityModel }],
+					required: false,
+				},
+			],
 		});
 	},
 
