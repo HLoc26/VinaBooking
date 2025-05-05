@@ -3,11 +3,18 @@ import { Paper, Grid, Typography, Box, IconButton, Button, List, ListItemText, I
 import * as Icon from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice.js";
 
+// Redux
+import { useDispatch, useSelector } from "react-redux";
+import { updateRoomQuantity, selectSelectedRooms } from "../../../features/booking/bookingSlice";
+
 function RoomCard({ room }) {
-	// After implementing Booking page, change _id -> id
-	const { _id, name, maxCapacity, size, description, price, amenities, images } = room;
+	const { id, name, maxCapacity, size, description, price, amenities, images, availableRooms } = room;
 	const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 	const [modalOpen, setModalOpen] = React.useState(false);
+
+	// Redux
+	const dispatch = useDispatch();
+	const currentQuantity = useSelector((state) => state.booking.selectedRooms[id]?.quantity || 0);
 
 	const handlePrevious = React.useCallback(() => {
 		setCurrentImageIndex((prev) => Math.max(prev - 1, 0));
@@ -20,8 +27,29 @@ function RoomCard({ room }) {
 	const handleOpenModal = () => setModalOpen(true);
 	const handleCloseModal = () => setModalOpen(false);
 
-	const handleChooseRoom = () => {
-		alert("Choose room, this should navigate to booking page");
+	// Quantity handlers
+	const handleIncreaseQuantity = () => {
+		if (currentQuantity < availableRooms) {
+			dispatch(
+				updateRoomQuantity({
+					roomId: id,
+					quantity: currentQuantity + 1,
+					price: price,
+				})
+			);
+		}
+	};
+
+	const handleDecreaseQuantity = () => {
+		if (currentQuantity > 0) {
+			dispatch(
+				updateRoomQuantity({
+					roomId: id,
+					quantity: currentQuantity - 1,
+					price: price,
+				})
+			);
+		}
 	};
 
 	// Modal style
@@ -43,7 +71,7 @@ function RoomCard({ room }) {
 	return (
 		<>
 			{/* Room Card (Preview) */}
-			<Paper elevation={3} sx={{ mb: 4, padding: 3, borderRadius: 2, width: "75%" }}>
+			<Paper elevation={3} sx={{ mb: 4, padding: 3, borderRadius: 2, width: "80%" }}>
 				{/* Room Title */}
 				<Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
 					{name}
@@ -52,7 +80,7 @@ function RoomCard({ room }) {
 				{/* Room Content */}
 				<Grid container spacing={3}>
 					{/* Image Section */}
-					<Grid size={4}>
+					<Grid item size={4}>
 						<Box
 							onClick={handleOpenModal}
 							sx={{
@@ -112,21 +140,21 @@ function RoomCard({ room }) {
 
 							{/* Key Room Info */}
 							<Grid container spacing={2} sx={{ mb: 2 }}>
-								<Grid>
+								<Grid item>
 									<Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 										<Icon.SquareFoot fontSize="small" />
 										<b>Size:</b> {size}m²
 									</Typography>
 								</Grid>
 
-								<Grid>
+								<Grid item>
 									<Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 										<Icon.People fontSize="small" />
 										<b>Capacity:</b> {maxCapacity}
 									</Typography>
 								</Grid>
 
-								<Grid>
+								<Grid item>
 									<Typography sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
 										<Icon.AttachMoney fontSize="small" />
 										<b>Price:</b> {convertPrice(price)} VND
@@ -174,14 +202,67 @@ function RoomCard({ room }) {
 							</Box>
 						</Box>
 
-						{/* Action Button */}
-						<Box sx={{ textAlign: "right", mt: 2 }}>
-							<Button variant="outlined" color="primary" onClick={handleOpenModal} startIcon={<Icon.Info />}>
-								See details
-							</Button>
-							<Button variant="contained" color="primary" sx={{ ml: 2 }} onClick={handleChooseRoom}>
-								Choose Room
-							</Button>
+						<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2, gap: 2, flexWrap: "wrap" }}>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+								<Button variant="outlined" color="primary" onClick={handleOpenModal} startIcon={<Icon.Info />}>
+									See details
+								</Button>
+
+								{/* Available Rooms Info */}
+								<Typography
+									sx={{
+										display: "flex",
+										alignItems: "center",
+										gap: 1,
+										color: availableRooms <= 3 ? "error.main" : "text.primary",
+										fontWeight: availableRooms <= 3 ? "bold" : "normal",
+									}}
+								>
+									<b>{availableRooms} rooms left</b>
+								</Typography>
+							</Box>
+
+							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+								{/* Decrease Quantity Button */}
+								<IconButton
+									onClick={handleDecreaseQuantity}
+									disabled={currentQuantity === 0}
+									color="primary"
+									sx={{
+										border: "1px solid",
+										borderColor: "primary.main",
+										"&.Mui-disabled": {
+											borderColor: "action.disabled",
+										},
+									}}
+								>
+									<Icon.Remove fontSize="small" />
+								</IconButton>
+
+								{/* Quantity Display */}
+								<Typography
+									variant="h6"
+									sx={{
+										minWidth: "40px",
+										textAlign: "center",
+										fontWeight: "bold",
+									}}
+								>
+									{currentQuantity}
+								</Typography>
+
+								{/* Increase Quantity Button */}
+								<IconButton
+									onClick={handleIncreaseQuantity}
+									color="primary"
+									sx={{
+										border: "1px solid",
+										borderColor: "primary.main",
+									}}
+								>
+									<Icon.Add fontSize="small" />
+								</IconButton>
+							</Box>
 						</Box>
 					</Grid>
 				</Grid>
@@ -203,7 +284,7 @@ function RoomCard({ room }) {
 
 					<Grid container spacing={3}>
 						{/* Image Gallery Section */}
-						<Grid md={6}>
+						<Grid item md={6}>
 							<Box
 								sx={{
 									position: "relative",
@@ -401,7 +482,7 @@ function RoomCard({ room }) {
 						</Grid>
 
 						{/* Full Room Details Section */}
-						<Grid md={6}>
+						<Grid item xs={12} md={6}>
 							<Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
 								Room Details
 							</Typography>
@@ -419,6 +500,20 @@ function RoomCard({ room }) {
 								<b>Price:</b> {convertPrice(price)} VND
 							</Typography>
 
+							{/* Available Rooms Info in Modal*/}
+							<Typography
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									gap: 1,
+									mb: 2,
+									color: availableRooms <= 3 ? "error.main" : "text.primary",
+									fontWeight: availableRooms <= 3 ? "bold" : "normal",
+								}}
+							>
+								<b>{availableRooms} rooms remaining</b>
+							</Typography>
+
 							<Typography variant="h6" fontWeight="bold" sx={{ mb: 1, mt: 3 }}>
 								Description
 							</Typography>
@@ -431,7 +526,7 @@ function RoomCard({ room }) {
 							</Typography>
 							<Grid container spacing={2}>
 								{amenities.basic && (
-									<Grid sm={4}>
+									<Grid item sm={4}>
 										<Typography variant="subtitle2" fontWeight="bold">
 											Basic
 										</Typography>
@@ -448,7 +543,7 @@ function RoomCard({ room }) {
 									</Grid>
 								)}
 								{amenities.bathroom && (
-									<Grid sm={4}>
+									<Grid item sm={4}>
 										<Typography variant="subtitle2" fontWeight="bold">
 											Bathroom
 										</Typography>
@@ -465,7 +560,7 @@ function RoomCard({ room }) {
 									</Grid>
 								)}
 								{amenities.facility && (
-									<Grid sm={4}>
+									<Grid item sm={4}>
 										<Typography variant="subtitle2" fontWeight="bold">
 											Facilities
 										</Typography>
@@ -488,9 +583,6 @@ function RoomCard({ room }) {
 					<Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
 						<Button variant="outlined" onClick={handleCloseModal} sx={{ mr: 2 }}>
 							Close
-						</Button>
-						<Button variant="contained" color="primary">
-							Choose Room
 						</Button>
 					</Box>
 				</Box>
