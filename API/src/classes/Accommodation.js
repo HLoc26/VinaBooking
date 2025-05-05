@@ -31,10 +31,8 @@ class Accommodation {
 	}
 
 	getMinPrice() {
-		console.log(this.rooms, "HELLO");
 		let minPrice = Infinity;
 		this.rooms.forEach((room) => {
-			console.log(room.price);
 			if (room.price < minPrice) {
 				minPrice = room.price;
 			}
