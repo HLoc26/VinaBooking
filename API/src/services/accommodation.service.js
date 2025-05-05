@@ -87,9 +87,12 @@ export default {
 				}
 			}
 
+			const minPrice = accommodation.getMinPrice();
+
+			const rating = await accommodation.getAvgRating();
 			// Add accommodation to results if it has enough available rooms
 			if (availableRooms.length > 0) {
-				results.push(accommodation.toPlainWithRooms(availableRooms));
+				results.push({ ...accommodation.toPlain(availableRooms), minPrice, rating });
 			}
 		}
 
@@ -109,11 +112,7 @@ export default {
 		// Process each accommodation using class methods
 		const processedAccommodations = await Promise.all(
 			accommodationInstances.map(async (accommodation) => {
-				const reviewModels = await ReviewRepository.findByAccommodationId(accommodation.id);
-
-				const stars = reviewModels.map((review) => Review.fromModel(review).getStar());
-
-				const avgStar = (stars.reduce((acc, val) => acc + val, 0) / stars.length).toFixed(1);
+				const rating = await accommodation.getAvgRating();
 
 				await accommodation.loadRooms();
 
@@ -122,7 +121,7 @@ export default {
 				return {
 					...accommodation.toPlain(),
 					rooms: undefined, // Does not need to get rooms
-					rating: avgStar,
+					rating,
 					minPrice,
 				};
 			})
