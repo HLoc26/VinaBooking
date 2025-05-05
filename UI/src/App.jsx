@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Auth/Login/Login";
 import Register from "./pages/Auth/Register/Register";
 import Landing from "./pages/Landing/Landing";
+import Search from "./pages/Search/Search";
 import ProtectedRoute from "./components/auth/ProtectedRoute/ProtectedRoute";
 
 // Create these empty "under construction" pages
@@ -40,6 +41,7 @@ function App() {
 			<Routes>
 				{/* Public routes */}
 				<Route path="/" element={<Landing />} />
+				<Route path="/search" element={<Search />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 
