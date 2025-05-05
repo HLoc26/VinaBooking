@@ -22,7 +22,7 @@ function Landing() {
 
 	const handleSearch = React.useCallback(
 		(searchData) => {
-			const address = searchData.location.address;
+			const address = searchData.location;
 
 			const location = {
 				city: address.city || address.town || address.village || null,
@@ -30,6 +30,9 @@ function Landing() {
 				country: address.country || null,
 				postalCode: address.postcode || null,
 			};
+
+			console.log("Search data", searchData);
+			const label = address.display_name;
 
 			const startDate = new Date(searchData.dateRange.startDate).toISOString().split("T")[0];
 			const endDate = new Date(searchData.dateRange.endDate).toISOString().split("T")[0];
@@ -42,6 +45,7 @@ function Landing() {
 				state: location.state,
 				postalCode: location.postalCode,
 				country: location.country,
+				locationLabel: label,
 				startDate,
 				endDate,
 				roomCount,

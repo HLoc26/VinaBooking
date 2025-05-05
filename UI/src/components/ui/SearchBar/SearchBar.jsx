@@ -6,24 +6,31 @@ import * as Icon from "@mui/icons-material";
 
 import LocationInput from "../LocationInput/LocationInput";
 
-function SearchBar({ onSearch }) {
-	const [dateRange, setDateRange] = useState({
-		startDate: new Date(),
-		endDate: new Date(),
-	});
-	const [occupancy, setOccupancy] = useState({
-		adults: 1,
-		children: 0,
-		rooms: 1,
-	});
-	const [location, setLocation] = useState("");
+function SearchBar({ initialData = {}, onSearch }) {
+	const [dateRange, setDateRange] = useState(
+		initialData.dateRange || {
+			startDate: new Date(),
+			endDate: new Date(),
+		}
+	);
+	const [occupancy, setOccupancy] = useState(
+		initialData.occupancy || {
+			adults: 1,
+			children: 0,
+			rooms: 1,
+		}
+	);
+	const [location, setLocation] = useState(initialData.location || "");
 
 	const handleSearch = (e) => {
 		e.preventDefault();
 		if (onSearch) {
+			console.log("On search", location);
+
 			onSearch({ location, dateRange, occupancy });
 		}
 	};
+
 	return (
 		<Box
 			component="form"
@@ -45,12 +52,12 @@ function SearchBar({ onSearch }) {
 			{/* Location Input */}
 			<FormControl sx={{ flex: 1, minWidth: "200px", width: 1 }}>
 				<LocationInput
-					value={location}
+					value={location.locationLabel}
 					onSelect={(location) => {
-						console.log("Selected location:", location);
+						console.log("Selected location:", { ...location.address, display_name: location.display_name });
 						setLocation(location);
 					}}
-					onChange={(newLocation) => setLocation(newLocation)}
+					onChange={(location) => setLocation({ ...location.address, display_name: location.display_name })}
 				/>
 			</FormControl>
 			{/* Date Range Picker */}
