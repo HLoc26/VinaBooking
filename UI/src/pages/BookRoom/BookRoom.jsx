@@ -1,24 +1,9 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { selectSelectedRooms } from "../../features/booking/bookingSlice";
-import {
-	Box,
-	Typography,
-	Paper,
-	TableContainer,
-	Table,
-	TableHead,
-	TableRow,
-	TableBody,
-	TableCell,
-	Button,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	DialogContentText,
-	Icon,
-} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { selectSelectedRooms, updateTotalAmount } from "../../features/booking/bookingSlice";
+import { Box, Typography, Paper, TableContainer, Table, TableHead, TableRow, TableBody, TableCell, Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from "@mui/material";
+
+import * as Icon from "@mui/icons-material";
 
 import { useNavigate } from "react-router-dom";
 import { selectCurrentUser } from "../../features/auth/authSlice";
@@ -27,6 +12,7 @@ import { selectBookingDates } from "../../features/search/searchSlice";
 
 const BookRoom = () => {
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const [openDialog, setOpenDialog] = useState(false);
 
 	// Retrieve data passed via state
@@ -45,6 +31,8 @@ const BookRoom = () => {
 	const totalAmount = Object.values(rooms).reduce((sum, room) => {
 		return sum + room.quantity * room.price * nights;
 	}, 0);
+
+	dispatch(updateTotalAmount(totalAmount));
 
 	// Redirect to the previous page if no data is passed
 	useEffect(() => {
