@@ -2,11 +2,15 @@ import * as React from "react";
 import { AppBar, Toolbar, Typography, Box, Button, IconButton, Menu, MenuItem, Avatar } from "@mui/material";
 import * as Icon from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../../features/auth/authSlice";
 
 function Navbar() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
-	const [isLoggedIn, setIsLoggedIn] = React.useState(false); // Mock login state
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const { user } = useSelector((state) => state.auth);
+	const isLoggedIn = !!user;
 
 	const handleMenuOpen = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -16,17 +20,32 @@ function Navbar() {
 		setAnchorEl(null);
 	};
 
+	const handleLogout = () => {
+		dispatch(logout());
+		handleMenuClose();
+		navigate("/");
+	};
+
+	const navigateTo = (path) => {
+		navigate(path);
+		handleMenuClose();
+	};
+
 	return (
 		<AppBar position="sticky" color="primary">
 			<Toolbar>
 				{/* Logo */}
-				<Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: "bold" }}>
+				<Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }} onClick={() => navigate("/")}>
 					VinaBooking
 				</Typography>
 
 				{/* NavLinks */}
 				<Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
-					<Button color="inherit">Saved Accommodation</Button>
+					{isLoggedIn && (
+						<Button color="inherit" onClick={() => navigate("/saved")}>
+							Saved Accommodation
+						</Button>
+					)}
 				</Box>
 
 				{/* UserMenu */}
@@ -36,7 +55,7 @@ function Navbar() {
 							<Icon.Notifications htmlColor="white" />
 						</IconButton>
 						<IconButton onClick={handleMenuOpen} color="inherit">
-							<Avatar alt="User Profile" src="https://via.placeholder.com/40" />
+							<Avatar alt={user?.name || "User"} src="https://via.placeholder.com/40" />
 						</IconButton>
 						<Menu
 							anchorEl={anchorEl}
@@ -45,17 +64,10 @@ function Navbar() {
 							anchorOrigin={{ vertical: "top", horizontal: "right" }}
 							transformOrigin={{ vertical: "top", horizontal: "right" }}
 						>
-							<MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-							<MenuItem onClick={handleMenuClose}>Bookings</MenuItem>
-							<MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-							<MenuItem
-								onClick={() => {
-									setIsLoggedIn(false);
-									handleMenuClose();
-								}}
-							>
-								Logout
-							</MenuItem>
+							<MenuItem onClick={() => navigateTo("/profile")}>Profile</MenuItem>
+							<MenuItem onClick={() => navigateTo("/bookings")}>Bookings</MenuItem>
+							<MenuItem onClick={() => navigateTo("/settings")}>Settings</MenuItem>
+							<MenuItem onClick={handleLogout}>Logout</MenuItem>
 						</Menu>
 					</Box>
 				) : (
