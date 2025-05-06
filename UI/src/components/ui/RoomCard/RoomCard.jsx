@@ -5,7 +5,7 @@ import convertPrice from "../../../utils/convertPrice.js";
 
 // Redux
 import { useDispatch, useSelector } from "react-redux";
-import { updateRoomQuantity, selectSelectedRooms } from "../../../features/booking/bookingSlice";
+import { updateRoomQuantity } from "../../../features/booking/bookingSlice";
 
 function RoomCard({ room }) {
 	const { id, name, maxCapacity, size, description, price, amenities, images, availableRooms } = room;
@@ -32,9 +32,8 @@ function RoomCard({ room }) {
 		if (currentQuantity < availableRooms) {
 			dispatch(
 				updateRoomQuantity({
-					roomId: id,
+					...room,
 					quantity: currentQuantity + 1,
-					price: price,
 				})
 			);
 		}
@@ -44,9 +43,8 @@ function RoomCard({ room }) {
 		if (currentQuantity > 0) {
 			dispatch(
 				updateRoomQuantity({
-					roomId: id,
+					...room,
 					quantity: currentQuantity - 1,
-					price: price,
 				})
 			);
 		}
