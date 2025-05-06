@@ -1,5 +1,7 @@
 import authService from "../services/auth.service.js";
 import emailService from "../services/email.service.js";
+import User from "../classes/User.js";
+
 export default {
 	// Handles user authentication requests
 	async login(req, res) {
@@ -54,10 +56,10 @@ export default {
 	},
 
 	async initiateRegistration(req, res) {
-		const { name, phone, email, password, role, gender, dob, username, address } = req.body;
-
 		try {
-			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob, username, address });
+			const { name, phone, email, password, role, gender, dob } = req.body;
+
+			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob });
 
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
@@ -70,9 +72,11 @@ export default {
 	},
 
 	async completeRegistration(req, res) {
-		const { email, otp } = req.body;
 		try {
+			const { email, otp } = req.body;
+
 			const result = await authService.completeRegistration(email, otp);
+
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}

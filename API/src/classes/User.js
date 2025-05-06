@@ -1,6 +1,7 @@
 import { UserRepository } from "../database/repositories/user.repository.js";
+
 /**
- * User class, have 2 children: `RegisteredUser` and `AccommodationOwner`
+ * User class, has 2 children: `RegisteredUser` and `AccommodationOwner`
  * @class User
  */
 class User {
@@ -46,7 +47,32 @@ class User {
 	}
 
 	validateAccount(username, password) {
-		// Validate using UserDAO (sequelize)
+		// TODO: Implement account validation logic
+	}
+
+	static async findByEmail(email) {
+		const model = await UserRepository.findByEmail(email);
+		return model ? User.fromModel(model) : null;
+	}
+
+	static async findById(id) {
+		const model = await UserRepository.findById(id);
+		return model ? User.fromModel(model) : null;
+	}
+	async save() {
+		const userData = {
+			name: this.name,
+			phone: this.phone,
+			email: this.email,
+			password: this.password,
+			role: this.role,
+			gender: this.gender,
+			dob: this.dob,
+			isActive: this.isActive,
+		};
+
+		const created = await UserRepository.create(userData);
+		this.id = created.id; // update id after saving
 	}
 }
 
@@ -59,7 +85,7 @@ export const EGender = Object.freeze({
 	MALE: "male",
 	FEMALE: "female",
 });
-//
+
 /**
  * Enum for user roles.
  * @readonly
