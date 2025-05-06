@@ -1,18 +1,35 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectSelectedRooms, selectTotalAmount } from "../../features/booking/bookingSlice";
-import { Box, Typography, Paper, TableContainer, Table, TableHead, TableRow, TableBody, TableCell, Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from "@mui/material";
-
+import {
+	Box,
+	Typography,
+	Paper,
+	TableContainer,
+	Table,
+	TableHead,
+	TableRow,
+	TableBody,
+	TableCell,
+	Button,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	DialogContentText,
+	Divider,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { selectCurrentUser } from "../../features/auth/authSlice";
 
 const BookRoom = () => {
 	const navigate = useNavigate();
 	const [openDialog, setOpenDialog] = useState(false);
 
 	// Retrieve data passed via state
-
 	const rooms = useSelector(selectSelectedRooms);
 	const totalAmount = useSelector(selectTotalAmount);
+	const currentUser = useSelector(selectCurrentUser);
 
 	// Redirect to the previous page if no data is passed
 	useEffect(() => {
@@ -38,8 +55,24 @@ const BookRoom = () => {
 
 	return (
 		<Box sx={{ padding: 4 }}>
+			{/* User Information */}
+			<Box sx={{ marginBottom: 4 }}>
+				<Typography variant="h5" gutterBottom>
+					Booking Information
+				</Typography>
+				<Paper sx={{ padding: 2 }}>
+					<Typography variant="body1">
+						<b>Name:</b> {currentUser?.username || "Guest"}
+					</Typography>
+					<Typography variant="body1">
+						<b>Email:</b> {currentUser?.email || "Not provided"}
+					</Typography>
+				</Paper>
+			</Box>
+
+			{/* Room Details */}
 			<Typography variant="h4" gutterBottom>
-				Book Room
+				Selected Rooms
 			</Typography>
 
 			<TableContainer component={Paper} sx={{ marginBottom: 4 }}>
@@ -50,6 +83,8 @@ const BookRoom = () => {
 							<TableCell align="right">Number</TableCell>
 							<TableCell align="right">Price per Night</TableCell>
 							<TableCell align="right">Sub-total</TableCell>
+							<TableCell>Description</TableCell>
+							<TableCell>Amenities</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -59,16 +94,31 @@ const BookRoom = () => {
 								<TableCell align="right">{room.quantity}</TableCell>
 								<TableCell align="right">{room.price} VND</TableCell>
 								<TableCell align="right">{room.subtotal} VND</TableCell>
+								<TableCell>{room.description}</TableCell>
+								<TableCell>
+									{Object.entries(room.amenities || {}).map(([category, items]) => (
+										<Box key={category} sx={{ mb: 1 }}>
+											<Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+												{category.charAt(0).toUpperCase() + category.slice(1)}:
+											</Typography>
+											<Typography variant="body2">{items.join(", ")}</Typography>
+										</Box>
+									))}
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
 				</Table>
 			</TableContainer>
 
-			<Typography variant="h6" gutterBottom>
-				Total Price: ${totalAmount}
-			</Typography>
+			{/* Total Price */}
+			<Box sx={{ marginBottom: 4 }}>
+				<Typography variant="h6" gutterBottom>
+					Total Price: {totalAmount} VND
+				</Typography>
+			</Box>
 
+			{/* Proceed to Payment */}
 			<Button variant="contained" color="primary" onClick={handleProceedToPayment} disabled={!rooms.length}>
 				Proceed to Payment
 			</Button>
