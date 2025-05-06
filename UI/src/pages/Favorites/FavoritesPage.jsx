@@ -7,7 +7,8 @@ import {
   CircularProgress, 
   Alert, 
   Divider,
-  Grid
+  Grid,
+  Snackbar
 } from '@mui/material';
 import axiosInstance from '../../app/axios';
 import FavoriteCard from '../../components/ui/FavoriteCard/FavoriteCard';
@@ -16,44 +17,71 @@ const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   // Fetch favorite list when component mounts
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get('/favourite');
-        
-        if (response.data.success) {
-          setFavorites(response.data.payload.accommodations || []);
-        } else {
-          setError(response.data.error.message || 'Failed to load favorites');
-        }
-      } catch (err) {
-        console.error('Error fetching favorites:', err);
-        setError('Error loading your saved accommodations. Please try again later.');
-      } finally {
-        setLoading(false);
+  const fetchFavorites = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axiosInstance.get('/favourite');
+      
+      if (response.data.success) {
+        setFavorites(response.data.payload.accommodations || []);
+      } else {
+        setError(response.data.error?.message || 'Failed to load favorites');
       }
-    };
+    } catch (err) {
+      console.error('Error fetching favorites:', err);
+      setError('Error loading your saved accommodations. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchFavorites();
   }, []);
+
+  // Close snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   // Handle removing an accommodation from favorites
   const handleRemoveFromFavorites = async (accommodationId) => {
     try {
+      // Don't set loading to true here as it clears the whole favorites list from view
+      // Instead, we could add a local loading state if needed
       const response = await axiosInstance.delete(`/favourite/remove/${accommodationId}`);
       
       if (response.data.success) {
-        // Update local state to reflect the removal
-        setFavorites(favorites.filter(accommodation => accommodation.id !== accommodationId));
+        // Update state to remove the item without a full reload
+        setFavorites(prevFavorites => prevFavorites.filter(item => item.id !== accommodationId));
+        setSnackbar({
+          open: true,
+          message: 'Accommodation removed from favorites',
+          severity: 'success'
+        });
       } else {
-        setError(response.data.error.message || 'Failed to remove from favorites');
+        // Only set error and show error message if the API returns an error
+        setError(response.data.error?.message || 'Failed to remove from favorites');
+        setSnackbar({
+          open: true,
+          message: response.data.error?.message || 'Failed to remove from favorites',
+          severity: 'error'
+        });
       }
     } catch (err) {
+      // This block only executes when there's a network error or other exception
       console.error('Error removing from favorites:', err);
-      setError('Error removing accommodation from favorites. Please try again.');
+      const errorMessage = err.response?.data?.error?.message || 'Error removing accommodation from favorites. Please try again.';
+      setError(errorMessage);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error'
+      });
     }
   };
 
@@ -97,6 +125,15 @@ const FavoritesPage = () => {
           ))}
         </Stack>
       )}
+
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        message={snackbar.message}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Container>
   );
 };
