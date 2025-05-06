@@ -13,6 +13,8 @@ function RoomCard({ room }) {
 	const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 	const [modalOpen, setModalOpen] = React.useState(false);
 
+	const imagesList = images ? images : [{ img: "/uploads/room/default.jpg" }];
+
 	// Redux
 	const dispatch = useDispatch();
 	const currentQuantity = useSelector((state) => state.booking.selectedRooms[id]?.quantity || 0);
@@ -69,11 +71,11 @@ function RoomCard({ room }) {
 							}}
 						>
 							{/* Current Image */}
-							{images?.length > 0 ? (
+							{imagesList?.length > 0 ? (
 								<img
-									srcSet={`${images[0].img}`}
-									src={`${images[0].img}`}
-									alt={images[0].title}
+									srcSet={`${imagesList[0].img}`}
+									src={`${imagesList[0].img}`}
+									alt={imagesList[0].title}
 									loading="lazy"
 									style={{
 										width: "100%",
@@ -91,7 +93,7 @@ function RoomCard({ room }) {
 								title={
 									<Typography sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
 										<Icon.PhotoLibrary fontSize="small" />
-										{images?.length} {images?.length === 1 ? "photo" : "photos"} - Click to view
+										{imagesList?.length} {imagesList?.length === 1 ? "photo" : "photos"} - Click to view
 									</Typography>
 								}
 							/>
@@ -245,7 +247,7 @@ function RoomCard({ room }) {
 			</Paper>
 
 			{/* Detailed Modal */}
-			<RoomDetailModal room={{ ...room, currentImageIndex, setCurrentImageIndex }} handleCloseModal={handleCloseModal} modalOpen={modalOpen} />
+			<RoomDetailModal room={{ ...room, images: imagesList, currentImageIndex, setCurrentImageIndex }} handleCloseModal={handleCloseModal} modalOpen={modalOpen} />
 		</>
 	);
 }
