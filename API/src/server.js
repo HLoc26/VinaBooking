@@ -1,5 +1,6 @@
 import express, { urlencoded } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import router from "./routes/index.routes.js";
 import sequelize from "./config/sequelize.js";
 import "./database/models/index.js";
@@ -10,8 +11,11 @@ const app = express();
 app.use(express.json());
 
 app.use(urlencoded({ extended: true }));
-// ======================= CORS =========================
 
+// Add cookie-parser middleware to parse cookies
+app.use(cookieParser());
+
+// ======================= CORS =========================
 app.use(
 	cors({
 		origin: "http://localhost:5173",

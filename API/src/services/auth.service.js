@@ -143,4 +143,15 @@ export default {
 			return { success: false, error: { code: 500, message: "Registration failed", details: error.message } };
 		}
 	},
+
+	// Get user by ID
+	async getUserById(userId) {
+		try {
+			const user = await User.findByPk(userId);
+			return user;
+		} catch (error) {
+			console.error("Error fetching user by ID:", error);
+			return null;
+		}
+	}
 };

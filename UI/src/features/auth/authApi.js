@@ -45,3 +45,19 @@ export const logoutApi = async () => {
 		throw error;
 	}
 };
+
+export const getCurrentUserApi = async () => {
+	try {
+		console.log("Getting current user");
+		const response = await axiosInstance.get("/auth/me", { withCredentials: true });
+		
+		if (response.data && response.data.success) {
+			return response.data.payload;
+		}
+		
+		throw new Error(response.data?.error?.message || "Failed to get user data");
+	} catch (error) {
+		console.error("Get current user API error occurred:", error.message);
+		throw error;
+	}
+};
