@@ -45,8 +45,7 @@ class Room {
 
 	async numberOfAvailable(startDate, endDate) {
 		const bookedCount = await RoomRepository.getBookedCount(this.id, startDate, endDate);
-		const remain = this.count - bookedCount;
-		return remain > 0 ? remain : 0;
+		return Math.max(0, this.count - bookedCount);
 	}
 
 	async isAvailable(startDate, endDate, adultCount) {
