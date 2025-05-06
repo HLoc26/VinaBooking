@@ -1,15 +1,15 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import Usr from "../classes/User.js";
+import User from "../classes/User.js";
 import redis from "../config/redis.js";
-import { User } from "../database/models/index.js";
+import { User as UserModel } from "../database/models/index.js";
 import emailService from "./email.service.js";
 
 export default {
 	// Authenticates a user and generates a JWT token
 	async login(email, password) {
 		try {
-			const user = await User.findOne({ where: { email } });
+			const user = await UserModel.findOne({ where: { email } });
 			if (!user) {
 				return { success: false, error: { code: 401, message: "Invalid email or password" } };
 			}
@@ -105,7 +105,7 @@ export default {
 	},
 
 	async initiateRegistration(userData) {
-		const existingUser = await Usr.findByEmail(userData.email); // Use User class method
+		const existingUser = await User.findByEmail(userData.email); // Use User class method
 		if (existingUser) {
 			return { success: false, error: { code: 409, message: "Email already exists." } };
 		}
@@ -133,7 +133,7 @@ export default {
 		userData.password = await bcrypt.hash(userData.password, 10);
 
 		// Now create User instance
-		const usr = new Usr(userData);
+		const usr = new User(userData);
 		await usr.save();
 
 		await redis.del(`pending_user:${email}`);
