@@ -1,30 +1,26 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { selectSelectedRooms, selectTotalAmount } from "../../features/booking/bookingSlice";
+import { Box, Typography, Paper, TableContainer, Table, TableHead, TableRow, TableBody, TableCell, Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from "@mui/material";
+
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 const BookRoom = () => {
 	const navigate = useNavigate();
-	const [openDialog, setOpenDialog] = React.useState(false);
+	const [openDialog, setOpenDialog] = useState(false);
 
-	// Redux state
-	const user = useSelector((state) => state.user.currentUser);
-	const roomSelection = useSelector((state) => state.booking.roomSelection); // Example: [{ type: "Deluxe", count: 2, pricePerNight: 100 }]
-	const numberOfDays = useSelector((state) => state.booking.numberOfDays); // Example: 3
+	// Retrieve data passed via state
 
-	// Redirect to login if user is not logged in
+	const rooms = useSelector(selectSelectedRooms);
+	const totalAmount = useSelector(selectTotalAmount);
+
+	// Redirect to the previous page if no data is passed
 	useEffect(() => {
-		if (!user) {
-			const confirmLogin = window.confirm("You are not logged in. Do you want to login?");
-			if (confirmLogin) {
-				navigate("/login");
-			}
+		if (!Object.entries(rooms).length) {
+			alert("No booking data found. Redirecting to the previous page.");
+			navigate(-1); // Go back to the previous page
 		}
-	}, [user, navigate]);
-
-	// Calculate total price
-	const calculateSubTotal = (room) => room.count * room.pricePerNight * numberOfDays;
-	const totalPrice = roomSelection.reduce((total, room) => total + calculateSubTotal(room), 0);
+	}, [rooms, navigate]);
 
 	// Handle navigation to payment page
 	const handleProceedToPayment = () => {
@@ -46,14 +42,6 @@ const BookRoom = () => {
 				Book Room
 			</Typography>
 
-			{user && (
-				<Box sx={{ marginBottom: 4 }}>
-					<Typography variant="h6">User Information</Typography>
-					<Typography>Name: {user.name}</Typography>
-					<Typography>Email: {user.email}</Typography>
-				</Box>
-			)}
-
 			<TableContainer component={Paper} sx={{ marginBottom: 4 }}>
 				<Table>
 					<TableHead>
@@ -65,12 +53,12 @@ const BookRoom = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{roomSelection.map((room, index) => (
-							<TableRow key={index}>
-								<TableCell>{room.type}</TableCell>
-								<TableCell align="right">{room.count}</TableCell>
-								<TableCell align="right">${room.pricePerNight}</TableCell>
-								<TableCell align="right">${calculateSubTotal(room)}</TableCell>
+						{Object.entries(rooms).map(([roomId, room]) => (
+							<TableRow key={roomId}>
+								<TableCell>{room.name}</TableCell>
+								<TableCell align="right">{room.quantity}</TableCell>
+								<TableCell align="right">{room.price} VND</TableCell>
+								<TableCell align="right">{room.subtotal} VND</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
@@ -78,10 +66,10 @@ const BookRoom = () => {
 			</TableContainer>
 
 			<Typography variant="h6" gutterBottom>
-				Total Price: ${totalPrice}
+				Total Price: ${totalAmount}
 			</Typography>
 
-			<Button variant="contained" color="primary" onClick={handleProceedToPayment} disabled={!roomSelection.length}>
+			<Button variant="contained" color="primary" onClick={handleProceedToPayment} disabled={!rooms.length}>
 				Proceed to Payment
 			</Button>
 
