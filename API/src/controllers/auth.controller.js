@@ -5,20 +5,53 @@ import User from "../classes/User.js";
 export default {
 	// Handles user authentication requests
 	async login(req, res) {
-		const { email, password } = req.body;
+		const { email, password, rememberMe } = req.body;
+
 		try {
-			const result = await authService.login(email, password);
+			const result = await authService.login(email, password, rememberMe);
+
 			if (!result.success) {
+				console.log(`[LOGIN] Authentication failed`);
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
+
+			console.log(`[LOGIN] Authentication successful`);
+
+			// Set JWT as HTTP-only cookie
+			const token = result.payload.jwt;
+
+			// Set cookie expiration based on rememberMe flag
+			const maxAge = rememberMe
+				? 30 * 24 * 60 * 60 * 1000 // 30 days for "Remember Me"
+				: 24 * 60 * 60 * 1000; // 1 day for normal login
+
+			res.cookie("jwt", token, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
+				sameSite: "lax",
+				maxAge: maxAge,
+			});
+
+			// Only send user info in payload, not the JWT token
 			return res.json({
 				success: true,
 				message: "Login success",
-				payload: result.payload,
+				payload: {
+					user: result.payload.user,
+					rememberMe
+				},
 			});
 		} catch (err) {
-			console.error(err);
-			return res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
+			console.error(`[LOGIN] Server error during authentication`);
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Server error",
+					details: err.message,
+					stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+				},
+			});
 		}
 	},
 
@@ -33,7 +66,7 @@ export default {
 			}
 			res.status(200).json({ success: true, message: "OTP sent to email. Please confirm to complete registration." });
 		} catch (error) {
-			console.error("Registration request failed:", error);
+			console.error("Registration initiation failed");
 			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
 		}
 	},
@@ -49,7 +82,7 @@ export default {
 			}
 			res.status(201).json({ success: true, message: "Account created successfully. You can now log in." });
 		} catch (error) {
-			console.error("Confirm registration failed:", error);
+			console.error("Registration confirmation failed");
 			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
 		}
 	},
