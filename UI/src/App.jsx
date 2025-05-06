@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+<<<<<<< HEAD
 import { Provider } from "react-redux";
 import store from "./app/store";
 
+=======
+import { useDispatch } from "react-redux";
+>>>>>>> feature/auth-cookie-persistence
 import Login from "./pages/Auth/Login/Login";
 import Register from "./pages/Auth/Register/Register";
 import Landing from "./pages/Landing/Landing";
 import AccommodationDetail from "./pages/AccommodationDetail/AccommodationDetail";
 import ProtectedRoute from "./components/auth/ProtectedRoute/ProtectedRoute";
+import { restoreSession } from "./features/auth/authSlice";
 
 // Create these empty "under construction" pages
 const SavedAccommodations = () => (
@@ -39,6 +44,13 @@ const Settings = () => (
 );
 
 function App() {
+	const dispatch = useDispatch();
+	
+	useEffect(() => {
+		// Try to restore the user session when the app loads
+		dispatch(restoreSession());
+	}, [dispatch]);
+
 	return (
     <Provider store={store}>
       <Router>

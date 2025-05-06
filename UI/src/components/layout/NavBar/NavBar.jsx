@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Box, Button, IconButton, Menu, MenuItem, A
 import * as Icon from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../../features/auth/authSlice";
+import { logoutUser } from "../../../features/auth/authSlice";
 
 function Navbar() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
@@ -21,9 +21,10 @@ function Navbar() {
 	};
 
 	const handleLogout = () => {
-		dispatch(logout());
-		handleMenuClose();
-		navigate("/");
+		dispatch(logoutUser()).then(() => {
+			handleMenuClose();
+			navigate("/");
+		});
 	};
 
 	const navigateTo = (path) => {

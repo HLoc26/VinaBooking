@@ -3,10 +3,15 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute = () => {
-	const { user } = useSelector((state) => state.auth);
+	const { user, isLoggedIn, loading } = useSelector((state) => state.auth);
+
+	// If authentication is still being checked, render nothing (or a loading indicator)
+	if (loading) {
+		return <div style={{ marginTop: "100px", textAlign: "center" }}>Loading...</div>;
+	}
 
 	// If user is not logged in, redirect to login page
-	if (!user) {
+	if (!isLoggedIn || !user) {
 		return <Navigate to="/login" replace />;
 	}
 
