@@ -6,6 +6,7 @@ const accommodationRouter = Router();
 
 // This route should be defined before /:id
 accommodationRouter.get("/search", searchMiddleware.validateSearch, accommodationController.search);
+accommodationRouter.get("/popular", accommodationController.getPopular);
 accommodationRouter.get("/:id", accommodationController.getAccommodationDetail);
 
 export default accommodationRouter;

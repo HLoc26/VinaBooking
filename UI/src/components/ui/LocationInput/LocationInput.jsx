@@ -34,7 +34,7 @@ function LocationInput({ value, onSelect, onChange }) {
 		}
 		setIsLoading(true);
 		try {
-			const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json`);
+			const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&accept-language=en&addressdetails=1`);
 			if (!response.ok) throw new Error("Network response was not ok");
 			const data = await response.json();
 			setSuggestions(data);

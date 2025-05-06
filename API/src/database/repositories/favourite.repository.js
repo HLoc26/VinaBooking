@@ -38,7 +38,6 @@ export const FavouriteRepository = {
 			if (!favListModel) throw new Error("FavouriteList not found");
 
 			const accommodationIds = favList.accommodations.map((a) => a.id);
-			console.log(accommodationIds);
 
 			await favListModel.setAccommodation(accommodationIds);
 		} catch (error) {

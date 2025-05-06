@@ -12,10 +12,23 @@ class AccommodationAmenity extends Amenity {
 	 * @param {number} accommodationId
 	 * @param {EAccommodationAmenityType} type
 	 */
-	constructor(id, name, accommodationId, type) {
+	constructor({ id, name, accommodationId, type }) {
 		super(id, name);
 		this.accommodationId = accommodationId;
 		this.type = type;
+	}
+
+	static fromModel(model) {
+		return new AccommodationAmenity({
+			id: model.id,
+			name: model.Amenity?.name || model.name,
+			accommodationId: model.accommodationId,
+			type: model.type,
+		});
+	}
+
+	toString() {
+		return this.name;
 	}
 }
 
