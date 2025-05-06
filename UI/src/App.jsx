@@ -7,6 +7,7 @@ import Login from "./pages/Auth/Login/Login";
 import Register from "./pages/Auth/Register/Register";
 import Landing from "./pages/Landing/Landing";
 import AccommodationDetail from "./pages/AccommodationDetail/AccommodationDetail";
+import Search from "./pages/Search/Search";
 import ProtectedRoute from "./components/auth/ProtectedRoute/ProtectedRoute";
 import { restoreSession } from "./features/auth/authSlice";
 import BookRoom from "./pages/BookRoom/BookRoom";
@@ -55,6 +56,7 @@ function App() {
 					{/* Public routes */}
 					<Route path="/" element={<Landing />} />
 					<Route path="/login" element={<Login />} />
+					<Route path="/search" element={<Search />} />
 					<Route path="/register" element={<Register />} />
 					<Route path="accommodation">
 						<Route path="detail/:aid" element={<AccommodationDetail />} /> {/* aid: Accommodation id */}

@@ -1,7 +1,8 @@
 import { AccommodationRepository } from "../database/repositories/accommodation.repository.js";
 import { RoomRepository } from "../database/repositories/room.repository.js";
+import { ReviewRepository } from "../database/repositories/review.repository.js";
 
-import { Accommodation } from "../classes/index.js";
+import { Accommodation, Review } from "../classes/index.js";
 
 export default {
 	async findById(id) {
@@ -86,12 +87,49 @@ export default {
 				}
 			}
 
+			const minPrice = accommodation.getMinPrice();
+
+			const rating = await accommodation.getAvgRating();
 			// Add accommodation to results if it has enough available rooms
 			if (availableRooms.length > 0) {
-				results.push(accommodation.toPlainWithRooms(availableRooms));
+				results.push({ ...accommodation.toPlain(availableRooms), minPrice, rating });
 			}
 		}
 
 		return results;
+	},
+
+	async findPopular() {
+		// Fetch accommodations with their booking counts (already sorted desc by bookingCount)
+		const accommodationModels = await AccommodationRepository.findPopular();
+
+		if (!accommodationModels || accommodationModels.length === 0) {
+			throw new Error("No accommodations found.");
+		}
+
+		const accommodationInstances = accommodationModels.map((model) => Accommodation.fromModel(model.dataValues));
+
+		// Process each accommodation using class methods
+		const processedAccommodations = await Promise.all(
+			accommodationInstances.map(async (accommodation) => {
+				const rating = await accommodation.getAvgRating();
+
+				await accommodation.loadRooms();
+
+				const minPrice = accommodation.getMinPrice();
+
+				return {
+					...accommodation.toPlain(),
+					rooms: undefined, // Does not need to get rooms
+					rating,
+					minPrice,
+				};
+			})
+		);
+
+		// Sort by averageStar in descending order
+		processedAccommodations.sort((a, b) => (parseFloat(b.averageStar) || 0) - (parseFloat(a.averageStar) || 0));
+
+		return processedAccommodations;
 	},
 };

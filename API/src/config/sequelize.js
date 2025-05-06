@@ -14,6 +14,7 @@ const sequelize = new Sequelize(DATABASE, USERNAME, PASSWORD, {
 		underscored: true,
 		freezeTableName: true,
 	},
+	logging: false, // Change to true if want to check sql query
 });
 
 export default sequelize;
