@@ -94,7 +94,7 @@ function Landing() {
 					<Grid container spacing={3} sx={{ justifyContent: "space-between" }}>
 						{featuredHotels.map((hotel, index) => (
 							<Grid key={index} sx={{ width: { xs: "100%", md: "48%" } }}>
-								<HotelCard name={hotel.name} amenities={hotel.amenities} location={hotel.address} minPrice={hotel.minPrice} rating={hotel.rating} />
+								<HotelCard id={hotel.id} name={hotel.name} amenities={hotel.amenities} location={hotel.address} minPrice={hotel.minPrice} rating={hotel.rating} />
 							</Grid>
 						))}
 					</Grid>

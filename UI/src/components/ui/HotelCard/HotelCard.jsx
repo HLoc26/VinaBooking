@@ -1,8 +1,10 @@
 import { Card, CardMedia, CardActions, CardContent, Typography, Rating, Stack, Button, Chip, Box } from "@mui/material";
 import { LocationOn } from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice";
+import { useNavigate } from "react-router-dom";
 
-function HotelCard({ name = "Hotel Name", location = "Location", amenities = [], minPrice = "Price VND", rating = 4.5 }) {
+function HotelCard({ id, name = "Hotel Name", location = "Location", amenities = [], minPrice = "Price VND", rating = 4.5 }) {
+	const navigate = useNavigate();
 	// Maximum total character length allowed for all visible chips combined
 	const maxTotalCharLength = 30; // Adjust this value based on your design needs
 
@@ -103,7 +105,14 @@ function HotelCard({ name = "Hotel Name", location = "Location", amenities = [],
 						{convertPrice(minPrice)} VND
 					</Typography>
 					<Stack direction="row" spacing={1}>
-						<Button variant="contained" size="small" color="primary">
+						<Button
+							variant="contained"
+							size="small"
+							color="primary"
+							onClick={() => {
+								navigate(`/accommodation/detail/${id}`);
+							}}
+						>
 							Choose room
 						</Button>
 					</Stack>
