@@ -26,7 +26,7 @@ function BookingSummary() {
 
 		// Navigate to booking page with selected rooms data
 		// You would typically use React Router for this
-		navigate("/booking", { state: { bookingData } });
+		navigate("/book", { state: { bookingData } });
 	};
 
 	return (
