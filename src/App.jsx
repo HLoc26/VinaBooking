@@ -22,7 +22,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/favorites" element={<ProtectedRoute component={FavoritesPage} />} />
+        <Route path="/saved" element={<ProtectedRoute component={FavoritesPage} />} />
         <Route path="/search" element={<Search />} />
       </Routes>
     </Router>
