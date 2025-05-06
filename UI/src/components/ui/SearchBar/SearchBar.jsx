@@ -16,8 +16,10 @@ function SearchBar({ initialData = {}, onSearch }) {
 	const reduxLocation = useSelector(selectSearchLocation);
 
 	const [dateRange, setDateRange] = useState(
-		initialData.dateRange ||
-			reduxDateRange || {
+		initialData.dateRange || {
+				startDate: new Date(reduxDateRange.startDate),
+				endDate: new Date(reduxDateRange.endDate),
+			} || {
 				startDate: new Date(),
 				endDate: new Date(),
 			}
