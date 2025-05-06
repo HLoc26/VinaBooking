@@ -18,15 +18,7 @@ function BookingSummary() {
 		// If no rooms are selected, don't navigate
 		if (selectedRoomsCount === 0) return;
 
-		// Prepare data to pass to booking page
-		const bookingData = {
-			rooms: selectedRooms,
-			totalAmount,
-		};
-
-		// Navigate to booking page with selected rooms data
-		// You would typically use React Router for this
-		navigate("/book", { state: { bookingData } });
+		navigate("/book");
 	};
 
 	return (
