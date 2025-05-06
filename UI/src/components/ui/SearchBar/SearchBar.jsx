@@ -7,6 +7,7 @@ import LocationInput from "../LocationInput/LocationInput";
 
 import { selectBookingDates, selectSearchLocation, selectSearchOccupancy, updateSearchFields } from "../../../features/search/searchSlice.js";
 import { useDispatch, useSelector } from "react-redux";
+import { resetBooking } from "../../../features/booking/bookingSlice.js";
 
 function SearchBar({ initialData = {}, onSearch }) {
 	const dispatch = useDispatch();
@@ -39,15 +40,14 @@ function SearchBar({ initialData = {}, onSearch }) {
 	const handleSearch = (e) => {
 		e.preventDefault();
 
-		dispatch(updateSearchFields({ location, dateRange, occupancy }));
-
 		// Check if location is empty
 		if (!location || !location.locationLabel) {
 			setError(true);
 			setModalOpen(true); // Open the modal
 			return;
 		}
-
+		dispatch(updateSearchFields({ location, dateRange, occupancy }));
+		dispatch(resetBooking());
 		console.log("At search bar", dateRange);
 
 		if (onSearch) {
