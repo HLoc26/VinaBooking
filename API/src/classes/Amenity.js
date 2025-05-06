@@ -12,6 +12,12 @@ class Amenity {
 		this.id = id;
 		this.name = name;
 	}
+
+	static fromModel(model) {}
+
+	toString() {
+		return this.name;
+	}
 }
 
 export default Amenity;

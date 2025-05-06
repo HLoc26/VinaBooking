@@ -64,7 +64,7 @@ function HotelCard({ name = "Hotel Name", location = "Location", amenities = [],
 
 					{/* Rating */}
 					<Stack direction="row" alignItems="center" spacing={1} mb={1}>
-						<Rating value={rating} precision={0.5} readOnly />
+						<Rating value={rating} precision={0.1} readOnly />
 						<Typography variant="body2" color="text.secondary">
 							{rating} / 5
 						</Typography>
