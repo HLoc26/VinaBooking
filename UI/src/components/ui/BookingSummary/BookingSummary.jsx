@@ -28,7 +28,7 @@ function BookingSummary() {
 				padding: 3,
 				borderRadius: 2,
 				position: "sticky",
-				top: 24,
+				top: 130,
 				width: 360,
 			}}
 		>
