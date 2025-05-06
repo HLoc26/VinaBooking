@@ -43,10 +43,14 @@ const bookingSlice = createSlice({
 			state.selectedRooms = {};
 			state.totalAmount = 0;
 		},
+
+		updateTotalAmount: (state, action) => {
+			state.totalAmount = action.payload;
+		},
 	},
 });
 
-export const { updateRoomQuantity, resetBooking } = bookingSlice.actions;
+export const { updateRoomQuantity, resetBooking, updateTotalAmount } = bookingSlice.actions;
 
 export const selectSelectedRooms = (state) => state.booking.selectedRooms;
 export const selectTotalAmount = (state) => state.booking.totalAmount;
