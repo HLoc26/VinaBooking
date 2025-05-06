@@ -47,6 +47,7 @@ function AccommodationDetail() {
 	}
 
 	const [accommodation, setAccommodation] = React.useState({});
+	const images = accommodation.images;
 	const [address, setAddress] = React.useState("");
 	const [amenities, setAmenities] = React.useState([]);
 	const [rooms, setRoom] = React.useState([]);
@@ -125,9 +126,13 @@ function AccommodationDetail() {
 					{/* Main + Thumbnails images*/}
 					<Box mt={3}>
 						{/* Main image */}
-						{/* <Box>
-							<img src={accommodation.images[selectedImage].filename} alt="Accommodation" style={{ width: "100%", maxHeight: 500, objectFit: "cover", borderRadius: 8 }} />
-						</Box> */}
+						<Box>
+							<img
+								src={images ? images[selectedImage].filename : "/uploads/accommodation/default.jpg"}
+								alt="Accommodation"
+								style={{ width: "100%", maxHeight: 500, objectFit: "cover", borderRadius: 8 }}
+							/>
+						</Box>
 
 						{/* Thumbnails */}
 						{/* <Stack direction="row" spacing={1} mt={1} sx={{ overflowX: "auto", py: 1 }}>

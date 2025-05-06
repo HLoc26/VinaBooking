@@ -3,7 +3,7 @@ import { LocationOn } from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice";
 import { useNavigate } from "react-router-dom";
 
-function HotelCard({ id, name = "Hotel Name", location = "Location", amenities = [], minPrice = "Price VND", rating = 4.5 }) {
+function HotelCard({ id, name = "Hotel Name", location = "Location", amenities = [], minPrice = "Price VND", rating = 4.5, thumbnail }) {
 	const navigate = useNavigate();
 	// Maximum total character length allowed for all visible chips combined
 	const maxTotalCharLength = 30; // Adjust this value based on your design needs
@@ -41,7 +41,7 @@ function HotelCard({ id, name = "Hotel Name", location = "Location", amenities =
 				borderRadius: 2,
 				boxShadow: 3,
 			}}
-			style={{ width: "100%" }}
+			style={{ width: "100%", height: "100%" }}
 		>
 			{/* Hotel Image */}
 			<CardMedia
@@ -52,7 +52,7 @@ function HotelCard({ id, name = "Hotel Name", location = "Location", amenities =
 					objectFit: "cover",
 					borderRadius: { xs: "8px 8px 0 0", md: "8px 0 0 8px" }, // Rounded corners
 				}}
-				image="https://th.bing.com/th/id/R.286b917dbac88394a863dd814ee19bda?rik=twiYWEn5m8hQ2A&pid=ImgRaw&r=0"
+				image={thumbnail || "/uploads/accommodation/default.jpg"}
 				alt={`${name} Image`}
 			/>
 
