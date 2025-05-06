@@ -17,6 +17,7 @@
 		"@mui/material": "^7.0.0",
 		"@reduxjs/toolkit": "^2.6.1",
 		"axios": "^1.8.4",
+		"mui-tel-input": "^9.0.0",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-redux": "^9.2.0",

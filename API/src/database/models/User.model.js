@@ -16,7 +16,7 @@ User.init(
 			type: DataTypes.STRING,
 		},
 		phone: {
-			type: DataTypes.STRING(10),
+			type: DataTypes.STRING(20),
 			unique: true,
 		},
 		email: {
