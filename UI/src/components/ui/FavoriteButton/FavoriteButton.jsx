@@ -9,15 +9,28 @@ import axiosInstance from '../../../app/axios';
  * @param {number} props.accommodationId The ID of the accommodation
  * @param {boolean} props.initialIsFavorite Whether the accommodation is initially in favorites
  * @param {function} props.onToggle Optional callback when favorite status changes
+ * @param {boolean} props.disableApiCalls If true, will not make API calls and only rely on onToggle
  * @returns {JSX.Element} FavoriteButton component
  */
-const FavoriteButton = ({ accommodationId, initialIsFavorite = false, onToggle, ...props }) => {
+const FavoriteButton = ({ 
+  accommodationId, 
+  initialIsFavorite = false, 
+  onToggle, 
+  disableApiCalls = false,
+  ...props 
+}) => {
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Handle adding to favorites
   const addToFavorites = async () => {
+    if (disableApiCalls) {
+      setIsFavorite(true);
+      if (onToggle) onToggle(true);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
@@ -42,6 +55,12 @@ const FavoriteButton = ({ accommodationId, initialIsFavorite = false, onToggle, 
 
   // Handle removing from favorites
   const removeFromFavorites = async () => {
+    if (disableApiCalls) {
+      setIsFavorite(false);
+      if (onToggle) onToggle(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);

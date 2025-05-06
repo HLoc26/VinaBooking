@@ -175,6 +175,7 @@ const FavoriteCard = ({ accommodation, onRemove }) => {
               onToggle={(isFavorite) => {
                 if (!isFavorite) onRemove(id);
               }}
+              disableApiCalls={true}
               size="small"
             />
           </Stack>
