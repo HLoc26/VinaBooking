@@ -31,11 +31,10 @@ function Landing() {
 				postalCode: address.postcode || null,
 			};
 
-			console.log("Search data", searchData);
-			const label = address.display_name;
+			const label = address.locationLabel;
 
-			const startDate = new Date(searchData.dateRange.startDate).toISOString().split("T")[0];
-			const endDate = new Date(searchData.dateRange.endDate).toISOString().split("T")[0];
+			const startDate = searchData.dateRange.startDate;
+			const endDate = searchData.dateRange.endDate;
 
 			const roomCount = searchData.occupancy.rooms;
 			const adultCount = searchData.occupancy.adults;

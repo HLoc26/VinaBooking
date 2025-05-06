@@ -5,33 +5,48 @@ import OccupancyInput from "../OccupancyInput/OccupancyInput";
 import * as Icon from "@mui/icons-material";
 import LocationInput from "../LocationInput/LocationInput";
 
+import { selectBookingDates, selectSearchLocation, selectSearchOccupancy, updateSearchFields } from "../../../features/search/searchSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+
 function SearchBar({ initialData = {}, onSearch }) {
+	const dispatch = useDispatch();
+
+	const reduxDateRange = useSelector(selectBookingDates);
+	const reduxOccupancy = useSelector(selectSearchOccupancy);
+	const reduxLocation = useSelector(selectSearchLocation);
+
 	const [dateRange, setDateRange] = useState(
-		initialData.dateRange || {
-			startDate: new Date(),
-			endDate: new Date(),
-		}
+		initialData.dateRange ||
+			reduxDateRange || {
+				startDate: new Date(),
+				endDate: new Date(),
+			}
 	);
 	const [occupancy, setOccupancy] = useState(
-		initialData.occupancy || {
-			adults: 1,
-			children: 0,
-			rooms: 1,
-		}
+		initialData.occupancy ||
+			reduxOccupancy || {
+				adults: 1,
+				children: 0,
+				rooms: 1,
+			}
 	);
-	const [location, setLocation] = useState(initialData.location || "");
+	const [location, setLocation] = useState(initialData.location || reduxLocation || "");
 	const [error, setError] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
 
 	const handleSearch = (e) => {
 		e.preventDefault();
 
+		dispatch(updateSearchFields({ location, dateRange, occupancy }));
+
 		// Check if location is empty
-		if (!location || !location.display_name) {
+		if (!location || !location.locationLabel) {
 			setError(true);
 			setModalOpen(true); // Open the modal
 			return;
 		}
+
+		console.log("At search bar", dateRange);
 
 		if (onSearch) {
 			onSearch({ location, dateRange, occupancy });
@@ -63,11 +78,11 @@ function SearchBar({ initialData = {}, onSearch }) {
 						value={location.locationLabel}
 						onSelect={(location) => {
 							setError(false);
-							setLocation(location);
+							setLocation({ ...location.address, locationLabel: location.display_name, display_name: undefined });
 						}}
 						onChange={(location) => {
 							setError(false);
-							setLocation({ ...location.address, display_name: location.display_name });
+							setLocation({ ...location.address, locationLabel: location.display_name, display_name: undefined });
 						}}
 						error={error}
 						helperText={error ? "Please select a location" : ""}
