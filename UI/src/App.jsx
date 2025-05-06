@@ -4,17 +4,11 @@ import { useDispatch } from "react-redux";
 import Login from "./pages/Auth/Login/Login";
 import Register from "./pages/Auth/Register/Register";
 import Landing from "./pages/Landing/Landing";
+import FavoritesPage from "./pages/Favorites/FavoritesPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute/ProtectedRoute";
 import { restoreSession } from "./features/auth/authSlice";
 
 // Create these empty "under construction" pages
-const SavedAccommodations = () => (
-	<div style={{ marginTop: "100px", textAlign: "center", padding: "20px" }}>
-		<h1>Saved Accommodations</h1>
-		<p>This page is under construction</p>
-	</div>
-);
-
 const Profile = () => (
 	<div style={{ marginTop: "100px", textAlign: "center", padding: "20px" }}>
 		<h1>User Profile</h1>
@@ -54,7 +48,7 @@ function App() {
 
 				{/* Protected routes */}
 				<Route element={<ProtectedRoute />}>
-					<Route path="/saved" element={<SavedAccommodations />} />
+					<Route path="/saved" element={<FavoritesPage />} />
 					<Route path="/profile" element={<Profile />} />
 					<Route path="/bookings" element={<Bookings />} />
 					<Route path="/settings" element={<Settings />} />
