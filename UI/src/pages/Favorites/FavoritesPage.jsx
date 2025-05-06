@@ -10,17 +10,30 @@ import {
   Grid,
   Snackbar
 } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { useNavigate, Navigate } from 'react-router-dom';
 import axiosInstance from '../../app/axios';
 import FavoriteCard from '../../components/ui/FavoriteCard/FavoriteCard';
+import Navbar from '../../components/layout/NavBar/NavBar';
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [initialLoad, setInitialLoad] = useState(true);
+  const navigate = useNavigate();
+  
+  // Get auth state from Redux
+  const { isLoggedIn, loading: authLoading, user } = useSelector((state) => state.auth);
 
   // Fetch favorite list when component mounts
   const fetchFavorites = async () => {
+    if (!isLoggedIn || !user) {
+      // Don't fetch if not logged in
+      return;
+    }
+    
     try {
       setLoading(true);
       setError(null);
@@ -40,8 +53,17 @@ const FavoritesPage = () => {
   };
 
   useEffect(() => {
-    fetchFavorites();
+    // This effect runs once after the first render to set initial load to false
+    const timer = setTimeout(() => setInitialLoad(false), 500);
+    return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Only fetch data when authenticated and auth loading is complete
+    if (!authLoading && isLoggedIn && user) {
+      fetchFavorites();
+    }
+  }, [isLoggedIn, authLoading, user]);
 
   // Close snackbar
   const handleCloseSnackbar = () => {
@@ -51,8 +73,6 @@ const FavoritesPage = () => {
   // Handle removing an accommodation from favorites
   const handleRemoveFromFavorites = async (accommodationId) => {
     try {
-      // Don't set loading to true here as it clears the whole favorites list from view
-      // Instead, we could add a local loading state if needed
       const response = await axiosInstance.delete(`/favourite/remove/${accommodationId}`);
       
       if (response.data.success) {
@@ -64,7 +84,6 @@ const FavoritesPage = () => {
           severity: 'success'
         });
       } else {
-        // Only set error and show error message if the API returns an error
         setError(response.data.error?.message || 'Failed to remove from favorites');
         setSnackbar({
           open: true,
@@ -73,7 +92,6 @@ const FavoritesPage = () => {
         });
       }
     } catch (err) {
-      // This block only executes when there's a network error or other exception
       console.error('Error removing from favorites:', err);
       const errorMessage = err.response?.data?.error?.message || 'Error removing accommodation from favorites. Please try again.';
       setError(errorMessage);
@@ -85,56 +103,87 @@ const FavoritesPage = () => {
     }
   };
 
+  // Show a loading state if either authentication is loading or favorites are loading
+  const isPageLoading = authLoading || loading;
+
+  // Check if we have an auth token in localStorage
+  const hasAuthToken = () => {
+    return !!localStorage.getItem('token');
+  };
+
+  // During initial load or when auth is still loading, show loading spinner instead of redirecting
+  if (initialLoad || authLoading) {
+    return (
+      <>
+        <Navbar />
+        <Container maxWidth="lg" sx={{ py: 4, mt: 8 }}>
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+            <CircularProgress />
+          </Box>
+        </Container>
+      </>
+    );
+  }
+
+  // Only redirect to login if the auth loading has completed AND user is not logged in
+  // AND there's no token in storage (to handle page reloads before redux is ready)
+  if (!isLoggedIn && !hasAuthToken()) {
+    return <Navigate to="/login" state={{ from: '/favorites' }} replace />;
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box mb={4}>
-        <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-          Your Saved Accommodations
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          View and manage your favorite accommodations
-        </Typography>
-        <Divider sx={{ mt: 2 }} />
-      </Box>
-      
-      {loading ? (
-        <Box display="flex" justifyContent="center" py={8}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Alert severity="error" sx={{ mb: 4 }}>
-          {error}
-        </Alert>
-      ) : favorites.length === 0 ? (
-        <Box textAlign="center" py={8}>
-          <Typography variant="h6" gutterBottom>
-            You don't have any saved accommodations yet
+    <>
+      <Navbar />
+      <Container maxWidth="lg" sx={{ py: 4, mt: 8 }}>
+        <Box mb={4}>
+          <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+            Your Saved Accommodations
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            When you find places you like, save them here for easy access
+            View and manage your favorite accommodations
           </Typography>
+          <Divider sx={{ mt: 2 }} />
         </Box>
-      ) : (
-        <Stack spacing={3}>
-          {favorites.map((accommodation) => (
-            <FavoriteCard
-              key={accommodation.id}
-              accommodation={accommodation}
-              onRemove={() => handleRemoveFromFavorites(accommodation.id)}
-            />
-          ))}
-        </Stack>
-      )}
+        
+        {isPageLoading ? (
+          <Box display="flex" justifyContent="center" py={8}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Alert severity="error" sx={{ mb: 4 }}>
+            {error}
+          </Alert>
+        ) : favorites.length === 0 ? (
+          <Box textAlign="center" py={8}>
+            <Typography variant="h6" gutterBottom>
+              You don't have any saved accommodations yet
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              When you find places you like, save them here for easy access
+            </Typography>
+          </Box>
+        ) : (
+          <Stack spacing={3}>
+            {favorites.map((accommodation) => (
+              <FavoriteCard
+                key={accommodation.id}
+                accommodation={accommodation}
+                onRemove={() => handleRemoveFromFavorites(accommodation.id)}
+              />
+            ))}
+          </Stack>
+        )}
 
-      {/* Notification Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        message={snackbar.message}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      />
-    </Container>
+        {/* Notification Snackbar */}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          message={snackbar.message}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        />
+      </Container>
+    </>
   );
 };
 
