@@ -10,26 +10,28 @@ const bookingSlice = createSlice({
 	initialState,
 	reducers: {
 		updateRoomQuantity: (state, action) => {
-			const { roomId, quantity, price } = action.payload;
+			const room = action.payload;
 
 			// Get the current quantity for this room (default to 0 if not set)
-			const currentQuantity = state.selectedRooms[roomId]?.quantity || 0;
+			const currentQuantity = state.selectedRooms[room.id]?.quantity || 0;
 
 			// Calculate price difference for this update
-			const priceDifference = (quantity - currentQuantity) * price;
+			const priceDifference = (room.quantity - currentQuantity) * +room.price;
 
-			if (quantity > 0) {
+			if (room.quantity > 0) {
 				// Update or add the room with the new quantity
-				state.selectedRooms[roomId] = {
-					...state.selectedRooms[roomId],
-					quantity,
-					price,
-					subtotal: quantity * price,
+				state.selectedRooms[room.id] = {
+					...state.selectedRooms[room.id],
+					...room,
+					quantity: room.quantity,
+					price: +room.price,
+					subtotal: room.quantity * +room.price,
 				};
+				console.log("State:", state.selectedRooms[room.id]);
 			} else {
 				// Remove room if quantity is 0
-				if (state.selectedRooms[roomId]) {
-					delete state.selectedRooms[roomId];
+				if (state.selectedRooms[room.id]) {
+					delete state.selectedRooms[room.id];
 				}
 			}
 
