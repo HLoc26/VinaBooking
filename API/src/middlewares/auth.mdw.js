@@ -4,19 +4,29 @@ import "dotenv/config";
 export default {
 	decodeJwt(req, res, next) {
 		try {
-			if (!req.headers.authorization) {
+			let token;
+			
+			// Check for token in cookies (preferred method)
+			if (req.cookies && req.cookies.jwt) {
+				token = req.cookies.jwt;
+			} 
+			// Fall back to Authorization header if cookie isn't present
+			else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+				token = req.headers.authorization.split(" ")[1];
+			}
+			
+			if (!token) {
 				return res.status(401).json({
 					success: false,
-					error: { code: 401, message: "No authorization token provided" },
+					error: { code: 401, message: "No authentication token provided" },
 				});
 			}
 
-			const token = req.headers.authorization.split(" ")[1];
 			const user = jwt.verify(token, process.env.JWT_SECRET);
 			req.user = user;
 			next();
 		} catch (error) {
-			console.log(error.message);
+			console.log("JWT verification error:", error.message);
 
 			if (error.name === "TokenExpiredError") {
 				return res.status(401).json({

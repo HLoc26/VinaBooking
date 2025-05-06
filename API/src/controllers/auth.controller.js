@@ -82,4 +82,72 @@ export default {
 			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
 		}
 	},
+
+	async getCurrentUser(req, res) {
+		try {
+			// User information is already attached to req.user by the auth middleware
+			if (!req.user) {
+				return res.status(401).json({
+					success: false,
+					error: {
+						code: 401,
+						message: "Not authenticated"
+					}
+				});
+			}
+
+			// Get the complete user data
+			const user = await authService.getUserById(req.user.id);
+			if (!user) {
+				return res.status(404).json({
+					success: false,
+					error: {
+						code: 404,
+						message: "User not found"
+					}
+				});
+			}
+
+			return res.status(200).json({
+				success: true,
+				payload: authService.sanitizeUser(user)
+			});
+		} catch (error) {
+			console.error("Error in getCurrentUser:", error);
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Server error",
+					details: error.message
+				}
+			});
+		}
+	},
+
+	async logout(req, res) {
+		try {
+			// Clear the JWT cookie
+			res.clearCookie("jwt", {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "lax"
+			});
+
+			return res.status(200).json({
+				success: true,
+				message: "Logout successful"
+			});
+		} catch (error) {
+			console.error("Error in logout:", error);
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Server error",
+					details: error.message
+				}
+			});
+		}
+	}
 };
