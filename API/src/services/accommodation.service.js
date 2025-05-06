@@ -5,7 +5,7 @@ import { Accommodation } from "../classes/index.js";
 
 export default {
 	async findById(id) {
-		const accommodation = AccommodationRepository.getFullInfo(id);
+		const accommodation = await AccommodationRepository.getFullInfo(id);
 
 		if (!accommodation) return null;
 
