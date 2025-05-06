@@ -1,12 +1,8 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-<<<<<<< HEAD
 import { Provider } from "react-redux";
 import store from "./app/store";
-
-=======
 import { useDispatch } from "react-redux";
->>>>>>> feature/auth-cookie-persistence
 import Login from "./pages/Auth/Login/Login";
 import Register from "./pages/Auth/Register/Register";
 import Landing from "./pages/Landing/Landing";
@@ -45,34 +41,34 @@ const Settings = () => (
 
 function App() {
 	const dispatch = useDispatch();
-	
+
 	useEffect(() => {
 		// Try to restore the user session when the app loads
 		dispatch(restoreSession());
 	}, [dispatch]);
 
 	return (
-    <Provider store={store}>
-      <Router>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="accommodation">
-            <Route path="detail/:aid" element={<AccommodationDetail />} /> {/* aid: Accommodation id */}
-          </Route>
+		<Provider store={store}>
+			<Router>
+				<Routes>
+					{/* Public routes */}
+					<Route path="/" element={<Landing />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/register" element={<Register />} />
+					<Route path="accommodation">
+						<Route path="detail/:aid" element={<AccommodationDetail />} /> {/* aid: Accommodation id */}
+					</Route>
 
-          {/* Protected routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/saved" element={<SavedAccommodations />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/bookings" element={<Bookings />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      </Router>
-    </Provider>
+					{/* Protected routes */}
+					<Route element={<ProtectedRoute />}>
+						<Route path="/saved" element={<SavedAccommodations />} />
+						<Route path="/profile" element={<Profile />} />
+						<Route path="/bookings" element={<Bookings />} />
+						<Route path="/settings" element={<Settings />} />
+					</Route>
+				</Routes>
+			</Router>
+		</Provider>
 	);
 }
 
