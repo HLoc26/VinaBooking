@@ -1,7 +1,6 @@
 import { Router } from "express";
 import favouriteController from "../controllers/favourite.controller.js";
 
-
 const favouriteRouter = Router();
 
 favouriteRouter.get("/", favouriteController.getFavouriteList);
