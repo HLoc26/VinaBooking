@@ -9,6 +9,7 @@ import Landing from "./pages/Landing/Landing";
 import AccommodationDetail from "./pages/AccommodationDetail/AccommodationDetail";
 import ProtectedRoute from "./components/auth/ProtectedRoute/ProtectedRoute";
 import { restoreSession } from "./features/auth/authSlice";
+import BookRoom from "./pages/BookRoom/BookRoom";
 
 // Create these empty "under construction" pages
 const SavedAccommodations = () => (
@@ -65,6 +66,7 @@ function App() {
 						<Route path="/profile" element={<Profile />} />
 						<Route path="/bookings" element={<Bookings />} />
 						<Route path="/settings" element={<Settings />} />
+						<Route path="/book" element={<BookRoom />} />
 					</Route>
 				</Routes>
 			</Router>
