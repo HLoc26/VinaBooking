@@ -9,7 +9,7 @@ export default {
 			const favList = await FavouriteService.findByUserId(userId);
 
 			if (!favList) {
-				res.json({
+				return res.json({
 					success: false,
 					error: {
 						code: 500,
@@ -17,14 +17,14 @@ export default {
 					},
 				});
 			}
-			res.json({
+			return res.json({
 				success: true,
 				message: "Successfully retrieved user favourite list",
 				payload: favList,
 			});
 		} catch (error) {
 			console.error(error.message);
-			res.json({
+			return res.json({
 				success: false,
 				error: {
 					code: 500,
