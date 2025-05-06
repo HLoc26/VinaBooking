@@ -37,7 +37,23 @@ function Search() {
 
 	useEffect(() => {
 		const fetchSearchResults = async () => {
-			const query = searchParams.toString();
+			const params = new URLSearchParams(searchParams);
+
+			// Format lại startDate và endDate nếu có
+			const startDateRaw = params.get("startDate");
+			const endDateRaw = params.get("endDate");
+
+			if (startDateRaw) {
+				const parsed = new Date(decodeURIComponent(startDateRaw));
+				params.set("startDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
+			}
+			if (endDateRaw) {
+				const parsed = new Date(decodeURIComponent(endDateRaw));
+				params.set("endDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
+			}
+
+			const query = params.toString();
+			console.group(query);
 			const response = await axiosInstance.get(`/accommodations/search?${query}`);
 			if (response.data.success) {
 				setSearchResults(response.data.payload);
