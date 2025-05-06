@@ -57,8 +57,9 @@ export default {
 				throw new Error(`Accommodation ${accommodation.id} is not in FavouriteList of user ${userId}.`);
 			}
 
-			// Remove the accommodation to the user's favourite list
-			favouriteList.removeAccommodation(accommodationId);
+			// Remove the accommodation from the user's favourite list
+			// Fix: Pass the accommodation object instead of just the ID
+			favouriteList.removeAccommodation(accommodation);
 
 			await FavouriteRepository.save(favouriteList);
 			return true;
