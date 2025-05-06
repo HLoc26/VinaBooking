@@ -38,22 +38,6 @@ function Search() {
 	useEffect(() => {
 		const fetchSearchResults = async () => {
 			const query = searchParams.toString();
-
-			console.group(query);
-			const response = await axiosInstance.get(`/accommodations/search?${query}`);
-			if (response.data.success) {
-				setSearchResults(response.data.payload);
-			} else {
-				console.error(response.data.error);
-			}
-		};
-
-		fetchSearchResults();
-	}, [searchParams]);
-
-	useEffect(() => {
-		const fetchSearchResults = async () => {
-			const query = searchParams.toString();
 			const response = await axiosInstance.get(`/accommodations/search?${query}`);
 			if (response.data.success) {
 				setSearchResults(response.data.payload);
