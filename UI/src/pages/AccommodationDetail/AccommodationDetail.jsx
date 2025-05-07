@@ -14,10 +14,11 @@ import { toggleFavorite } from "../../features/accommodationDetail/favoritesSlic
 
 import CustomTabPanel from "../../components/ui/CustomTabPanel/CustomTabPanel";
 import MainLayout from "../../components/layout/MainLayout/MainLayout";
-import ReviewCard from "../../components/ui/ReviewCard/ReviewCard";
 import RoomCard from "../../components/ui/RoomCard/RoomCard";
 import BookingSummary from "../../components/ui/BookingSummary/BookingSummary";
 import axiosInstance from "../../app/axios";
+import AppImage from "../../components/ui/Image/Image";
+import { useSafeImageList } from "../../../hooks/useSafeImageList";
 
 function AccommodationDetail() {
 	const { aid } = useParams();
@@ -47,7 +48,7 @@ function AccommodationDetail() {
 	}
 
 	const [accommodation, setAccommodation] = React.useState({});
-	const images = accommodation.images;
+	const images = useSafeImageList(accommodation.images);
 	const [address, setAddress] = React.useState("");
 	const [amenities, setAmenities] = React.useState([]);
 	const [rooms, setRoom] = React.useState([]);
@@ -70,6 +71,7 @@ function AccommodationDetail() {
 			console.error(error);
 		}
 	}, [aid]);
+	console.log(rooms);
 
 	// // Tính điểm trung bình từ reviews
 	// // const averageRating = accommodation.reviews.length ? accommodation.reviews.reduce((sum, r) => sum + r.star, 0) / accommodation.reviews.length : 0;
@@ -127,8 +129,9 @@ function AccommodationDetail() {
 					<Box mt={3}>
 						{/* Main image */}
 						<Box>
-							<img
-								src={`/uploads/accommodation/${images ? images[selectedImage].filename : "default.jpg"}`}
+							<AppImage
+								type="accommodation"
+								filename={images[selectedImage].filename}
 								alt="Accommodation"
 								style={{ width: "100%", maxHeight: 500, objectFit: "cover", borderRadius: 8 }}
 							/>
@@ -136,7 +139,7 @@ function AccommodationDetail() {
 
 						{/* Thumbnails */}
 						<Stack direction="row" spacing={1} mt={1} sx={{ overflowX: "auto", py: 1 }}>
-							{images?.map((img, idx) => (
+							{images.map((img, idx) => (
 								<Box
 									key={img.id}
 									onClick={() => setSelectedImage(idx)}
@@ -147,8 +150,9 @@ function AccommodationDetail() {
 										flex: "0 0 auto",
 									}}
 								>
-									<img
-										src={img.filename}
+									<AppImage
+										type="accommodation"
+										filename={img.filename}
 										alt={`Thumb ${img.id}`}
 										style={{
 											width: 100,

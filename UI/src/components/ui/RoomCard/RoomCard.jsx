@@ -7,13 +7,15 @@ import convertPrice from "../../../utils/convertPrice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { updateRoomQuantity } from "../../../features/booking/bookingSlice";
 import RoomDetailModal from "./RoomDetailModal.jsx";
+import AppImage from "../Image/Image.jsx";
+import { useSafeImageList } from "../../../../hooks/useSafeImageList.js";
 
 function RoomCard({ room }) {
 	const { id, name, maxCapacity, size, description, price, RoomAmenities, images, availableRooms = 1 } = room;
 	const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 	const [modalOpen, setModalOpen] = React.useState(false);
 
-	const imagesList = images && images.length > 0 ? images : [{ filename: "default.jpg" }];
+	const imagesList = useSafeImageList(images);
 
 	// Redux
 	const dispatch = useDispatch();
@@ -71,31 +73,29 @@ function RoomCard({ room }) {
 							}}
 						>
 							{/* Current Image */}
-							{imagesList?.length > 0 ? (
-								<img
-									srcSet={`/uploads/room/${imagesList[0].filename}`}
-									src={`/uploads/room/${imagesList[0].filename}`}
-									loading="lazy"
-									style={{
-										width: "100%",
-										height: "100%",
-										objectFit: "cover",
-									}}
-								/>
-							) : (
-								<Typography>No images available</Typography>
-							)}
+							<AppImage
+								type="room"
+								srcSet={`${imagesList[0].filename}`}
+								src={`${imagesList[0].filename}`}
+								style={{
+									width: "100%",
+									height: "100%",
+									objectFit: "cover",
+								}}
+							/>
 
 							{/* Overlay with text */}
-							<ImageListItemBar
-								sx={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
-								title={
-									<Typography sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
-										<Icon.PhotoLibrary fontSize="small" />
-										{imagesList?.length} {imagesList?.length === 1 ? "photo" : "photos"} - Click to view
-									</Typography>
-								}
-							/>
+							{imagesList && (
+								<ImageListItemBar
+									sx={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
+									title={
+										<Typography sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+											<Icon.PhotoLibrary fontSize="small" />
+											{imagesList.length} {imagesList.length === 1 ? "photo" : "photos"} - Click to view
+										</Typography>
+									}
+								/>
+							)}
 						</Box>
 					</Grid>
 
@@ -141,7 +141,7 @@ function RoomCard({ room }) {
 							{/* Quick Amenities Preview */}
 							<Box sx={{ mb: 2 }}>
 								<Typography variant="subtitle1" sx={{ mb: 1 }}>
-									<b>Key amenities:</b>
+									<b>Amenities:</b>
 								</Typography>
 								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
 									{RoomAmenities &&
@@ -246,7 +246,7 @@ function RoomCard({ room }) {
 			</Paper>
 
 			{/* Detailed Modal */}
-			<RoomDetailModal room={{ ...room, images: imagesList, currentImageIndex, setCurrentImageIndex }} handleCloseModal={handleCloseModal} modalOpen={modalOpen} />
+			<RoomDetailModal room={{ ...room, availableRooms, images: imagesList, currentImageIndex, setCurrentImageIndex }} handleCloseModal={handleCloseModal} modalOpen={modalOpen} />
 		</>
 	);
 }

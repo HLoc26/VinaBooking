@@ -2,9 +2,11 @@ import React, { useMemo } from "react";
 import { Modal, Box, Typography, Divider, Grid, IconButton, List, ListItemText, Button } from "@mui/material";
 import * as Icon from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice";
+import AppImage from "../Image/Image";
+import { useSafeImageList } from "../../../../hooks/useSafeImageList";
 
 function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
-	const { name, size, maxCapacity, price, description, RoomAmenities, images, availableRooms, currentImageIndex, setCurrentImageIndex } = room;
+	const { name, size, maxCapacity, price, description, RoomAmenities, images, availableRooms = 1, currentImageIndex, setCurrentImageIndex } = room;
 
 	const modalStyle = {
 		position: "absolute",
@@ -21,8 +23,10 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 		overflow: "auto",
 	};
 
+	const imagesList = useSafeImageList(images);
+
 	const handlePrevious = () => setCurrentImageIndex((prev) => Math.max(prev - 1, 0));
-	const handleNext = () => setCurrentImageIndex((prev) => Math.min(prev + 1, images?.length - 1));
+	const handleNext = () => setCurrentImageIndex((prev) => Math.min(prev + 1, imagesList.length - 1));
 
 	// Group RoomAmenities by type
 	const groupedAmenities = useMemo(() => {
@@ -35,7 +39,7 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 	}, [RoomAmenities]);
 
 	return (
-		<Modal open={modalOpen} onClose={handleCloseModal} aria-labelledby="room-detail-modal">
+		<Modal open={modalOpen} onClose={handleCloseModal} aria-labelledby="room-detail-modal" style={{ zIndex: 10000000 }}>
 			<Box sx={modalStyle}>
 				<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
 					<Typography variant="h4" fontWeight="bold" id="room-detail-modal">
@@ -64,24 +68,19 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 							}}
 						>
 							{/* Current Image */}
-							{images?.length > 0 ? (
-								<img
-									srcSet={`/uploads/room/${images[currentImageIndex].filename}`}
-									src={`/uploads/room/${images[currentImageIndex].filename}`}
-									alt={images[currentImageIndex].title}
-									loading="lazy"
-									style={{
-										width: "100%",
-										height: "100%",
-										objectFit: "cover",
-									}}
-								/>
-							) : (
-								<Typography>No images available</Typography>
-							)}
+							<AppImage
+								type="room"
+								filename={imagesList[currentImageIndex].filename}
+								alt={imagesList[currentImageIndex].title}
+								style={{
+									width: "100%",
+									height: "100%",
+									objectFit: "cover",
+								}}
+							/>
 
 							{/* Navigation Buttons */}
-							{images?.length > 1 && (
+							{imagesList.length > 1 && (
 								<>
 									<IconButton
 										onClick={handlePrevious}
