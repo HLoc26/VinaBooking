@@ -18,7 +18,7 @@ import RoomCard from "../../components/ui/RoomCard/RoomCard";
 import BookingSummary from "../../components/ui/BookingSummary/BookingSummary";
 import axiosInstance from "../../app/axios";
 import AppImage from "../../components/ui/Image/Image";
-import { useSafeImageList } from "../../../hooks/useSafeImageList";
+import { useSafeImageList } from "../../hooks/useSafeImageList";
 
 function AccommodationDetail() {
 	const { aid } = useParams();

@@ -3,7 +3,7 @@ import { Modal, Box, Typography, Divider, Grid, IconButton, List, ListItemText, 
 import * as Icon from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice";
 import AppImage from "../Image/Image";
-import { useSafeImageList } from "../../../../hooks/useSafeImageList";
+import { useSafeImageList } from "../../../hooks/useSafeImageList";
 
 function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 	const { name, size, maxCapacity, price, description, RoomAmenities, images, availableRooms = 1, currentImageIndex, setCurrentImageIndex } = room;

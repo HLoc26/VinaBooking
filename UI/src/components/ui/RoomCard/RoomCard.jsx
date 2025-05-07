@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateRoomQuantity } from "../../../features/booking/bookingSlice";
 import RoomDetailModal from "./RoomDetailModal.jsx";
 import AppImage from "../Image/Image.jsx";
-import { useSafeImageList } from "../../../../hooks/useSafeImageList.js";
+import { useSafeImageList } from "../../../hooks/useSafeImageList.js";
 
 function RoomCard({ room }) {
 	const { id, name, maxCapacity, size, description, price, RoomAmenities, images, availableRooms = 1 } = room;
