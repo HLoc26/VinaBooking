@@ -13,7 +13,7 @@ function RoomCard({ room }) {
 	const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 	const [modalOpen, setModalOpen] = React.useState(false);
 
-	const imagesList = images ? images : [{ img: "/uploads/room/default.jpg" }];
+	const imagesList = images ? images : [{ filename: "/uploads/room/default.jpg" }];
 
 	// Redux
 	const dispatch = useDispatch();
@@ -73,9 +73,8 @@ function RoomCard({ room }) {
 							{/* Current Image */}
 							{imagesList?.length > 0 ? (
 								<img
-									srcSet={`${imagesList[0].img}`}
-									src={`${imagesList[0].img}`}
-									alt={imagesList[0].title}
+									srcSet={`/uploads/room/${imagesList[0].filename}`}
+									src={`/uploads/room/${imagesList[0].filename}`}
 									loading="lazy"
 									style={{
 										width: "100%",

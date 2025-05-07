@@ -66,8 +66,8 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 							{/* Current Image */}
 							{images?.length > 0 ? (
 								<img
-									srcSet={`${images[currentImageIndex].img}?w=800&h=600&fit=cover&auto=format&dpr=2 2x`}
-									src={`${images[currentImageIndex].img}?w=800&h=600&fit=cover&auto=format`}
+									srcSet={`/uploads/room/${images[currentImageIndex].filename}`}
+									src={`/uploads/room/${images[currentImageIndex].filename}`}
 									alt={images[currentImageIndex].title}
 									loading="lazy"
 									style={{

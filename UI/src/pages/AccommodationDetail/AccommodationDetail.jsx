@@ -128,15 +128,15 @@ function AccommodationDetail() {
 						{/* Main image */}
 						<Box>
 							<img
-								src={images ? images[selectedImage].filename : "/uploads/accommodation/default.jpg"}
+								src={`/uploads/accommodation/${images ? images[selectedImage].filename : "default.jpg"}`}
 								alt="Accommodation"
 								style={{ width: "100%", maxHeight: 500, objectFit: "cover", borderRadius: 8 }}
 							/>
 						</Box>
 
 						{/* Thumbnails */}
-						{/* <Stack direction="row" spacing={1} mt={1} sx={{ overflowX: "auto", py: 1 }}>
-							{accommodation.images.map((img, idx) => (
+						<Stack direction="row" spacing={1} mt={1} sx={{ overflowX: "auto", py: 1 }}>
+							{images?.map((img, idx) => (
 								<Box
 									key={img.id}
 									onClick={() => setSelectedImage(idx)}
@@ -159,7 +159,7 @@ function AccommodationDetail() {
 									/>
 								</Box>
 							))}
-						</Stack> */}
+						</Stack>
 					</Box>
 
 					{/* Amenities */}
