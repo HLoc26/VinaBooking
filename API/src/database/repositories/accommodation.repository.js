@@ -12,6 +12,8 @@ import {
 	Review as ReviewModel,
 	ReviewReply as ReviewReplyModel,
 	User as UserModel,
+	BookingItem as BookingItemModel,
+	Booking as BookingModel,
 } from "../models/index.js";
 
 export const AccommodationRepository = {
@@ -68,13 +70,17 @@ export const AccommodationRepository = {
 		});
 	},
 
-	async getFullInfo(accommId) {
+	async getFullInfo(accommId, startDate, endDate) {
 		const accommodation = await AccommodationModel.findOne({
 			where: { id: accommId },
 			include: [
 				{
 					model: AccommodationAmenityModel,
-					include: [{ model: AmenityModel }],
+					required: false,
+					include: [{
+						model: AmenityModel,
+						attributes: ["id", "name"],
+					 }],
 				},
 				{
 					model: AddressModel,
@@ -86,6 +92,30 @@ export const AccommodationRepository = {
 						{
 							model: RoomAmenityModel,
 							include: [{ model: AmenityModel }],
+						},
+						{
+							model: BookingItemModel,
+							required: false,
+							include: [
+								{
+									model: BookingModel,
+									required: false,
+									where:
+										startDate && endDate
+											? {
+													[Op.or]: [
+														{ startDate: { [Op.between]: [startDate, endDate] } },
+														{ endDate: { [Op.between]: [startDate, endDate] } },
+														{
+															[Op.and]: [{ startDate: { [Op.lte]: startDate } }, { endDate: { [Op.gte]: endDate } }],
+														},
+													],
+											  }
+											: {},
+									required: false,
+								},
+							],
+							required: false,
 						},
 					],
 				},
@@ -113,7 +143,31 @@ export const AccommodationRepository = {
 				},
 			],
 		});
-		return accommodation;
+
+		if (!accommodation) {
+			return { accommodation: null, bookedCounts: {} };
+		}
+
+		// Tính bookedCounts cho mỗi phòng
+		const bookedCounts = {};
+		accommodation.Rooms.forEach((room) => {
+			const items = Array.isArray(room.bookingItems) ? room.bookingItems : [];
+			bookedCounts[room.id] = items.reduce((total, item) => {
+				const booking = item.Booking;
+				if (booking) {
+					const bookingStart = new Date(booking.startDate);
+					const bookingEnd = new Date(booking.endDate);
+					const checkIn = new Date(startDate);
+					const checkOut = new Date(endDate);
+					if (bookingStart <= checkOut && bookingEnd >= checkIn) {
+						return total + (item.count || 0);
+					}
+				}
+				return total;
+			}, 0);
+		});
+
+		return { accommodation, bookedCounts };
 	},
 
 	// Find all with booking counts and min price
