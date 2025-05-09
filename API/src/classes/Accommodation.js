@@ -15,7 +15,7 @@ class Accommodation {
 	constructor({ id, name, amenities, address, rooms, images, policy }) {
 		this.id = id;
 		this.name = name;
-		this.amenities = amenities ? amenities.map((a) => new AccommodationAmenity(a)) : [];
+		this.amenities = amenities ? amenities.map((a) => AccommodationAmenity.fromModel(a)) : [];
 		this.address = address ? new Address(address) : null;
 		this.rooms = rooms ? rooms.map((r) => new Room(r)) : [];
 		this.images = images ? images.map((i) => new Image(i)) : [];
@@ -75,7 +75,6 @@ class Accommodation {
 	}
 
 	getSimplifiedAmenities() {
-		console.log("@@@@@@Accommodation amenities:", this.amenities);
 		return this.amenities?.map((amenity) => amenity.toPlain()) || [];
 
 		//return this.amenities?.map((amenity) => amenity.id).filter(Boolean) || [];
