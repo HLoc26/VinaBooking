@@ -57,13 +57,9 @@ function AccommodationDetail() {
 				console.log(response);
 				const accomm = response.data.payload.accommodation;
 				setAccommodation(accomm);
-				setAddress(
-					`${accomm.Address?.addressLine}, ${accomm.Address?.city} ${accomm.Address?.state ? `, ${accomm.Address.state}` : ""} ${accomm.Address?.postalCode}, ${accomm.Address?.country}`
-						.replace(/\s+/g, " ")
-						.trim()
-				);
-				setAmenities(accomm.AccommodationAmenities);
-				setRoom(accomm.Rooms);
+				setAddress(accomm.address);
+				setAmenities(accomm.amenities);
+				setRoom(accomm.rooms);
 			});
 		} catch (error) {
 			console.error(error);

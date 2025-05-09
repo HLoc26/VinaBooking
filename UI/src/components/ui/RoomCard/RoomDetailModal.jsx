@@ -4,7 +4,7 @@ import * as Icon from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice";
 
 function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
-	const { name, size, maxCapacity, price, description, RoomAmenities, images, availableRooms, currentImageIndex, setCurrentImageIndex } = room;
+	const { name, size, maxCapacity, price, description, amenities, images, availableRooms, currentImageIndex, setCurrentImageIndex } = room;
 
 	const modalStyle = {
 		position: "absolute",
@@ -26,13 +26,13 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 
 	// Group RoomAmenities by type
 	const groupedAmenities = useMemo(() => {
-		if (!RoomAmenities) return {};
-		return RoomAmenities.reduce((acc, amenity) => {
+		if (!amenities) return {};
+		return amenities.reduce((acc, amenity) => {
 			if (!acc[amenity.type]) acc[amenity.type] = [];
 			acc[amenity.type].push(amenity);
 			return acc;
 		}, {});
-	}, [RoomAmenities]);
+	}, [amenities]);
 
 	return (
 		<Modal open={modalOpen} onClose={handleCloseModal} aria-labelledby="room-detail-modal">
