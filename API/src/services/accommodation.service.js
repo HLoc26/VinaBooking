@@ -9,21 +9,37 @@ import { Accommodation, Review } from "../classes/index.js";
 
 export default {
 	async findById(id, startDate, endDate) {
-		const { accommodation, bookedCounts } = await AccommodationRepository.getFullInfo(id, startDate, endDate);
-		const reviewsData = await ReviewRepository.findByAccommodationId(id);
-		//console.log("Accommodation model:", accommodation);
+		const accommodationModel = await AccommodationRepository.getFullInfo(id, startDate, endDate);
+		const reviewsDataModel = await ReviewRepository.findByAccommodationId(id);
 
-		if (!accommodation) return null;
+		// Tính bookedCounts cho mỗi phòng
+		const bookedCounts = {};
+		accommodationModel.Rooms.forEach((room) => {
+			const items = Array.isArray(room.BookingItems) ? room.BookingItems : [];
+			bookedCounts[room.id] = items.reduce((total, item) => {
+				const booking = item.Booking;
+				if (booking) {
+					const bookingStart = new Date(booking.startDate);
+					const bookingEnd = new Date(booking.endDate);
+					const checkIn = new Date(startDate);
+					const checkOut = new Date(endDate);
+					if (bookingStart <= checkOut && bookingEnd >= checkIn) {
+						return total + (item.count || 0);
+					}
+				}
+				return total;
+			}, 0);
+		});
 
-		console.log("Accommodation model:", accommodation.dataValues);
+		if (!accommodationModel) return null;
 
-		const accommodationInstance = AccommodationClass.fromModel(accommodation);
+		const accommodationInstance = AccommodationClass.fromModel(accommodationModel);
 
-		//console.log("Accommodation instance:", accommodationInstance);
+		console.log(accommodationInstance.toPlain());
 
 		return {
 			...accommodationInstance.toPlain(bookedCounts),
-			reviews: reviewsData.map((review) => Review.fromModel(review).toPlain()),
+			reviews: reviewsDataModel.map((review) => Review.fromModel(review).toPlain()),
 		};
 	},
 
