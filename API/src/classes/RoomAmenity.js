@@ -12,10 +12,18 @@ class RoomAmenity extends Amenity {
 	 * @param {number} roomId
 	 * @param {ERoomAmenityType} type
 	 */
-	constructor(id, name, roomId, type) {
+	constructor(id, name, type) {
 		super(id, name);
-		this.roomId = roomId;
+		this.id = Number(id); // Ensure id is a number
 		this.type = type;
+	}
+
+	toPlain() {
+		return {
+			id: Number(this.id),
+			name: this.name || "Unknown Amenity",
+			type: this.type,
+		};
 	}
 }
 
