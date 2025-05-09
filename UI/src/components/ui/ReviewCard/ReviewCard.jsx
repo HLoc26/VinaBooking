@@ -1,11 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { ImageList, ImageListItem, Paper, Rating, Typography, Modal, Box, IconButton, CircularProgress } from "@mui/material";
 import * as Icon from "@mui/icons-material";
+import AppImage from "../Image/Image";
+import { useSafeImageList } from "../../../hooks/useSafeImageList";
 
 function ReviewCard({ star, comment, reviewer, images, reviewDate = new Date() }) {
 	const [open, setOpen] = useState(false);
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 	const [loading, setLoading] = useState(true); // Track loading state for the full image
+
+	const imagesList = useSafeImageList(images);
 
 	// Handlers
 	const handleOpen = useCallback((index) => {
@@ -19,14 +23,14 @@ function ReviewCard({ star, comment, reviewer, images, reviewDate = new Date() }
 	}, []);
 
 	const handlePrevious = useCallback(() => {
-		setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length); // Loop to the last image
+		setSelectedImageIndex((prev) => (prev - 1 + imagesList.length) % imagesList.length); // Loop to the last image
 		setLoading(true); // Reset loading state when navigating
-	}, [images.length]);
+	}, [imagesList.length]);
 
 	const handleNext = useCallback(() => {
-		setSelectedImageIndex((prev) => (prev + 1) % images.length); // Loop to the first image
+		setSelectedImageIndex((prev) => (prev + 1) % imagesList.length); // Loop to the first image
 		setLoading(true); // Reset loading state when navigating
-	}, [images.length]);
+	}, [imagesList.length]);
 
 	const handleImageLoad = useCallback(() => {
 		setLoading(false); // Set loading to false when the image is fully loaded
@@ -38,11 +42,11 @@ function ReviewCard({ star, comment, reviewer, images, reviewDate = new Date() }
 				{reviewer} reviewed at {reviewDate.toLocaleString()}
 			</Typography>
 			<Rating readOnly value={star} precision={0.1} />
-			<ImageList cols={images.length} rowHeight={150}>
+			<ImageList cols={imagesList.length} rowHeight={150}>
 				{/* Mock images data */}
-				{images.map((item, index) => (
+				{imagesList.map((item, index) => (
 					<ImageListItem key={index} onClick={() => handleOpen(index)} sx={{ cursor: "pointer" }}>
-						<img srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`} src={`${item.img}?w=164&h=164&fit=crop&auto=format`} alt={item.title} loading="lazy" />
+						<AppImage filename={item.filename} />
 					</ImageListItem>
 				))}
 			</ImageList>
@@ -98,7 +102,7 @@ function ReviewCard({ star, comment, reviewer, images, reviewDate = new Date() }
 								{/* Show spinner while loading */}
 								{loading && <CircularProgress />}
 								<img
-									src={images[selectedImageIndex]?.img}
+									src={imagesList[selectedImageIndex]?.img}
 									alt="Full view"
 									style={{
 										maxWidth: "100%",
