@@ -71,20 +71,35 @@ export const AccommodationRepository = {
 	},
 
 	async getFullInfo(accommId, startDate, endDate) {
+		// Define date filter condition for bookings if dates are provided
+		const dateFilterCondition =
+			startDate && endDate
+				? {
+						[Op.or]: [
+							{ startDate: { [Op.between]: [startDate, endDate] } },
+							{ endDate: { [Op.between]: [startDate, endDate] } },
+							{
+								[Op.and]: [{ startDate: { [Op.lte]: startDate } }, { endDate: { [Op.gte]: endDate } }],
+							},
+						],
+				  }
+				: {};
+
+		// Fetch accommodation with all related data
 		const accommodation = await AccommodationModel.findOne({
 			where: { id: accommId },
 			include: [
 				{
 					model: AccommodationAmenityModel,
 					required: false,
-					include: [{
-						model: AmenityModel,
-						attributes: ["id", "name"],
-					 }],
+					include: [
+						{
+							model: AmenityModel,
+							attributes: ["id", "name"],
+						},
+					],
 				},
-				{
-					model: AddressModel,
-				},
+				{ model: AddressModel },
 				{
 					model: RoomModel,
 					include: [
@@ -100,18 +115,7 @@ export const AccommodationRepository = {
 								{
 									model: BookingModel,
 									required: false,
-									where:
-										startDate && endDate
-											? {
-													[Op.or]: [
-														{ startDate: { [Op.between]: [startDate, endDate] } },
-														{ endDate: { [Op.between]: [startDate, endDate] } },
-														{
-															[Op.and]: [{ startDate: { [Op.lte]: startDate } }, { endDate: { [Op.gte]: endDate } }],
-														},
-													],
-											  }
-											: {},
+									where: dateFilterCondition,
 									required: false,
 								},
 							],
@@ -119,12 +123,8 @@ export const AccommodationRepository = {
 						},
 					],
 				},
-				{
-					model: ImageModel,
-				},
-				{
-					model: PolicyModel,
-				},
+				{ model: ImageModel },
+				{ model: PolicyModel },
 				{
 					model: ReviewModel,
 					include: [
@@ -132,9 +132,7 @@ export const AccommodationRepository = {
 							model: UserModel,
 							as: "reviewer",
 						},
-						{
-							model: ImageModel,
-						},
+						{ model: ImageModel },
 						{
 							model: ReviewReplyModel,
 							include: [{ model: UserModel }],
@@ -145,29 +143,10 @@ export const AccommodationRepository = {
 		});
 
 		if (!accommodation) {
-			return { accommodation: null, bookedCounts: {} };
+			return null;
 		}
 
-		// Tính bookedCounts cho mỗi phòng
-		const bookedCounts = {};
-		accommodation.Rooms.forEach((room) => {
-			const items = Array.isArray(room.bookingItems) ? room.bookingItems : [];
-			bookedCounts[room.id] = items.reduce((total, item) => {
-				const booking = item.Booking;
-				if (booking) {
-					const bookingStart = new Date(booking.startDate);
-					const bookingEnd = new Date(booking.endDate);
-					const checkIn = new Date(startDate);
-					const checkOut = new Date(endDate);
-					if (bookingStart <= checkOut && bookingEnd >= checkIn) {
-						return total + (item.count || 0);
-					}
-				}
-				return total;
-			}, 0);
-		});
-
-		return { accommodation, bookedCounts };
+		return accommodation;
 	},
 
 	// Find all with booking counts and min price
