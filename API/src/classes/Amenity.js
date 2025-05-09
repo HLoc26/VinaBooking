@@ -13,7 +13,19 @@ class Amenity {
 		this.name = name;
 	}
 
-	static fromModel(model) {}
+	static fromModel(model) {
+		return new Amenity({
+			id: model.id,
+			name: model.name,
+		});
+	}
+
+	toPlain() {
+		return {
+			id: this.id,
+			name: this.name,
+		};
+	}
 
 	toString() {
 		return this.name;
