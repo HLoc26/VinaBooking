@@ -2,51 +2,29 @@ import { AccommodationRepository } from "../database/repositories/accommodation.
 import { RoomRepository } from "../database/repositories/room.repository.js";
 import { ReviewRepository } from "../database/repositories/review.repository.js";
 
+// Import classes
+import AccommodationClass from "../classes/Accommodation.js";
+
 import { Accommodation, Review } from "../classes/index.js";
 
 export default {
-	async findById(id) {
-		const accommodation = await AccommodationRepository.getFullInfo(id);
+	async findById(id, startDate, endDate) {
+		const { accommodation, bookedCounts } = await AccommodationRepository.getFullInfo(id, startDate, endDate);
+		const reviewsData = await ReviewRepository.findByAccommodationId(id);
+		//console.log("Accommodation model:", accommodation);
 
 		if (!accommodation) return null;
 
-		const plain = accommodation.toJSON();
+		console.log("Accommodation model:", accommodation.dataValues);
 
-		// Merge Amenity fields into AccommodationAmenity
-		plain.AccommodationAmenities = plain.AccommodationAmenities.map((aa) => {
-			const { Amenity, ...rest } = aa;
-			if (Amenity) {
-				const { id: amenityId, ...amenityFields } = Amenity;
-				return {
-					...rest,
-					...amenityFields,
-					amenityId,
-				};
-			}
-			return aa;
-		});
+		const accommodationInstance = AccommodationClass.fromModel(accommodation);
 
-		// Merge Amenity fields into RoomAmenity
-		plain.Rooms = plain.Rooms.map((room) => {
-			const updatedRoom = { ...room };
-			if (room.RoomAmenities) {
-				updatedRoom.RoomAmenities = room.RoomAmenities.map((ra) => {
-					const { Amenity, ...rest } = ra;
-					if (Amenity) {
-						const { id: amenityId, ...amenityFields } = Amenity;
-						return {
-							...rest,
-							...amenityFields,
-							amenityId,
-						};
-					}
-					return ra;
-				});
-			}
-			return updatedRoom;
-		});
+		//console.log("Accommodation instance:", accommodationInstance);
 
-		return plain;
+		return {
+			...accommodationInstance.toPlain(bookedCounts),
+			reviews: reviewsData.map((review) => Review.fromModel(review).toPlain()),
+		};
 	},
 
 	async search(criteria) {
