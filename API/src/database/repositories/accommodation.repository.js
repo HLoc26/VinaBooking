@@ -8,7 +8,12 @@ import {
 	Room as RoomModel,
 	RoomAmenity as RoomAmenityModel,
 	Amenity as AmenityModel,
+	Policy as PolicyModel,
 	Review as ReviewModel,
+	ReviewReply as ReviewReplyModel,
+	User as UserModel,
+	BookingItem as BookingItemModel,
+	Booking as BookingModel,
 } from "../models/index.js";
 
 export const AccommodationRepository = {
@@ -65,17 +70,36 @@ export const AccommodationRepository = {
 		});
 	},
 
-	async getFullInfo(accommId) {
+	async getFullInfo(accommId, startDate, endDate) {
+		// Define date filter condition for bookings if dates are provided
+		const dateFilterCondition =
+			startDate && endDate
+				? {
+						[Op.or]: [
+							{ startDate: { [Op.between]: [startDate, endDate] } },
+							{ endDate: { [Op.between]: [startDate, endDate] } },
+							{
+								[Op.and]: [{ startDate: { [Op.lte]: startDate } }, { endDate: { [Op.gte]: endDate } }],
+							},
+						],
+				  }
+				: {};
+
+		// Fetch accommodation with all related data
 		const accommodation = await AccommodationModel.findOne({
 			where: { id: accommId },
 			include: [
 				{
 					model: AccommodationAmenityModel,
-					include: [{ model: AmenityModel }],
+					required: false,
+					include: [
+						{
+							model: AmenityModel,
+							attributes: ["id", "name"],
+						},
+					],
 				},
-				{
-					model: AddressModel,
-				},
+				{ model: AddressModel },
 				{
 					model: RoomModel,
 					include: [
@@ -84,13 +108,44 @@ export const AccommodationRepository = {
 							model: RoomAmenityModel,
 							include: [{ model: AmenityModel }],
 						},
+						{
+							model: BookingItemModel,
+							required: false,
+							include: [
+								{
+									model: BookingModel,
+									required: false,
+									where: dateFilterCondition,
+									required: false,
+								},
+							],
+							required: false,
+						},
 					],
 				},
+				{ model: ImageModel },
+				{ model: PolicyModel },
 				{
-					model: ImageModel,
+					model: ReviewModel,
+					include: [
+						{
+							model: UserModel,
+							as: "reviewer",
+						},
+						{ model: ImageModel },
+						{
+							model: ReviewReplyModel,
+							include: [{ model: UserModel }],
+						},
+					],
 				},
 			],
 		});
+
+		if (!accommodation) {
+			return null;
+		}
+
 		return accommodation;
 	},
 
