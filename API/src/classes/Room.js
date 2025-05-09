@@ -44,7 +44,7 @@ class Room {
 		return remain >= requiredCount;
 	}
 
-	async getAvailableQuantity(bookedCount = 0) {
+	getAvailableQuantity(bookedCount = 0) {
 		return Math.max(0, this.count - bookedCount);
 	}
 
