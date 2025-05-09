@@ -14,8 +14,8 @@ class Room {
 		this.description = description;
 		this.price = price;
 		this.count = count;
-		this.amenities = amenities ? amenities.map((a) => new RoomAmenity(a)) : [];
-		this.images = images ? images.map((i) => new Image(i)) : [];
+		this.amenities = amenities ? amenities.map((a) => RoomAmenity.fromModel(a)) : [];
+		this.images = images ? images.map((i) => Image.fromModel(i)) : [];
 	}
 
 	static fromModel(model) {
@@ -84,7 +84,7 @@ class Room {
 			count: this.count,
 			amenities: this.amenities?.map((amenity) => amenity.toPlain()) || [],
 			images: this.images.map((i) => i.toPlain()),
-			availableQuantity: this.getAvailableQuantity(bookedCount),
+			availableRooms: this.getAvailableQuantity(bookedCount),
 			//isActive: await this.isCurrentlyActive(),
 		};
 	}

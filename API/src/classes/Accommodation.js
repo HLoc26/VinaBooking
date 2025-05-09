@@ -17,9 +17,9 @@ class Accommodation {
 		this.name = name;
 		this.amenities = amenities ? amenities.map((a) => AccommodationAmenity.fromModel(a)) : [];
 		this.address = address ? new Address(address) : null;
-		this.rooms = rooms ? rooms.map((r) => new Room(r)) : [];
-		this.images = images ? images.map((i) => new Image(i)) : [];
-		this.policy = policy ? new Policy(policy) : null;
+		this.rooms = rooms ? rooms.map((r) => Room.fromModel(r)) : [];
+		this.images = images ? images.map((i) => Image.fromModel(i)) : [];
+		this.policy = policy ? Policy.fromModel(policy) : null;
 	}
 
 	static fromModel(model) {
