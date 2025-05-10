@@ -27,11 +27,11 @@ export const restoreSession = createAsyncThunk("auth/restoreSession", async (_, 
 	try {
 		console.log("Attempting to restore session");
 		const userData = await getCurrentUserApi();
-		
+
 		console.log("Session restored successfully");
 		return {
 			user: userData,
-			rememberMe: true // Assume remembered if session exists
+			rememberMe: true, // Assume remembered if session exists
 		};
 	} catch (error) {
 		console.log("Session restoration failed:", error.message);
@@ -90,7 +90,7 @@ const authSlice = createSlice({
 				state.loading = false;
 				state.error = action.payload || "Authentication failed";
 			})
-			
+
 			// Restore session cases
 			.addCase(restoreSession.pending, (state) => {
 				state.loading = true;
@@ -107,8 +107,8 @@ const authSlice = createSlice({
 				// Don't set error for session restoration failure
 				// This is an expected case when user isn't logged in
 			})
-			
-			// Logout cases  
+
+			// Logout cases
 			.addCase(logoutUser.fulfilled, (state) => {
 				state.user = null;
 				state.isLoggedIn = false;
@@ -119,3 +119,5 @@ const authSlice = createSlice({
 
 export const { logout, clearErrors } = authSlice.actions;
 export default authSlice.reducer;
+
+export const selectCurrentUser = (state) => state.auth.user;

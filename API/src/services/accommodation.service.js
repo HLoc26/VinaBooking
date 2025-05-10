@@ -2,51 +2,45 @@ import { AccommodationRepository } from "../database/repositories/accommodation.
 import { RoomRepository } from "../database/repositories/room.repository.js";
 import { ReviewRepository } from "../database/repositories/review.repository.js";
 
+// Import classes
+import AccommodationClass from "../classes/Accommodation.js";
+
 import { Accommodation, Review } from "../classes/index.js";
 
 export default {
-	async findById(id) {
-		const accommodation = await AccommodationRepository.getFullInfo(id);
+	async findById(id, startDate, endDate) {
+		const accommodationModel = await AccommodationRepository.getFullInfo(id, startDate, endDate);
+		const reviewsDataModel = await ReviewRepository.findByAccommodationId(id);
 
-		if (!accommodation) return null;
-
-		const plain = accommodation.toJSON();
-
-		// Merge Amenity fields into AccommodationAmenity
-		plain.AccommodationAmenities = plain.AccommodationAmenities.map((aa) => {
-			const { Amenity, ...rest } = aa;
-			if (Amenity) {
-				const { id: amenityId, ...amenityFields } = Amenity;
-				return {
-					...rest,
-					...amenityFields,
-					amenityId,
-				};
-			}
-			return aa;
-		});
-
-		// Merge Amenity fields into RoomAmenity
-		plain.Rooms = plain.Rooms.map((room) => {
-			const updatedRoom = { ...room };
-			if (room.RoomAmenities) {
-				updatedRoom.RoomAmenities = room.RoomAmenities.map((ra) => {
-					const { Amenity, ...rest } = ra;
-					if (Amenity) {
-						const { id: amenityId, ...amenityFields } = Amenity;
-						return {
-							...rest,
-							...amenityFields,
-							amenityId,
-						};
+		// Tính bookedCounts cho mỗi phòng
+		const bookedCounts = {};
+		accommodationModel.Rooms.forEach((room) => {
+			const items = Array.isArray(room.BookingItems) ? room.BookingItems : [];
+			bookedCounts[room.id] = items.reduce((total, item) => {
+				const booking = item.Booking;
+				if (booking) {
+					const bookingStart = new Date(booking.startDate);
+					const bookingEnd = new Date(booking.endDate);
+					const checkIn = new Date(startDate);
+					const checkOut = new Date(endDate);
+					if (bookingStart <= checkOut && bookingEnd >= checkIn) {
+						return total + (item.count || 0);
 					}
-					return ra;
-				});
-			}
-			return updatedRoom;
+				}
+				return total;
+			}, 0);
 		});
 
-		return plain;
+		if (!accommodationModel) return null;
+
+		const accommodationInstance = AccommodationClass.fromModel(accommodationModel);
+
+		console.log(accommodationInstance.toPlain());
+
+		return {
+			...accommodationInstance.toPlain(bookedCounts),
+			reviews: reviewsDataModel.map((review) => Review.fromModel(review).toPlain()),
+		};
 	},
 
 	async search(criteria) {
