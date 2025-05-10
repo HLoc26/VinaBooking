@@ -37,23 +37,23 @@ function Search() {
 
 	useEffect(() => {
 		const fetchSearchResults = async () => {
-			const query = searchParams.toString();
+			const params = new URLSearchParams(searchParams);
 
-			console.group(query);
-			const response = await axiosInstance.get(`/accommodations/search?${query}`);
-			if (response.data.success) {
-				setSearchResults(response.data.payload);
-			} else {
-				console.error(response.data.error);
+			// Format lại startDate và endDate nếu có
+			const startDateRaw = params.get("startDate");
+			const endDateRaw = params.get("endDate");
+
+			if (startDateRaw) {
+				const parsed = new Date(decodeURIComponent(startDateRaw));
+				params.set("startDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
 			}
-		};
+			if (endDateRaw) {
+				const parsed = new Date(decodeURIComponent(endDateRaw));
+				params.set("endDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
+			}
 
-		fetchSearchResults();
-	}, [searchParams]);
-
-	useEffect(() => {
-		const fetchSearchResults = async () => {
-			const query = searchParams.toString();
+			const query = params.toString();
+			console.group(query);
 			const response = await axiosInstance.get(`/accommodations/search?${query}`);
 			if (response.data.success) {
 				setSearchResults(response.data.payload);
@@ -81,14 +81,14 @@ function Search() {
 				postalCode: address.postcode || null,
 			};
 
-			console.log("Search data", searchData);
-			const label = address.display_name;
+			const label = address.locationLabel;
 
-			const startDate = new Date(searchData.dateRange.startDate).toISOString().split("T")[0];
-			const endDate = new Date(searchData.dateRange.endDate).toISOString().split("T")[0];
+			const startDate = searchData.dateRange.startDate;
+			const endDate = searchData.dateRange.endDate;
 
 			const roomCount = searchData.occupancy.rooms;
 			const adultCount = searchData.occupancy.adults;
+			const childrenCount = searchData.occupancy.children;
 
 			const queryParams = new URLSearchParams({
 				city: location.city,
@@ -100,6 +100,7 @@ function Search() {
 				endDate,
 				roomCount,
 				adultCount,
+				childrenCount,
 			}).toString();
 
 			navigate(`/search?${queryParams}`);
@@ -138,7 +139,7 @@ function Search() {
 						<Grid container spacing={3} direction={"column"}>
 							{filteredResults.map((result, index) => (
 								<Grid item xs={12} key={index}>
-									<HotelCard name={result.name} amenities={result.amenities} location={result.address} minPrice={result.minPrice} rating={result.rating} />
+									<HotelCard id={result.id} name={result.name} amenities={result.amenities} location={result.address} minPrice={result.minPrice} rating={result.rating} />
 								</Grid>
 							))}
 						</Grid>

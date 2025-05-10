@@ -8,16 +8,32 @@ function FilterBox({ results, onFilterChange }) {
 
 	const [priceRange, setPriceRange] = useState([minAvailablePrice || 0, maxAvailablePrice || 1000]);
 
-	// Get unique amenities from all hotels
-	const availableAmenities = [...new Set(results.flatMap((hotel) => hotel.amenities))];
-	const initialAmenities = Object.fromEntries(availableAmenities.map((amenity) => [amenity, false]));
+	// Get unique amenities from all hotels by their ID
+	const allAmenities = results.flatMap((hotel) => hotel.amenities);
+	const uniqueAmenityIds = [...new Set(allAmenities.map((amenity) => amenity.id))];
+
+	// Create a map of unique amenities by ID for easy access
+	const amenityMap = allAmenities.reduce((map, amenity) => {
+		if (!map[amenity.id]) {
+			map[amenity.id] = amenity;
+		}
+		return map;
+	}, {});
+
+	// Initialize amenities state with IDs as keys
+	const initialAmenities = Object.fromEntries(uniqueAmenityIds.map((id) => [id, false]));
 	const [amenities, setAmenities] = useState(initialAmenities);
 
 	// Update price range and amenities when results change
 	useEffect(() => {
 		setPriceRange([minAvailablePrice || 0, maxAvailablePrice || 1000]);
-		setAmenities(initialAmenities);
-	}, [results]);
+
+		// Reset amenities when results change
+		const newAllAmenities = results.flatMap((hotel) => hotel.amenities);
+		const newUniqueAmenityIds = [...new Set(newAllAmenities.map((amenity) => amenity.id))];
+		const newInitialAmenities = Object.fromEntries(newUniqueAmenityIds.map((id) => [id, false]));
+		setAmenities(newInitialAmenities);
+	}, [results, minAvailablePrice, maxAvailablePrice]);
 
 	const handlePriceChange = (event, newValue) => {
 		setPriceRange(newValue);
@@ -51,12 +67,13 @@ function FilterBox({ results, onFilterChange }) {
 			const meetsPrice = hotel.minPrice >= priceRange[0] && hotel.minPrice <= priceRange[1];
 
 			// Filter by amenities
-			const selectedAmenities = Object.entries(amenities)
+			const selectedAmenityIds = Object.entries(amenities)
 				.filter(([, checked]) => checked)
-				.map(([name]) => name);
+				.map(([id]) => parseInt(id)); // Convert string keys back to numbers
 
 			// Changed from every() to some() to implement OR logic
-			const meetsAmenities = selectedAmenities.length === 0 || selectedAmenities.some((amenity) => hotel.amenities.includes(amenity));
+			// Check if the hotel has any of the selected amenities
+			const meetsAmenities = selectedAmenityIds.length === 0 || selectedAmenityIds.some((amenityId) => hotel.amenities.some((amenity) => amenity.id === amenityId));
 
 			return meetsPrice && meetsAmenities;
 		});
@@ -83,17 +100,17 @@ function FilterBox({ results, onFilterChange }) {
 			</Stack>
 
 			{/* Amenities Filter */}
-			{availableAmenities.length > 0 && (
+			{uniqueAmenityIds.length > 0 && (
 				<>
 					<Typography variant="body1" gutterBottom sx={{ marginTop: 2 }}>
 						Amenities
 					</Typography>
 					<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-						{availableAmenities.map((amenity) => (
+						{uniqueAmenityIds.map((id) => (
 							<FormControlLabel
-								key={amenity}
-								control={<Checkbox checked={amenities[amenity]} onChange={handleAmenityChange} name={amenity} />}
-								label={amenity.charAt(0).toUpperCase() + amenity.slice(1)}
+								key={id}
+								control={<Checkbox checked={amenities[id]} onChange={handleAmenityChange} name={id.toString()} />}
+								label={amenityMap[id].name.charAt(0).toUpperCase() + amenityMap[id].name.slice(1)}
 							/>
 						))}
 					</Box>

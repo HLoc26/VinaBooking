@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Container, Grid } from "@mui/material";
-import Navbar from "../../components/layout/NavBar/NavBar";
+import MainLayout from "../../components/layout/MainLayout/MainLayout";
 import SearchBar from "../../components/ui/SearchBar/SearchBar";
 import HotelCard from "../../components/ui/HotelCard/HotelCard";
 import Footer from "../../components/layout/Footer/Footer";
@@ -31,11 +31,10 @@ function Landing() {
 				postalCode: address.postcode || null,
 			};
 
-			console.log("Search data", searchData);
-			const label = address.display_name;
+			const label = address.locationLabel;
 
-			const startDate = new Date(searchData.dateRange.startDate).toISOString().split("T")[0];
-			const endDate = new Date(searchData.dateRange.endDate).toISOString().split("T")[0];
+			const startDate = searchData.dateRange.startDate;
+			const endDate = searchData.dateRange.endDate;
 
 			const roomCount = searchData.occupancy.rooms;
 			const adultCount = searchData.occupancy.adults;
@@ -60,10 +59,7 @@ function Landing() {
 	);
 
 	return (
-		<Box>
-			{/* Navbar */}
-			<Navbar />
-
+		<MainLayout>
 			{/* Hero Section */}
 			<Box
 				sx={{
@@ -97,18 +93,13 @@ function Landing() {
 					<Grid container spacing={3} sx={{ justifyContent: "space-between" }}>
 						{featuredHotels.map((hotel, index) => (
 							<Grid key={index} sx={{ width: { xs: "100%", md: "48%" } }}>
-								<HotelCard name={hotel.name} amenities={hotel.amenities} location={hotel.address} minPrice={hotel.minPrice} rating={hotel.rating} />
+								<HotelCard id={hotel.id} name={hotel.name} amenities={hotel.amenities} location={hotel.address} minPrice={hotel.minPrice} rating={hotel.rating} />
 							</Grid>
 						))}
 					</Grid>
 				</Container>
 			</Box>
-
-			{/* Footer */}
-			<Box sx={{ marginTop: 6 }}>
-				<Footer />
-			</Box>
-		</Box>
+		</MainLayout>
 	);
 }
 

@@ -12,5 +12,8 @@ export default defineConfig({
 			usePolling: true,
 		},
 		allowedHosts: ["vinabooking.com"],
+		proxy: {
+			"/uploads": "http://static:80",
+		},
 	},
 });

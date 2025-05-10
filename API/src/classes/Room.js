@@ -1,20 +1,21 @@
 import { RoomRepository } from "../database/repositories/room.repository.js";
+import RoomAmenity from "./RoomAmenity.js";
+import Image from "./Image.js";
 
 /**
  * @class Room
  */
 class Room {
-	constructor({ id, name, maxCapacity, size, description, price, amenities, images, isActive, count }) {
+	constructor({ id, name, maxCapacity, size, description, price, amenities, images, count }) {
 		this.id = id;
 		this.name = name;
 		this.maxCapacity = maxCapacity;
 		this.size = size;
 		this.description = description;
 		this.price = price;
-		this.amenities = amenities;
-		this.images = images;
-		this.isActive = isActive;
 		this.count = count;
+		this.amenities = amenities ? amenities.map((a) => RoomAmenity.fromModel(a)) : [];
+		this.images = images ? images.map((i) => Image.fromModel(i)) : [];
 	}
 
 	static fromModel(model) {
@@ -25,9 +26,9 @@ class Room {
 			size: +model.size,
 			description: model.description,
 			price: +model.price,
-			amenities: model.amenities,
-			isActive: model.isActive,
 			count: model.count,
+			amenities: model.RoomAmenities || [],
+			images: model.Images || [],
 		});
 	}
 
@@ -43,16 +44,25 @@ class Room {
 		return remain >= requiredCount;
 	}
 
+	getAvailableQuantity(bookedCount = 0) {
+		return Math.max(0, this.count - bookedCount);
+	}
+
 	async isAvailable(startDate, endDate, adultCount) {
-		return this.canHost(adultCount) && (await this.isEmptyBetween(startDate, endDate)) && this.isActive;
+		return this.canHost(adultCount) && (await this.isEmptyBetween(startDate, endDate)) && (await this.isCurrentlyActive());
 	}
 
 	async isEmptyBetween(startDate, endDate) {
 		return await RoomRepository.isEmptyBetween(this.id, startDate, endDate);
 	}
 
-	inBookedRooms(bookedRoomIds) {
-		return !bookedRoomIds.has(this.id) && this.isActive;
+	// async isCurrentlyActive() {
+	// 	const room = await RoomRepository.findById(this.id);
+	// 	return room?.isActive ?? false;
+	// }
+
+	async inBookedRooms(bookedRoomIds) {
+		return !bookedRoomIds.has(this.id) && (await this.isCurrentlyActive());
 	}
 
 	canHost(adultCount) {
@@ -63,7 +73,7 @@ class Room {
 		return this.price >= priceMin && this.price <= priceMax;
 	}
 
-	toPlain() {
+	toPlain(bookedCount = 0) {
 		return {
 			id: this.id,
 			name: this.name,
@@ -71,9 +81,11 @@ class Room {
 			size: this.size,
 			description: this.description,
 			price: this.price,
-			amenities: this.amenities,
-			isActive: this.isActive,
 			count: this.count,
+			amenities: this.amenities?.map((amenity) => amenity.toPlain()) || [],
+			images: this.images.map((i) => i.toPlain()),
+			availableRooms: this.getAvailableQuantity(bookedCount),
+			//isActive: await this.isCurrentlyActive(),
 		};
 	}
 }

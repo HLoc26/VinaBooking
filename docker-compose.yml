@@ -45,6 +45,14 @@ services:
             timeout: 5s
             retries: 5
 
+    static:
+        build: ./static
+        ports:
+            - "3001:80"
+        volumes:
+            - ./static/uploads:/usr/share/nginx/html/uploads
+        depends_on:
+            - backend
 volumes:
     db_data:
     redis_data:

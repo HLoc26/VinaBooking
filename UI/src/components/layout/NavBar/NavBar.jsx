@@ -33,7 +33,7 @@ function Navbar() {
 	};
 
 	return (
-		<AppBar position="fixed" color="primary">
+		<AppBar position="sticky" color="primary">
 			<Toolbar>
 				{/* Logo */}
 				<Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }} onClick={() => navigate("/")}>
