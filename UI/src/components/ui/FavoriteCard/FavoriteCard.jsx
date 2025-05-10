@@ -5,34 +5,7 @@ import FavoriteButton from "../FavoriteButton/FavoriteButton";
 
 // Modified version of HotelCard specifically for favorites page
 const FavoriteCard = ({ accommodation, onRemove }) => {
-	const { id, name = "Accommodation Name", address = {}, rooms = [], isActive = true } = accommodation;
-
-	// Get the lowest price from all rooms (if available)
-	const getMinPrice = () => {
-		if (!rooms || rooms.length === 0) return "N/A";
-		const prices = rooms.map((room) => room.price).filter((price) => price);
-		return prices.length > 0 ? Math.min(...prices) : "N/A";
-	};
-
-	// Get location string from address
-	const getLocationString = () => {
-		if (!address) return "Location unavailable";
-		const { city, state, country } = address;
-		return [city, state, country].filter(Boolean).join(", ");
-	};
-
-	// Get amenities from the first room (if available)
-	const getAmenities = () => {
-		if (!rooms || rooms.length === 0) return [];
-
-		// If rooms have amenities, use them
-		const firstRoom = rooms[0];
-		if (firstRoom.RoomAmenities && firstRoom.RoomAmenities.length > 0) {
-			return firstRoom.RoomAmenities.map((amenity) => amenity.name);
-		}
-
-		return [];
-	};
+	const { name = "Accommodation Name", rooms = [], isActive = true } = accommodation;
 
 	// Calculate how many amenity chips to show
 	const calculateVisibleChips = (amenities) => {
@@ -41,7 +14,7 @@ const FavoriteCard = ({ accommodation, onRemove }) => {
 		let visibleCount = 0;
 
 		for (let i = 0; i < amenities.length; i++) {
-			const amenityLength = amenities[i].length;
+			const amenityLength = amenities[i].name.length;
 			if (totalChars + amenityLength <= maxTotalCharLength) {
 				totalChars += amenityLength;
 				visibleCount++;
@@ -53,12 +26,12 @@ const FavoriteCard = ({ accommodation, onRemove }) => {
 		return visibleCount || 1;
 	};
 
-	const amenities = getAmenities();
+	const amenities = accommodation.amenities;
 	const maxChipsToShow = calculateVisibleChips(amenities);
 	const visibleAmenities = amenities.slice(0, maxChipsToShow);
 	const remainingCount = amenities.length > maxChipsToShow ? amenities.length - maxChipsToShow : 0;
-	const minPrice = getMinPrice();
-	const location = getLocationString();
+	const minPrice = accommodation.minPrice;
+	const location = accommodation.address;
 
 	return (
 		<Card
@@ -119,7 +92,7 @@ const FavoriteCard = ({ accommodation, onRemove }) => {
 							</Typography>
 							<Stack direction="row" spacing={1} sx={{ overflow: "hidden", whiteSpace: "nowrap" }}>
 								{visibleAmenities.map((amenity, index) => (
-									<Chip key={index} label={amenity} size="small" color="primary" variant="outlined" />
+									<Chip key={index} label={amenity.name} size="small" color="primary" variant="outlined" />
 								))}
 								{remainingCount > 0 && <Chip label={`+${remainingCount}`} size="small" color="primary" variant="outlined" />}
 							</Stack>
@@ -140,18 +113,10 @@ const FavoriteCard = ({ accommodation, onRemove }) => {
 						{minPrice !== "N/A" ? `${convertPrice(minPrice)} VND` : "Price unavailable"}
 					</Typography>
 					<Stack direction="row" spacing={1}>
-						<Button variant="contained" size="small" color="primary" href={`/accommodations/${id}`}>
+						<Button variant="contained" size="small" color="primary" href={`/accommodations/${accommodation.id}`}>
 							View Details
 						</Button>
-						<FavoriteButton
-							accommodationId={id}
-							initialIsFavorite={true}
-							onToggle={(isFavorite) => {
-								if (!isFavorite) onRemove(id);
-							}}
-							disableApiCalls={true}
-							size="small"
-						/>
+						<FavoriteButton accommodation={accommodation} onRemove={onRemove} size="small" />
 					</Stack>
 				</CardActions>
 			</Box>
