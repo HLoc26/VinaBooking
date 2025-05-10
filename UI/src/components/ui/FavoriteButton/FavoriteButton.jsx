@@ -1,96 +1,33 @@
-import { useState, useEffect } from "react";
-import { IconButton, Tooltip } from "@mui/material";
+import { IconButton, Tooltip, CircularProgress } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
-import axiosInstance from "../../../app/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavourite, removeFavourite } from "../../../features/favourite/favoritesSlice";
 
-/**
- * A reusable favorite button component that can be used to add/remove accommodations from favorites
- * @param {Object} props Component props
- * @param {number} props.accommodationId The ID of the accommodation
- * @param {boolean} props.initialIsFavorite Whether the accommodation is initially in favorites
- * @param {function} props.onToggle Optional callback when favorite status changes
- * @param {boolean} props.disableApiCalls If true, will not make API calls and only rely on onToggle
- * @returns {JSX.Element} FavoriteButton component
- */
-const FavoriteButton = ({ accommodationId, initialIsFavorite = false, onToggle, disableApiCalls = false, ...props }) => {
-	const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState(null);
+const FavoriteButton = ({ accommodation, onRemove, ...props }) => {
+	const dispatch = useDispatch();
 
-	// Handle adding to favorites
-	const addToFavorites = async () => {
-		if (disableApiCalls) {
-			setIsFavorite(true);
-			if (onToggle) onToggle(true);
-			return;
-		}
+	const favList = useSelector((state) => state.favourites.accomms);
+	const isLoadingGlobal = useSelector((state) => state.favourites.loading);
 
-		try {
-			setIsLoading(true);
-			setError(null);
+	const isFavourite = favList.some((a) => a.id === accommodation.id);
 
-			const response = await axiosInstance.post("/favourite/add", {
-				accommodationId,
-			});
-
-			if (response.data.success) {
-				setIsFavorite(true);
-				if (onToggle) onToggle(true);
-			} else {
-				setError(response.data.error?.message || "Failed to add to favorites");
-			}
-		} catch (err) {
-			console.error("Error adding to favorites:", err);
-			setError(err.response?.data?.error?.message || "An error occurred");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	// Handle removing from favorites
-	const removeFromFavorites = async () => {
-		if (disableApiCalls) {
-			setIsFavorite(false);
-			if (onToggle) onToggle(false);
-			return;
-		}
-
-		try {
-			setIsLoading(true);
-			setError(null);
-
-			const response = await axiosInstance.delete(`/favourite/remove/${accommodationId}`);
-
-			if (response.data.success) {
-				setIsFavorite(false);
-				if (onToggle) onToggle(false);
-			} else {
-				setError(response.data.error?.message || "Failed to remove from favorites");
-			}
-		} catch (err) {
-			console.error("Error removing from favorites:", err);
-			setError(err.response?.data?.error?.message || "An error occurred");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	// Toggle favorite status
-	const handleToggleFavorite = async () => {
-		if (isLoading) return;
-
-		if (isFavorite) {
-			await removeFromFavorites();
+	const handleClick = () => {
+		if (isLoadingGlobal) return;
+		if (isFavourite) {
+			dispatch(removeFavourite(accommodation));
+			onRemove();
 		} else {
-			await addToFavorites();
+			dispatch(addFavourite(accommodation));
 		}
 	};
 
 	return (
-		<Tooltip title={isFavorite ? "Remove from favorites" : "Add to favorites"} placement="top">
-			<IconButton onClick={handleToggleFavorite} disabled={isLoading} color={error ? "error" : "primary"} {...props}>
-				{isFavorite ? <Favorite /> : <FavoriteBorder />}
-			</IconButton>
+		<Tooltip title={isFavourite ? "Remove from favorites" : "Add to favorites"} placement="top">
+			<span>
+				<IconButton onClick={handleClick} disabled={isLoadingGlobal} color={isFavourite ? "secondary" : "default"} {...props}>
+					{isLoadingGlobal ? <CircularProgress size={24} /> : isFavourite ? <Favorite /> : <FavoriteBorder />}
+				</IconButton>
+			</span>
 		</Tooltip>
 	);
 };
