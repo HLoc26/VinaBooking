@@ -1,5 +1,18 @@
 import FavouriteList from "../../classes/FavouriteList.js";
-import { Accommodation as AccommodationModel, FavouriteList as FavouriteListModel } from "../models/index.js";
+import {
+	Accommodation as AccommodationModel,
+	AccommodationAmenity as AccommodationAmenityModel,
+	Address as AddressModel,
+	Image as ImageModel,
+	Room as RoomModel,
+	RoomAmenity as RoomAmenityModel,
+	Amenity as AmenityModel,
+	Policy as PolicyModel,
+	Review as ReviewModel,
+	ReviewReply as ReviewReplyModel,
+	User as UserModel,
+	FavouriteList as FavouriteListModel,
+} from "../models/index.js";
 
 export const FavouriteRepository = {
 	async findByUser(userId) {
@@ -7,6 +20,44 @@ export const FavouriteRepository = {
 			where: { userId: userId },
 			include: {
 				model: AccommodationModel,
+				include: [
+					{
+						model: AccommodationAmenityModel,
+						required: false,
+						include: [
+							{
+								model: AmenityModel,
+								attributes: ["id", "name"],
+							},
+						],
+					},
+					{ model: AddressModel },
+					{
+						model: RoomModel,
+						include: [
+							{
+								model: RoomAmenityModel,
+								include: [{ model: AmenityModel }],
+							},
+						],
+					},
+					{ model: ImageModel },
+					{ model: PolicyModel },
+					{
+						model: ReviewModel,
+						include: [
+							{
+								model: UserModel,
+								as: "reviewer",
+							},
+							{ model: ImageModel },
+							{
+								model: ReviewReplyModel,
+								include: [{ model: UserModel }],
+							},
+						],
+					},
+				],
 			},
 		});
 
@@ -15,13 +66,7 @@ export const FavouriteRepository = {
 			console.warn(`FavouriteList not found for user ${userId}, created new one.`);
 		}
 
-		const accommodations = favListModel.Accommodation.map((a) => a.toJSON());
-
-		return new FavouriteList({
-			id: favListModel.id,
-			userId,
-			accommodations: accommodations,
-		});
+		return favListModel;
 	},
 
 	async create(userId) {
