@@ -30,24 +30,28 @@ export default {
 	async add(userId, accommodationId) {
 		try {
 			// Find the user's favourite list
-			const favouriteList = await FavouriteRepository.findByUser(userId);
+			const favouriteListModel = await FavouriteRepository.findByUser(userId);
 
 			// Check if the accommodation exists
-			const accommodation = await AccommodationRepository.findById(accommodationId);
-			if (!accommodation) {
+			const accommodationModel = await AccommodationRepository.findById(accommodationId);
+			if (!accommodationModel) {
 				throw new Error(`Accommodation ${accommodationId} not found.`);
 			}
 
+			const accommInstance = Accommodation.fromModel(accommodationModel);
+
+			const listInstance = FavouriteList.fromModel(favouriteListModel);
+
 			// Check if the accommodation is already in the user's favourite list
-			const alreadyAdded = favouriteList.hasAccommodation(accommodation);
+			const alreadyAdded = listInstance.hasAccommodation(accommInstance);
 			if (alreadyAdded) {
 				throw new Error(`Accommodation ${accommodationId} is already in the user's favourite list.`);
 			}
 
 			// Add the accommodation to the user's favourite list
-			favouriteList.addAccommodation(accommodation);
+			listInstance.addAccommodation(accommInstance);
 
-			await FavouriteRepository.save(favouriteList);
+			await FavouriteRepository.save(listInstance);
 
 			return true;
 		} catch (error) {
@@ -59,21 +63,23 @@ export default {
 	// Remove an accommodation from the user's favourite list
 	async remove(userId, accommodationId) {
 		try {
-			const favouriteList = await FavouriteRepository.findByUser(userId);
+			const favouriteListModel = await FavouriteRepository.findByUser(userId);
 
-			const accommodation = new Accommodation({ id: accommodationId });
+			const accommodationModel = await AccommodationRepository.findById(accommodationId);
+
+			const listInstance = FavouriteList.fromModel(favouriteListModel);
+
+			const accommInstance = Accommodation.fromModel(accommodationModel);
 
 			// Check if accommodation has been added to favorite list
-			const alreadyAdded = favouriteList.hasAccommodation(accommodation);
+			const alreadyAdded = listInstance.hasAccommodation(accommInstance);
 			if (!alreadyAdded) {
-				throw new Error(`Accommodation ${accommodation.id} is not in FavouriteList of user ${userId}.`);
+				throw new Error(`Accommodation ${accommodationId} is not in FavouriteList of user ${userId}.`);
 			}
 
-			// Remove the accommodation from the user's favourite list
-			// Fix: Pass the accommodation object instead of just the ID
-			favouriteList.removeAccommodation(accommodation);
+			listInstance.removeAccommodation(accommInstance);
 
-			await FavouriteRepository.save(favouriteList);
+			await FavouriteRepository.save(listInstance);
 			return true;
 		} catch (error) {
 			console.error("Error in FavouriteService.remove:", error);
