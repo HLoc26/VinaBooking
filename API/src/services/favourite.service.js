@@ -1,4 +1,5 @@
 import Accommodation from "../classes/Accommodation.js";
+import FavouriteList from "../classes/FavouriteList.js";
 import { AccommodationRepository } from "../database/repositories/accommodation.repository.js";
 import { FavouriteRepository } from "../database/repositories/favourite.repository.js";
 
@@ -6,8 +7,19 @@ export default {
 	// Find favourite list by user id
 	async findByUserId(userId) {
 		try {
-			let favouriteList = await FavouriteRepository.findByUser(userId);
-			return favouriteList;
+			const favouriteListModel = await FavouriteRepository.findByUser(userId);
+
+			const favouriteListInstance = FavouriteList.fromModel(favouriteListModel);
+
+			const plain = { ...favouriteListInstance.toPlain(), accommodations: [] };
+
+			favouriteListInstance.accommodations.forEach((acc) => {
+				const minPrice = acc.getMinPrice();
+				const rating = acc.getAvgRating();
+				plain.accommodations.push({ ...acc.toPlain(), minPrice, rating });
+			});
+
+			return plain;
 		} catch (error) {
 			console.error(error.message);
 			return null;
