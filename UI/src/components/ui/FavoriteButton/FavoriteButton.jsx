@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { IconButton, Tooltip } from '@mui/material';
-import { Favorite, FavoriteBorder } from '@mui/icons-material';
-import axiosInstance from '../../../app/axios';
+import { useState, useEffect } from "react";
+import { IconButton, Tooltip } from "@mui/material";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import axiosInstance from "../../../app/axios";
 
 /**
  * A reusable favorite button component that can be used to add/remove accommodations from favorites
@@ -12,101 +12,87 @@ import axiosInstance from '../../../app/axios';
  * @param {boolean} props.disableApiCalls If true, will not make API calls and only rely on onToggle
  * @returns {JSX.Element} FavoriteButton component
  */
-const FavoriteButton = ({ 
-  accommodationId, 
-  initialIsFavorite = false, 
-  onToggle, 
-  disableApiCalls = false,
-  ...props 
-}) => {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+const FavoriteButton = ({ accommodationId, initialIsFavorite = false, onToggle, disableApiCalls = false, ...props }) => {
+	const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
 
-  // Handle adding to favorites
-  const addToFavorites = async () => {
-    if (disableApiCalls) {
-      setIsFavorite(true);
-      if (onToggle) onToggle(true);
-      return;
-    }
+	// Handle adding to favorites
+	const addToFavorites = async () => {
+		if (disableApiCalls) {
+			setIsFavorite(true);
+			if (onToggle) onToggle(true);
+			return;
+		}
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await axiosInstance.post('/favourite/add', {
-        accommodationId
-      });
-      
-      if (response.data.success) {
-        setIsFavorite(true);
-        if (onToggle) onToggle(true);
-      } else {
-        setError(response.data.error?.message || 'Failed to add to favorites');
-      }
-    } catch (err) {
-      console.error('Error adding to favorites:', err);
-      setError(err.response?.data?.error?.message || 'An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+		try {
+			setIsLoading(true);
+			setError(null);
 
-  // Handle removing from favorites
-  const removeFromFavorites = async () => {
-    if (disableApiCalls) {
-      setIsFavorite(false);
-      if (onToggle) onToggle(false);
-      return;
-    }
+			const response = await axiosInstance.post("/favourite/add", {
+				accommodationId,
+			});
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await axiosInstance.delete(`/favourite/remove/${accommodationId}`);
-      
-      if (response.data.success) {
-        setIsFavorite(false);
-        if (onToggle) onToggle(false);
-      } else {
-        setError(response.data.error?.message || 'Failed to remove from favorites');
-      }
-    } catch (err) {
-      console.error('Error removing from favorites:', err);
-      setError(err.response?.data?.error?.message || 'An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+			if (response.data.success) {
+				setIsFavorite(true);
+				if (onToggle) onToggle(true);
+			} else {
+				setError(response.data.error?.message || "Failed to add to favorites");
+			}
+		} catch (err) {
+			console.error("Error adding to favorites:", err);
+			setError(err.response?.data?.error?.message || "An error occurred");
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-  // Toggle favorite status
-  const handleToggleFavorite = async () => {
-    if (isLoading) return;
-    
-    if (isFavorite) {
-      await removeFromFavorites();
-    } else {
-      await addToFavorites();
-    }
-  };
+	// Handle removing from favorites
+	const removeFromFavorites = async () => {
+		if (disableApiCalls) {
+			setIsFavorite(false);
+			if (onToggle) onToggle(false);
+			return;
+		}
 
-  return (
-    <Tooltip 
-      title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-      placement="top"
-    >
-      <IconButton
-        onClick={handleToggleFavorite}
-        disabled={isLoading}
-        color={error ? "error" : "primary"}
-        {...props}
-      >
-        {isFavorite ? <Favorite /> : <FavoriteBorder />}
-      </IconButton>
-    </Tooltip>
-  );
+		try {
+			setIsLoading(true);
+			setError(null);
+
+			const response = await axiosInstance.delete(`/favourite/remove/${accommodationId}`);
+
+			if (response.data.success) {
+				setIsFavorite(false);
+				if (onToggle) onToggle(false);
+			} else {
+				setError(response.data.error?.message || "Failed to remove from favorites");
+			}
+		} catch (err) {
+			console.error("Error removing from favorites:", err);
+			setError(err.response?.data?.error?.message || "An error occurred");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// Toggle favorite status
+	const handleToggleFavorite = async () => {
+		if (isLoading) return;
+
+		if (isFavorite) {
+			await removeFromFavorites();
+		} else {
+			await addToFavorites();
+		}
+	};
+
+	return (
+		<Tooltip title={isFavorite ? "Remove from favorites" : "Add to favorites"} placement="top">
+			<IconButton onClick={handleToggleFavorite} disabled={isLoading} color={error ? "error" : "primary"} {...props}>
+				{isFavorite ? <Favorite /> : <FavoriteBorder />}
+			</IconButton>
+		</Tooltip>
+	);
 };
 
 export default FavoriteButton;
