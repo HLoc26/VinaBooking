@@ -7,7 +7,7 @@ import searchReducer from "../features/search/searchSlice";
 export default configureStore({
 	reducer: {
 		auth: authReducer,
-		favorites: favoritesReducer,
+		favourites: favoritesReducer,
 		booking: bookingReducer,
 		search: searchReducer,
 	},
