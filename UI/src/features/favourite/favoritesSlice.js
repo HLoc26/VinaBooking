@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { addFavouriteApi, getFavouriteApi, removeFavouriteApi } from "./favouriteApi";
+import { logoutUser } from "../auth/authSlice";
 
 export const getFavourite = createAsyncThunk("/favourites", async (_, { rejectWithValue }) => {
 	try {
@@ -98,6 +99,11 @@ const favoritesSlice = createSlice({
 				state.loading = false;
 				state.error = action.payload;
 				console.error("Error remove favourites:", action.payload);
+			})
+			.addCase(logoutUser.fulfilled, (state) => {
+				state.accomms = [];
+				state.loading = false;
+				state.error = "";
 			});
 	},
 });
