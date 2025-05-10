@@ -1,3 +1,5 @@
+import Accommodation from "./Accommodation.js";
+
 /**
  * A `RegisteredUser`'s favourite list
  * @class FavouriteList
@@ -7,6 +9,22 @@ class FavouriteList {
 		this.id = id;
 		this.userId = userId;
 		this.accommodations = accommodations;
+	}
+
+	static fromModel(model) {
+		return new FavouriteList({
+			id: model.id,
+			userId: model.userId,
+			accommodations: model.Accommodation.map((accModel) => Accommodation.fromModel(accModel)),
+		});
+	}
+
+	toPlain() {
+		return {
+			id: this.id,
+			userId: this.userId,
+			accommodations: this.accommodations.map((acc) => acc.toPlain()),
+		};
 	}
 
 	hasAccommodation(accommodation) {
