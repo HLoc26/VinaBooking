@@ -10,7 +10,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useParams } from "react-router-dom";
 // Redux
 import { useSelector, useDispatch } from "react-redux";
-import { toggleFavorite } from "../../features/favourite/favoritesSlice";
+// import { toggleFavorite } from "../../features/favourite/favoritesSlice";
 import { resetBooking } from "../../features/booking/bookingSlice";
 
 import CustomTabPanel from "../../components/ui/CustomTabPanel/CustomTabPanel";
@@ -20,15 +20,13 @@ import BookingSummary from "../../components/ui/BookingSummary/BookingSummary";
 import axiosInstance from "../../app/axios";
 import AppImage from "../../components/ui/Image/Image";
 import { useSafeImageList } from "../../hooks/useSafeImageList";
+import FavoriteButton from "../../components/ui/FavoriteButton/FavoriteButton";
 
 function AccommodationDetail() {
 	const { aid } = useParams();
-	const accId = Number(aid);
 
 	// Redux
 	const dispatch = useDispatch();
-	const favorites = useSelector((state) => state.favorites.ids);
-	const isFavorite = favorites.includes(accId);
 
 	const [activeTab, setActiveTab] = React.useState(0);
 	const [selectedImage, setSelectedImage] = React.useState(0);
@@ -37,9 +35,9 @@ function AccommodationDetail() {
 		setActiveTab(newValue);
 	};
 
-	const handleToggleFavorite = () => {
-		dispatch(toggleFavorite(accId));
-	};
+	// const handleToggleFavorite = () => {
+	// 	dispatch(toggleFavorite(accId));
+	// };
 
 	function a11yProps(index) {
 		return {
@@ -69,7 +67,7 @@ function AccommodationDetail() {
 		} catch (error) {
 			console.error(error);
 		}
-	}, [aid]);
+	}, [dispatch, aid]);
 	console.log(rooms);
 
 	// // Tính điểm trung bình từ reviews
@@ -106,9 +104,7 @@ function AccommodationDetail() {
 					{/* Name & Favorite button */}
 					<Stack direction="row" justifyContent="space-between" alignItems="center">
 						<Typography variant="h4">{accommodation.name}</Typography>
-						<IconButton onClick={handleToggleFavorite} color="error">
-							{isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-						</IconButton>
+						<FavoriteButton accommodation={accommodation} />
 					</Stack>
 
 					{/* Rating */}
@@ -140,7 +136,7 @@ function AccommodationDetail() {
 						<Stack direction="row" spacing={1} mt={1} sx={{ overflowX: "auto", py: 1 }}>
 							{images.map((img, idx) => (
 								<Box
-									key={img.id}
+									key={idx}
 									onClick={() => setSelectedImage(idx)}
 									sx={{
 										border: selectedImage === idx ? "2px solid #1976d2" : "2px solid transparent",

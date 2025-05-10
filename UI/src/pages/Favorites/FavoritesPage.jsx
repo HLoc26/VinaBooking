@@ -1,46 +1,31 @@
 import { useState, useEffect } from "react";
 import { Container, Typography, Box, Stack, CircularProgress, Alert, Divider, Grid, Snackbar } from "@mui/material";
-import { useSelector } from "react-redux";
-import { useNavigate, Navigate } from "react-router-dom";
-import axiosInstance from "../../app/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 import FavoriteCard from "../../components/ui/FavoriteCard/FavoriteCard";
 import Navbar from "../../components/layout/NavBar/NavBar";
+import { getFavourite } from "../../features/favourite/favoritesSlice";
 
 const FavoritesPage = () => {
-	const [favorites, setFavorites] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const dispatch = useDispatch();
+
+	const favorites = useSelector((state) => state.favourites.accomms);
+	const loading = useSelector((state) => state.favourites.loading);
+	const error = useSelector((state) => state.favourites.error);
+
 	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 	const [initialLoad, setInitialLoad] = useState(true);
-	const navigate = useNavigate();
 
 	// Get auth state from Redux
 	const { isLoggedIn, loading: authLoading, user } = useSelector((state) => state.auth);
 
-	// Fetch favorite list when component mounts
-	const fetchFavorites = async () => {
+	useEffect(() => {
 		if (!isLoggedIn || !user) {
 			// Don't fetch if not logged in
 			return;
 		}
-
-		try {
-			setLoading(true);
-			setError(null);
-			const response = await axiosInstance.get("/favourite");
-
-			if (response.data.success) {
-				setFavorites(response.data.payload.accommodations || []);
-			} else {
-				setError(response.data.error?.message || "Failed to load favorites");
-			}
-		} catch (err) {
-			console.error("Error fetching favorites:", err);
-			setError("Error loading your saved accommodations. Please try again later.");
-		} finally {
-			setLoading(false);
-		}
-	};
+		dispatch(getFavourite());
+	}, [isLoggedIn, user, dispatch]);
 
 	useEffect(() => {
 		// This effect runs once after the first render to set initial load to false
@@ -48,43 +33,30 @@ const FavoritesPage = () => {
 		return () => clearTimeout(timer);
 	}, []);
 
-	useEffect(() => {
-		// Only fetch data when authenticated and auth loading is complete
-		if (!authLoading && isLoggedIn && user) {
-			fetchFavorites();
-		}
-	}, [isLoggedIn, authLoading, user]);
-
 	// Close snackbar
 	const handleCloseSnackbar = () => {
 		setSnackbar({ ...snackbar, open: false });
 	};
 
 	// Handle removing an accommodation from favorites
-	const handleRemoveFromFavorites = async (accommodationId) => {
+	const handleRemove = async () => {
 		try {
-			const response = await axiosInstance.delete(`/favourite/remove/${accommodationId}`);
-
-			if (response.data.success) {
-				// Update state to remove the item without a full reload
-				setFavorites((prevFavorites) => prevFavorites.filter((item) => item.id !== accommodationId));
+			if (!error) {
 				setSnackbar({
 					open: true,
 					message: "Accommodation removed from favorites",
 					severity: "success",
 				});
 			} else {
-				setError(response.data.error?.message || "Failed to remove from favorites");
 				setSnackbar({
 					open: true,
-					message: response.data.error?.message || "Failed to remove from favorites",
+					message: error,
 					severity: "error",
 				});
 			}
 		} catch (err) {
 			console.error("Error removing from favorites:", err);
 			const errorMessage = err.response?.data?.error?.message || "Error removing accommodation from favorites. Please try again.";
-			setError(errorMessage);
 			setSnackbar({
 				open: true,
 				message: errorMessage,
@@ -155,7 +127,7 @@ const FavoritesPage = () => {
 				) : (
 					<Stack spacing={3}>
 						{favorites.map((accommodation) => (
-							<FavoriteCard key={accommodation.id} accommodation={accommodation} onRemove={() => handleRemoveFromFavorites(accommodation.id)} />
+							<FavoriteCard key={accommodation.id} accommodation={accommodation} onRemove={handleRemove} />
 						))}
 					</Stack>
 				)}
