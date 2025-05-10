@@ -10,7 +10,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useParams } from "react-router-dom";
 // Redux
 import { useSelector, useDispatch } from "react-redux";
-import { toggleFavorite } from "../../features/accommodationDetail/favoritesSlice";
+import { toggleFavorite } from "../../features/favourite/favoritesSlice";
 import { resetBooking } from "../../features/booking/bookingSlice";
 
 import CustomTabPanel from "../../components/ui/CustomTabPanel/CustomTabPanel";
