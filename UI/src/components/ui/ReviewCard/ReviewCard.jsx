@@ -101,8 +101,9 @@ function ReviewCard({ star, comment, reviewer, images, reviewDate = new Date() }
 							>
 								{/* Show spinner while loading */}
 								{loading && <CircularProgress />}
-								<img
-									src={imagesList[selectedImageIndex]?.img}
+								<AppImage
+									type="review"
+									filename={imagesList[selectedImageIndex]?.filename}
 									alt="Full view"
 									style={{
 										maxWidth: "100%",
