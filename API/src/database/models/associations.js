@@ -79,7 +79,7 @@ Notification.belongsToMany(User, {
 
 // Review associations
 Review.hasMany(Image, { foreignKey: "reviewId" });
-Review.belongsTo(User, { foreignKey: "userId" });
+Review.belongsTo(User, { as: "reviewer", foreignKey: "userId" });
 Review.belongsTo(Accommodation, { foreignKey: "accommodationId" });
 Review.hasMany(ReviewReply, { foreignKey: "reviewId" });
 

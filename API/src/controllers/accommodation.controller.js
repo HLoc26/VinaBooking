@@ -4,6 +4,7 @@ export default {
 	async getAccommodationDetail(req, res) {
 		try {
 			const id = parseInt(req.params.id, 10);
+			const {startDate, endDate} = req.query;
 
 			if (isNaN(id)) {
 				return res.status(400).json({
@@ -15,7 +16,7 @@ export default {
 				});
 			}
 
-			const accommodation = await accommodationService.findById(id);
+			const accommodation = await accommodationService.findById(id, startDate, endDate);
 
 			if (!accommodation) {
 				return res.status(404).json({

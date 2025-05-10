@@ -11,7 +11,7 @@ import AppImage from "../Image/Image.jsx";
 import { useSafeImageList } from "../../../hooks/useSafeImageList.js";
 
 function RoomCard({ room }) {
-	const { id, name, maxCapacity, size, description, price, RoomAmenities, images, availableRooms = 1 } = room;
+	const { id, name, maxCapacity, size, description, price, amenities, images, availableRooms = 1 } = room;
 	const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 	const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -144,8 +144,8 @@ function RoomCard({ room }) {
 									<b>Amenities:</b>
 								</Typography>
 								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-									{RoomAmenities &&
-										Object.values(RoomAmenities)
+									{amenities &&
+										Object.values(amenities)
 											.flat()
 											.slice(0, 5)
 											.map((amenity, index) => (
@@ -162,7 +162,7 @@ function RoomCard({ room }) {
 													{amenity.name}
 												</Typography>
 											))}
-									{RoomAmenities && Object.values(RoomAmenities).flat().length > 5 && (
+									{amenities && Object.values(amenities).flat().length > 5 && (
 										<Typography
 											variant="body2"
 											sx={{
@@ -172,7 +172,7 @@ function RoomCard({ room }) {
 												borderRadius: 1,
 											}}
 										>
-											+{Object.values(RoomAmenities).flat().length - 5} more
+											+{Object.values(amenities).flat().length - 5} more
 										</Typography>
 									)}
 								</Box>

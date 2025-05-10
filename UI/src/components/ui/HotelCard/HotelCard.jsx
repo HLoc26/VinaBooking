@@ -85,7 +85,7 @@ function HotelCard({ id, name = "Hotel Name", location = "Location", amenities =
 						</Typography>
 						<Stack direction="row" spacing={1} sx={{ overflow: "hidden", whiteSpace: "nowrap" }}>
 							{visibleAmenities.map((amenity, index) => (
-								<Chip key={index} label={amenity} size="small" color="primary" variant="outlined" />
+								<Chip key={index} label={amenity.name} size="small" color="primary" variant="outlined" />
 							))}
 							{remainingCount > 0 && <Chip label={`+${remainingCount}`} size="small" color="primary" variant="outlined" />}
 						</Stack>

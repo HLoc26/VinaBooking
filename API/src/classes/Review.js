@@ -1,3 +1,6 @@
+import Image from './Image.js';
+import User from './User.js';
+
 /**
  * @class Review
  */
@@ -6,8 +9,8 @@ class Review {
 		this.id = id;
 		this.star = star;
 		this.comment = comment;
-		this.images = images;
-		this.reviewer = reviewer;
+		this.images = images ? images.map((i) => new Image(i)) : [];
+		this.reviewer = reviewer ? new User(reviewer) : null;
 		this.accommodation = accommodation;
 		this.reviewDate = reviewDate;
 	}
@@ -26,6 +29,17 @@ class Review {
 
 	getStar() {
 		return +this.star;
+	}
+
+	toPlain() {
+		return {
+			id: this.id,
+			star: this.star,
+			comment: this.comment,
+			images: this.images.map((i) => i.toPlain()),
+			reviewer: this.reviewer ? this.reviewer.toPlain() : null,
+			reviewDate: this.reviewDate,
+		};
 	}
 }
 
