@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 // Redux
 import { useSelector, useDispatch } from "react-redux";
 import { toggleFavorite } from "../../features/accommodationDetail/favoritesSlice";
+import { resetBooking } from "../../features/booking/bookingSlice";
 
 import CustomTabPanel from "../../components/ui/CustomTabPanel/CustomTabPanel";
 import MainLayout from "../../components/layout/MainLayout/MainLayout";
@@ -53,6 +54,8 @@ function AccommodationDetail() {
 
 	React.useEffect(() => {
 		try {
+			// Reset booking state when component mounts
+			dispatch(resetBooking());
 			axiosInstance.get(`/accommodations/${aid}`).then((response) => {
 				console.log(response);
 				const accomm = response.data.payload.accommodation;
