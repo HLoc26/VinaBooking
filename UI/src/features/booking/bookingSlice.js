@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { logoutUser } from "../auth/authSlice";
 
 const initialState = {
 	selectedRooms: {},
@@ -47,6 +48,12 @@ const bookingSlice = createSlice({
 		updateTotalAmount: (state, action) => {
 			state.totalAmount = action.payload;
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(logoutUser.fulfilled, (state) => {
+			state.selectedRooms = {};
+			state.totalAmount = 0;
+		});
 	},
 });
 
