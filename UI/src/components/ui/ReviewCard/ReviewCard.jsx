@@ -4,7 +4,7 @@ import * as Icon from "@mui/icons-material";
 import AppImage from "../Image/Image";
 import { useSafeImageList } from "../../../hooks/useSafeImageList";
 
-function ReviewCard({ star, comment, reviewer, images, reviewDate = new Date() }) {
+function ReviewCard({ star, comment, reviewer, images = [], reviewDate = new Date() }) {
 	const [open, setOpen] = useState(false);
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 	const [loading, setLoading] = useState(true); // Track loading state for the full image
@@ -39,7 +39,12 @@ function ReviewCard({ star, comment, reviewer, images, reviewDate = new Date() }
 	return (
 		<Paper elevation={2} sx={{ mb: 2, padding: 2 }}>
 			<Typography>
-				{reviewer} reviewed at {reviewDate.toLocaleString()}
+				{reviewer} reviewed at{" "}
+				{new Intl.DateTimeFormat("en-US", {
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}).format(new Date(reviewDate))}
 			</Typography>
 			<Rating readOnly value={star} precision={0.1} />
 			<ImageList cols={imagesList.length} rowHeight={150}>
