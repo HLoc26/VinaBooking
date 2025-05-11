@@ -4,6 +4,7 @@ import { login } from "../../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { getFavourite } from "../../../features/favourite/favoritesSlice";
 
 function Login() {
 	const dispatch = useDispatch();
@@ -20,7 +21,7 @@ function Login() {
 		}
 	}, [user, navigate]);
 
-	const handleLogin = (e) => {
+	const handleLogin = async (e) => {
 		// Prevent default if this is in a form
 		if (e && e.preventDefault) e.preventDefault();
 
@@ -37,7 +38,8 @@ function Login() {
 		};
 
 		console.log("Dispatching login"); // Removed credentials from log
-		dispatch(login(credentials));
+		await dispatch(login(credentials)); // Await to make sure user have logged in before get their favs
+		dispatch(getFavourite());
 	};
 
 	return (
