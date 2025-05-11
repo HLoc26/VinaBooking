@@ -51,18 +51,20 @@ function AccommodationDetail() {
 	const [address, setAddress] = React.useState("");
 	const [amenities, setAmenities] = React.useState([]);
 	const [rooms, setRoom] = React.useState([]);
+	const [reviews, setReviews] = React.useState([]);
 
 	React.useEffect(() => {
 		try {
 			// Reset booking state when component mounts
 			dispatch(resetBooking());
 			axiosInstance.get(`/accommodations/${aid}`).then((response) => {
-				console.log(response);
+				console.log("@@@@@@",response);
 				const accomm = response.data.payload.accommodation;
 				setAccommodation(accomm);
 				setAddress(accomm.address);
 				setAmenities(accomm.amenities);
 				setRoom(accomm.rooms);
+				setReviews(accomm.reviews);
 			});
 		} catch (error) {
 			console.error(error);
@@ -109,12 +111,12 @@ function AccommodationDetail() {
 					</Stack>
 
 					{/* Rating */}
-					{/* <Stack direction="row" spacing={1} mt={1} alignItems="center">
-						<Rating value={averageRating} precision={0.1} readOnly />
+					<Stack direction="row" spacing={1} mt={1} alignItems="center">
+						<Rating value={Number(accommodation.rating)} precision={0.1} readOnly />
 						<Typography variant="body2" color="text.secondary">
-							{averageRating} ( reviews)
+							{Number(accommodation.rating).toFixed(1)} ({reviews?.length ?? 0} reviews)
 						</Typography>
-					</Stack> */}
+					</Stack>
 
 					{/* Address */}
 					<Typography variant="body2" color="text.secondary" mt={1}>
@@ -203,18 +205,24 @@ function AccommodationDetail() {
 				</CustomTabPanel>
 
 				{/* ========== REVIEWS TAB ========== */}
-				{/* <CustomTabPanel value={activeTab} index={4}>
-					{reviews.map((review, index) => (
-						<ReviewCard
-							key={index}
-							star={review.star}
-							reviewDate={review.reviewDate}
-							images={itemData} // A list of images, could be empty
-							reviewer={review.reviewer}
-							comment={review.comment}
-						/>
-					))}
-				</CustomTabPanel> */}
+				<CustomTabPanel value={activeTab} index={4}>
+					{reviews.length > 0 ? (
+						reviews.map((review, index) => (
+							<ReviewCard
+								key={index}
+								star={Number(review.star)}
+								reviewDate={review.reviewDate}
+								//images={review.images} // or fallback logic if needed
+								reviewer={review.reviewer.name}
+								comment={review.comment}
+							/>
+						))
+					) : (
+						<Typography variant="body2" color="text.secondary">
+							No reviews yet.
+						</Typography>
+					)}
+				</CustomTabPanel>
 
 				{/* Previous and Next buttons */}
 				<Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 4 }}>
