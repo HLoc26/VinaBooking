@@ -30,10 +30,8 @@ export default {
 				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
 				sameSite: "lax",
 				maxAge: maxAge,
-			});
-
-			// Only send user info in payload, not the JWT token
-			return res.json({
+			});			// Only send user info in payload, not the JWT token
+			return res.status(200).json({
 				success: true,
 				message: "Login success",
 				payload: {
@@ -54,7 +52,6 @@ export default {
 			});
 		}
 	},
-
 	async initiateRegistration(req, res) {
 		try {
 			const { name, phone, email, password, role, gender, dob } = req.body;
@@ -64,13 +61,21 @@ export default {
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
-			res.status(200).json({ success: true, message: "OTP sent to email. Please confirm to complete registration." });
+			return res.status(200).json({ 
+				success: true, 
+				message: "OTP sent to email. Please confirm to complete registration." 
+			});
 		} catch (error) {
-			console.error("Registration initiation failed");
-			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
+			console.error("Registration initiation failed:", error);
+			return res.status(500).json({ 
+				success: false, 
+				error: { 
+					code: 500, 
+					message: "Internal Server Error" 
+				} 
+			});
 		}
 	},
-
 	async completeRegistration(req, res) {
 		try {
 			const { email, otp } = req.body;
@@ -80,10 +85,19 @@ export default {
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
-			res.status(201).json({ success: true, message: "Account created successfully. You can now log in." });
+			return res.status(201).json({ 
+				success: true, 
+				message: "Account created successfully. You can now log in." 
+			});
 		} catch (error) {
-			console.error("Registration confirmation failed");
-			res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
+			console.error("Registration confirmation failed:", error);
+			return res.status(500).json({ 
+				success: false, 
+				error: { 
+					code: 500, 
+					message: "Internal Server Error" 
+				} 
+			});
 		}
 	},
 
