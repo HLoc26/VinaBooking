@@ -113,7 +113,7 @@ const FavoriteCard = ({ accommodation, onRemove }) => {
 						{minPrice !== "N/A" ? `${convertPrice(minPrice)} VND` : "Price unavailable"}
 					</Typography>
 					<Stack direction="row" spacing={1}>
-						<Button variant="contained" size="small" color="primary" href={`/accommodations/${accommodation.id}`}>
+						<Button variant="contained" size="small" color="primary" href={`/accommodation/detail/${accommodation.id}`}>
 							View Details
 						</Button>
 						<FavoriteButton accommodation={accommodation} onRemove={onRemove} size="small" />
