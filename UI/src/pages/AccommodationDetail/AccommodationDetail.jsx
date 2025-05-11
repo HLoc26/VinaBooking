@@ -1,6 +1,6 @@
 import * as React from "react";
 // MUI components
-import { Box, Tabs, Tab, Typography, IconButton, Rating, Stack, Chip, Button, Grid, List, ListItem, ListItemText, ListItemIcon, Divider, Container, Paper } from "@mui/material";
+import { Box, Tabs, Tab, Typography, IconButton, Rating, Stack, Chip, Button, Grid, List, ListItem, ListItemText, ListItemIcon, Divider, Container, Paper, Card, CardContent } from "@mui/material";
 // MUI icons
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -66,6 +66,8 @@ function AccommodationDetail() {
 				setAccommodation(accomm);
 				setAddress(accomm.address);
 				setAmenities(accomm.amenities);
+				console.log("AMENITIES:", accomm.amenities);
+
 				setRoom(accomm.rooms);
 				setReviews(accomm.reviews);
 			});
@@ -124,6 +126,24 @@ function AccommodationDetail() {
 		}
 	};
 
+	// Nhóm amenities theo type
+	const groupedAmenities = React.useMemo(() => {
+		return (amenities || []).reduce((acc, amenity) => {
+			const type = amenity.type || "Other";
+			if (!acc[type]) acc[type] = [];
+			acc[type].push(amenity);
+			return acc;
+		}, {});
+	}, [amenities]);
+
+	// Hàm chuyển snake_case sang Title Case
+	const formatTypeLabel = (type) => {
+		return type
+			.split("_")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	};
+
 	return (
 		<MainLayout>
 			<Box sx={{ width: "100%" }}>
@@ -135,7 +155,6 @@ function AccommodationDetail() {
 						))}
 					</Tabs>
 				</Box>
-
 				{/* ========== OVERVIEW TAB ========== */}
 				<CustomTabPanel value={activeTab} index={0}>
 					{/* Name & Favorite button */}
@@ -206,12 +225,11 @@ function AccommodationDetail() {
 						</Stack>
 					</Box>
 				</CustomTabPanel>
-
 				{/* ========== ROOMS TAB ========== */}
 				<CustomTabPanel value={activeTab} index={1}>
 					<Grid container spacing={1}>
 						{/* Room Cards Column - 2/3 width */}
-						<Grid item xs={9}>
+						<Grid item size={9}>
 							<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 								{rooms && rooms.length > 0 ? (
 									rooms.map((room) => <RoomCard key={room.id} room={room} />)
@@ -224,17 +242,39 @@ function AccommodationDetail() {
 						</Grid>
 
 						{/* Booking Summary Column - 1/3 width */}
-						<Grid item xs={3}>
+						<Grid item size={3}>
 							<BookingSummary />
 						</Grid>
 					</Grid>
 				</CustomTabPanel>
-
 				{/* ========== AMENITIES TAB ========== */}
 				<CustomTabPanel value={activeTab} index={2}>
-					Amenities
-				</CustomTabPanel>
+					<Typography variant="h5" gutterBottom>
+						What this place offers
+					</Typography>
 
+					{Object.keys(groupedAmenities).length === 0 ? (
+						<Typography>No amenities available</Typography>
+					) : (
+						<Grid container spacing={3}>
+							{Object.entries(groupedAmenities).map(([type, list]) => (
+								<Grid item xs={12} sm={6} md={4} lg={3} key={type}>
+									<Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: "100%" }}>
+										<Typography variant="subtitle1" gutterBottom sx={{ fontWeight: "bold", color: "primary.main" }}>
+											{formatTypeLabel(type)}
+										</Typography>
+
+										<Stack spacing={1}>
+											{list.map((am) => (
+												<Chip key={am.id} label={am.name} variant="outlined" />
+											))}
+										</Stack>
+									</Paper>
+								</Grid>
+							))}
+						</Grid>
+					)}
+				</CustomTabPanel>
 				{/* ========== POLICY TAB ========== */}y
 				<CustomTabPanel value={activeTab} index={3}>
 					<Container maxWidth="sm" sx={{ py: 4 }}>
@@ -294,7 +334,6 @@ function AccommodationDetail() {
 						</Paper>
 					</Container>
 				</CustomTabPanel>
-
 				{/* ========== REVIEWS TAB ========== */}
 				<CustomTabPanel value={activeTab} index={4}>
 					{reviews.length > 0 ? (
@@ -314,7 +353,6 @@ function AccommodationDetail() {
 						</Typography>
 					)}
 				</CustomTabPanel>
-
 				{/* Previous and Next buttons */}
 				<Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 4 }}>
 					{/* Hiển thị nút Previous nếu không phải tab đầu tiên */}
