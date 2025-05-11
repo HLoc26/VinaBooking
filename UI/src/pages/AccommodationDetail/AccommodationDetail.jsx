@@ -1,11 +1,14 @@
 import * as React from "react";
 // MUI components
-import { Box, Tabs, Tab, Typography, IconButton, Rating, Stack, Chip, Button, Grid } from "@mui/material";
+import { Box, Tabs, Tab, Typography, IconButton, Rating, Stack, Chip, Button, Grid, List, ListItem, ListItemText, ListItemIcon, Divider, Container, Paper } from "@mui/material";
 // MUI icons
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PaymentIcon from "@mui/icons-material/Payment";
+import CancelIcon from "@mui/icons-material/Cancel";
 // Router
 import { useParams } from "react-router-dom";
 // Redux
@@ -58,7 +61,7 @@ function AccommodationDetail() {
 			// Reset booking state when component mounts
 			dispatch(resetBooking());
 			axiosInstance.get(`/accommodations/${aid}`).then((response) => {
-				console.log("@@@@@@",response);
+				console.log("@@@@@@", response);
 				const accomm = response.data.payload.accommodation;
 				setAccommodation(accomm);
 				setAddress(accomm.address);
@@ -88,6 +91,39 @@ function AccommodationDetail() {
 		}
 	};
 	const tabLabels = ["Overview", "Rooms", "Amenities", "Policy", "Reviews"];
+
+	// Hàm lấy mô tả cho chính sách đặt cọc
+	const getPrepaymentDescription = (value) => {
+		switch (value?.toUpperCase()) {
+			case "FULL":
+				return "Full prepayment is required before check-in.";
+			case "HALF":
+				return "50% prepayment is required before check-in.";
+			case "NONE":
+				return "No prepayment required.";
+			default:
+				return "No information available about prepayment.";
+		}
+	};
+
+	// Hàm lấy mô tả cho chính sách hủy phòng
+	const getCancellationDescription = (value) => {
+		switch (value?.toUpperCase()) {
+			case "CANCEL_24H":
+				return "Free cancellation up to 24 hours before check-in.";
+			case "CANCEL_3D":
+				return "Free cancellation up to 3 days before check-in.";
+			case "CANCEL_7D":
+				return "Free cancellation up to 7 days before check-in.";
+			case "CANCEL_15D":
+				return "Free cancellation up to 15 days before check-in.";
+			case "NO_CANCEL":
+				return "No cancellation allowed after booking.";
+			default:
+				return "No information available about cancellation policy.";
+		}
+	};
+
 	return (
 		<MainLayout>
 			<Box sx={{ width: "100%" }}>
@@ -175,7 +211,7 @@ function AccommodationDetail() {
 				<CustomTabPanel value={activeTab} index={1}>
 					<Grid container spacing={1}>
 						{/* Room Cards Column - 2/3 width */}
-						<Grid item size={9}>
+						<Grid item xs={9}>
 							<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 								{rooms && rooms.length > 0 ? (
 									rooms.map((room) => <RoomCard key={room.id} room={room} />)
@@ -188,7 +224,7 @@ function AccommodationDetail() {
 						</Grid>
 
 						{/* Booking Summary Column - 1/3 width */}
-						<Grid item size={3}>
+						<Grid item xs={3}>
 							<BookingSummary />
 						</Grid>
 					</Grid>
@@ -199,9 +235,64 @@ function AccommodationDetail() {
 					Amenities
 				</CustomTabPanel>
 
-				{/* ========== POLICY TAB ========== */}
+				{/* ========== POLICY TAB ========== */}y
 				<CustomTabPanel value={activeTab} index={3}>
-					Policy
+					<Container maxWidth="sm" sx={{ py: 4 }}>
+						<Paper
+							elevation={2}
+							sx={{
+								p: 4,
+								borderRadius: 3,
+								boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+							}}
+						>
+							<Typography variant="h5" fontWeight="bold" gutterBottom>
+								House Rules & Policies
+							</Typography>
+
+							{accommodation?.policy ? (
+								<List disablePadding>
+									{/* Check-in/out */}
+									<ListItem alignItems="flex-start">
+										<ListItemIcon>
+											<AccessTimeIcon color="primary" />
+										</ListItemIcon>
+										<ListItemText
+											primary="Check-in / Check-out"
+											secondary={`Check-in: ${accommodation.policy.checkIn?.substring(0, 5) || "---"} | Check-out: ${accommodation.policy.checkOut?.substring(0, 5) || "---"}`}
+											primaryTypographyProps={{ fontWeight: "medium" }}
+										/>
+									</ListItem>
+									<Divider variant="inset" component="li" sx={{ my: 1 }} />
+
+									{/* Cancellation */}
+									<ListItem alignItems="flex-start">
+										<ListItemIcon>
+											<CancelIcon color="error" />
+										</ListItemIcon>
+										<ListItemText
+											primary="Cancellation Policy"
+											secondary={getCancellationDescription(accommodation.policy.cancellation)}
+											primaryTypographyProps={{ fontWeight: "medium" }}
+										/>
+									</ListItem>
+									<Divider variant="inset" component="li" sx={{ my: 1 }} />
+
+									{/* Prepayment */}
+									<ListItem alignItems="flex-start">
+										<ListItemIcon>
+											<PaymentIcon color="success" />
+										</ListItemIcon>
+										<ListItemText primary="Prepayment" secondary={getPrepaymentDescription(accommodation.policy.prepay)} primaryTypographyProps={{ fontWeight: "medium" }} />
+									</ListItem>
+								</List>
+							) : (
+								<Typography variant="body1" color="text.secondary">
+									Loading policy information...
+								</Typography>
+							)}
+						</Paper>
+					</Container>
 				</CustomTabPanel>
 
 				{/* ========== REVIEWS TAB ========== */}
