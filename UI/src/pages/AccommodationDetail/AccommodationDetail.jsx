@@ -23,6 +23,7 @@ import AppImage from "../../components/ui/Image/Image";
 import { useSafeImageList } from "../../hooks/useSafeImageList";
 import FavoriteButton from "../../components/ui/FavoriteButton/FavoriteButton";
 import ReviewCard from "../../components/ui/ReviewCard/ReviewCard";
+import ReviewsTab from "../../components/ui/ReviewTab/ReviewTab";
 
 function AccommodationDetail() {
 	const { aid } = useParams();
@@ -340,22 +341,7 @@ function AccommodationDetail() {
 				</CustomTabPanel>
 				{/* ========== REVIEWS TAB ========== */}
 				<CustomTabPanel value={activeTab} index={4}>
-					{reviews.length > 0 ? (
-						reviews.map((review, index) => (
-							<ReviewCard
-								key={index}
-								star={Number(review.star)}
-								reviewDate={review.reviewDate}
-								//images={review.images} // or fallback logic if needed
-								reviewer={review.reviewer.name}
-								comment={review.comment}
-							/>
-						))
-					) : (
-						<Typography variant="body2" color="text.secondary">
-							No reviews yet.
-						</Typography>
-					)}
+					<ReviewsTab reviews={reviews} />
 				</CustomTabPanel>
 				{/* Previous and Next buttons */}
 				<Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 4 }}>
