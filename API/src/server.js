@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import router from "./routes/index.routes.js";
 import sequelize from "./config/sequelize.js";
 import "./database/models/index.js";
+import "dotenv/config";
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.use(cookieParser());
 // ======================= CORS =========================
 app.use(
 	cors({
-		origin: ["http://localhost:5173", "http://vinabooking.com"],
+		origin: ["http://localhost:5173", process.env.UI_PATH],
 		credentials: true,
 	})
 );
