@@ -156,16 +156,6 @@ function BookingSummary() {
 								numMonths={1}
 								direction="vertical"
 							/>
-							
-							<Button 
-								variant="contained" 
-								color="primary" 
-								fullWidth 
-								onClick={handleConfirmDates}
-								sx={{ mt: 2 }}
-							>
-								Confirm Dates
-							</Button>
 						</Box>
 					) : (
 						<Box sx={{ my: 2 }}>
