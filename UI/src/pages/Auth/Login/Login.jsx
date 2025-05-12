@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, TextField, Button, Typography, Container, Link, CircularProgress, FormControlLabel, Checkbox } from "@mui/material";
+import { Box, TextField, Button, Typography, Container, Link, CircularProgress, FormControlLabel, Checkbox, Paper } from "@mui/material";
 import { login } from "../../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -21,7 +21,7 @@ function Login() {
 		if (user) {
 			navigate(fromPath, { replace: true });
 		}
-	}, [user, navigate]);
+	}, [user, navigate, fromPath]);
 
 	const handleLogin = async (e) => {
 		// Prevent default if this is in a form
@@ -45,60 +45,138 @@ function Login() {
 	};
 
 	return (
-		<Container maxWidth="sm">
-			<Box
-				component="form"
-				onSubmit={handleLogin}
+		<Container component="main" maxWidth="sm" sx={{ 
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'center',
+			minHeight: '100vh',
+			padding: 3
+		}}>
+			<Paper
+				elevation={6}
 				sx={{
-					marginTop: 8,
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "center",
-					boxShadow: 3,
-					padding: 4,
-					borderRadius: 2,
-					backgroundColor: "#fff",
+					width: '100%',
+					borderRadius: 3,
+					overflow: 'hidden',
+					transition: 'all 0.3s ease-in-out',
+					'&:hover': {
+						boxShadow: 10,
+					},
 				}}
 			>
-				<Typography variant="h4" fontWeight="bold" gutterBottom>
-					Login
-				</Typography>
-				<TextField fullWidth label="Email" variant="outlined" margin="normal" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={loading} />
-				<TextField
-					fullWidth
-					label="Password"
-					type="password"
-					variant="outlined"
-					margin="normal"
-					name="password"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					required
-					disabled={loading}
-				/>
-
-				{/* Remember Me Checkbox */}
-				<Box sx={{ width: "100%", display: "flex", justifyContent: "flex-start", mt: 1 }}>
-					<FormControlLabel control={<Checkbox checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} color="primary" disabled={loading} />} label="Remember me" />
+				<Box
+					sx={{
+						bgcolor: 'primary.main',
+						color: 'white',
+						padding: 3,
+						textAlign: 'center',
+					}}
+				>
+					<Typography variant="h4" fontWeight="bold" gutterBottom>
+						Welcome Back
+					</Typography>
+					<Typography variant="subtitle1">
+						Sign in to continue to VinaBooking
+					</Typography>
 				</Box>
 
-				<Button fullWidth variant="contained" color="primary" sx={{ marginTop: 2 }} type="submit" disabled={loading}>
-					{loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
-				</Button>
+				<Box
+					component="form"
+					onSubmit={handleLogin}
+					sx={{
+						padding: 4,
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						backgroundColor: "#fff",
+					}}
+				>
+					<TextField 
+						fullWidth 
+						label="Email" 
+						variant="outlined" 
+						margin="normal" 
+						name="email" 
+						value={email} 
+						onChange={(e) => setEmail(e.target.value)} 
+						required 
+						disabled={loading}
+						InputProps={{
+							sx: { borderRadius: 2 }
+						}}
+					/>
+					<TextField
+						fullWidth
+						label="Password"
+						type="password"
+						variant="outlined"
+						margin="normal"
+						name="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						required
+						disabled={loading}
+						InputProps={{
+							sx: { borderRadius: 2 }
+						}}
+					/>
 
-				{error && (
-					<Typography color="error" sx={{ mt: 2 }}>
-						{error}
-					</Typography>
-				)}
+					<Box sx={{ width: "100%", display: "flex", justifyContent: "space-between", mt: 1, mb: 2 }}>
+						<FormControlLabel 
+							control={
+								<Checkbox 
+									checked={rememberMe} 
+									onChange={(e) => setRememberMe(e.target.checked)} 
+									color="primary" 
+									disabled={loading} 
+								/>
+							} 
+							label="Remember me" 
+						/>
+						<Link href="#" underline="hover" color="primary.main" sx={{ alignSelf: 'center' }}>
+							Forgot password?
+						</Link>
+					</Box>
 
-				<Typography variant="body2" sx={{ marginTop: 2 }}>
-					Don't have an account?{" "}
-					<Link href="/register" color="primary">
-						Register
-					</Link>
-				</Typography>
-			</Box>
+					<Button 
+						fullWidth 
+						variant="contained" 
+						color="primary" 
+						type="submit" 
+						disabled={loading}
+						sx={{ 
+							marginTop: 2,
+							padding: '12px',
+							borderRadius: 2,
+							fontSize: '1rem',
+							fontWeight: 'bold',
+							textTransform: 'none',
+							transition: 'all 0.2s',
+							'&:hover': {
+								transform: 'translateY(-2px)',
+								boxShadow: 4,
+							}
+						}}
+					>
+						{loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
+					</Button>
+
+					{error && (
+						<Typography color="error" sx={{ mt: 2, p: 1, bgcolor: 'error.light', borderRadius: 1, width: '100%', textAlign: 'center' }}>
+							{error}
+						</Typography>
+					)}
+
+					<Box sx={{ marginTop: 4, textAlign: 'center' }}>
+						<Typography variant="body2">
+							Don't have an account?{" "}
+							<Link href="/register" color="primary" underline="hover" sx={{ fontWeight: 'bold' }}>
+								Create an account
+							</Link>
+						</Typography>
+					</Box>
+				</Box>
+			</Paper>
 		</Container>
 	);
 }
