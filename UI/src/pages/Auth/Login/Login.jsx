@@ -5,6 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { getFavourite } from "../../../features/favourite/favoritesSlice";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 function Login() {
 	const dispatch = useDispatch();
@@ -15,6 +19,7 @@ function Login() {
 	const [email, setEmail] = React.useState("");
 	const [password, setPassword] = React.useState("");
 	const [rememberMe, setRememberMe] = React.useState(false);
+	const [showPassword, setShowPassword] = React.useState(false);
 
 	// Redirect if user is already logged in
 	useEffect(() => {
@@ -42,6 +47,14 @@ function Login() {
 		console.log("Dispatching login"); // Removed credentials from log
 		await dispatch(login(credentials)); // Await to make sure user have logged in before get their favs
 		dispatch(getFavourite());
+	};
+
+	const handleClickShowPassword = () => {
+		setShowPassword(!showPassword);
+	};
+
+	const handleMouseDownPassword = (event) => {
+		event.preventDefault();
 	};
 
 	return (
@@ -124,7 +137,7 @@ function Login() {
 						<TextField
 							fullWidth
 							label="Password"
-							type="password"
+							type={showPassword ? "text" : "password"}
 							variant="outlined"
 							margin="normal"
 							name="password"
@@ -133,7 +146,20 @@ function Login() {
 							required
 							disabled={loading}
 							InputProps={{
-								sx: { borderRadius: 2 }
+								sx: { borderRadius: 2 },
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton
+											aria-label="toggle password visibility"
+											onClick={handleClickShowPassword}
+											onMouseDown={handleMouseDownPassword}
+											edge="end"
+											disabled={loading}
+										>
+											{showPassword ? <VisibilityOff /> : <Visibility />}
+										</IconButton>
+									</InputAdornment>
+								)
 							}}
 						/>
 
