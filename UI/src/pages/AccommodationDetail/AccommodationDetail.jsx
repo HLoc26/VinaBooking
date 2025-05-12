@@ -279,7 +279,7 @@ function AccommodationDetail() {
 						</Grid>
 					)}
 				</CustomTabPanel>
-				{/* ========== POLICY TAB ========== */}y
+				{/* ========== POLICY TAB ========== */}
 				<CustomTabPanel value={activeTab} index={3}>
 					<Container maxWidth="sm" sx={{ py: 4 }}>
 						<Paper
