@@ -3,9 +3,11 @@ import { IconButton, Tooltip, CircularProgress, Dialog, DialogTitle, DialogConte
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { addFavourite, removeFavourite } from "../../../features/favourite/favoritesSlice";
+import { useNavigate } from "react-router-dom";
 
 const FavoriteButton = ({ accommodation, onRemove, ...props }) => {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	const favList = useSelector((state) => state.favourites.accomms);
 	const isLoadingGlobal = useSelector((state) => state.favourites.loading);
@@ -52,7 +54,7 @@ const FavoriteButton = ({ accommodation, onRemove, ...props }) => {
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleCloseModal}>Cancel</Button>
-					<Button onClick={() => (window.location.href = "/login")} variant="contained" color="primary">
+					<Button onClick={() => navigate("/login", { state: { from: location.pathname + location.search } })} variant="contained" color="primary">
 						Login
 					</Button>
 				</DialogActions>

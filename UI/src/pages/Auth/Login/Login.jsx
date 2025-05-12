@@ -2,13 +2,15 @@ import * as React from "react";
 import { Box, TextField, Button, Typography, Container, Link, CircularProgress, FormControlLabel, Checkbox } from "@mui/material";
 import { login } from "../../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { getFavourite } from "../../../features/favourite/favoritesSlice";
 
 function Login() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const location = useLocation();
+	const fromPath = location.state?.from || "/";
 	const { loading, error, user } = useSelector((state) => state.auth);
 	const [email, setEmail] = React.useState("");
 	const [password, setPassword] = React.useState("");
@@ -17,7 +19,7 @@ function Login() {
 	// Redirect if user is already logged in
 	useEffect(() => {
 		if (user) {
-			navigate("/");
+			navigate(fromPath, { replace: true });
 		}
 	}, [user, navigate]);
 

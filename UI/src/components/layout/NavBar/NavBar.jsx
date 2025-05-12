@@ -43,13 +43,9 @@ function Navbar() {
 				{/* NavLinks */}
 				<Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
 					{isLoggedIn && (
-							<Button 
-								color="inherit" 
-								onClick={() => navigate("/saved")}
-								startIcon={<Icon.Favorite />}
-							>
-								Saved Accommodations
-							</Button>
+						<Button color="inherit" onClick={() => navigate("/saved")} startIcon={<Icon.Favorite />}>
+							Saved Accommodations
+						</Button>
 					)}
 				</Box>
 
@@ -76,7 +72,7 @@ function Navbar() {
 						</Menu>
 					</Box>
 				) : (
-					<Button color="inherit" onClick={() => navigate("/login")}>
+					<Button color="inherit" onClick={() => navigate("/login", { state: { from: location.pathname + location.search } })}>
 						Login
 					</Button>
 				)}
