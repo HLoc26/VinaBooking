@@ -15,24 +15,27 @@ const BookRoom = () => {
 	const dispatch = useDispatch();
 	const [openDialog, setOpenDialog] = useState(false);
 
-	// Retrieve data passed via state
+	// Retrieve data from Redux
 	const rooms = useSelector(selectSelectedRooms);
 	const currentUser = useSelector(selectCurrentUser);
 	const dateRange = useSelector(selectBookingDates);
 
-	const startDate = new Date(dateRange.startDate);
-	const endDate = new Date(dateRange.endDate);
+	// Parse dates from Redux
+	const startDate = dateRange?.startDate ? new Date(dateRange.startDate) : new Date();
+	const endDate = dateRange?.endDate ? new Date(dateRange.endDate) : new Date(new Date().setDate(new Date().getDate() + 1));
 
 	// Count nights
 	const msPerNight = 1000 * 60 * 60 * 24;
 	const nights = Math.max(1, Math.ceil((endDate - startDate) / msPerNight));
 
 	// Recalculate total amount
-	const totalAmount = Object.values(rooms).reduce((sum, room) => {
-		return sum + room.quantity * room.price * nights;
-	}, 0);
+	useEffect(() => {
+		const totalAmount = Object.values(rooms).reduce((sum, room) => {
+			return sum + room.quantity * room.price * nights;
+		}, 0);
 
-	dispatch(updateTotalAmount(totalAmount));
+		dispatch(updateTotalAmount(totalAmount));
+	}, [rooms, nights, dispatch]);
 
 	// Redirect to the previous page if no data is passed
 	useEffect(() => {
@@ -119,7 +122,7 @@ const BookRoom = () => {
 					<Typography variant="h6">
 						<b>Total Price:</b>{" "}
 						<Typography component="span" variant="h6" color="success.main">
-							{totalAmount.toLocaleString()} VND
+							{(Object.values(rooms).reduce((sum, room) => sum + room.subtotal * nights, 0)).toLocaleString()} VND
 						</Typography>
 					</Typography>
 					<Button
