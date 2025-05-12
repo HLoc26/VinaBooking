@@ -149,7 +149,7 @@ function AccommodationDetail() {
 		<MainLayout>
 			<Box sx={{ width: "100%" }}>
 				{/* Tabs navigation */}
-				<Box sx={{ position: "sticky", top: 60, borderBottom: 1, borderColor: "divider", backgroundColor: "white", zIndex: 10000 }}>
+				<Box sx={{ position: "sticky", top: 60, borderBottom: 1, borderColor: "divider", backgroundColor: "white", zIndex: 1001 }}>
 					<Tabs value={activeTab} onChange={handleChangeTab}>
 						{tabLabels.map((label, index) => (
 							<Tab key={index} label={label} {...a11yProps(index)} />
