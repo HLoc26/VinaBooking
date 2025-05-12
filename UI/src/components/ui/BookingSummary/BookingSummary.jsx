@@ -17,7 +17,7 @@ function BookingSummary() {
 
 	const [dateRange, setDateRange] = React.useState({
 		startDate: new Date(),
-		endDate: new Date(new Date().setDate(new Date().getDate() + 1)) // Default to next day checkout
+		endDate: new Date(new Date().setDate(new Date().getDate() + 1)), // Default to next day checkout
 	});
 	const [showDatePicker, setShowDatePicker] = React.useState(false);
 	const [dateError, setDateError] = React.useState("");
@@ -31,12 +31,12 @@ function BookingSummary() {
 			try {
 				const startDate = new Date(bookingDates.startDate);
 				const endDate = new Date(bookingDates.endDate);
-				
+
 				// Check if dates are valid
 				if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
 					setDateRange({
 						startDate,
-						endDate
+						endDate,
 					});
 				}
 			} catch (error) {
@@ -55,22 +55,22 @@ function BookingSummary() {
 	const validateDateRange = () => {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
-		
+
 		const startDate = new Date(dateRange.startDate);
 		const endDate = new Date(dateRange.endDate);
-		
+
 		// Check if start date is today or in the future
 		if (startDate < today) {
 			setDateError("Check-in date cannot be in the past");
 			return false;
 		}
-		
+
 		// Check if end date is after start date
 		if (endDate <= startDate) {
 			setDateError("Check-out date must be after check-in date");
 			return false;
 		}
-		
+
 		return true;
 	};
 
@@ -85,12 +85,14 @@ function BookingSummary() {
 		}
 
 		// Save the date range to Redux
-		dispatch(updateSearchFields({
-			dateRange: {
-				startDate: dateRange.startDate,
-				endDate: dateRange.endDate
-			}
-		}));
+		dispatch(
+			updateSearchFields({
+				dateRange: {
+					startDate: dateRange.startDate,
+					endDate: dateRange.endDate,
+				},
+			})
+		);
 
 		navigate("/book");
 	};
@@ -98,12 +100,14 @@ function BookingSummary() {
 	const handleConfirmDates = () => {
 		if (validateDateRange()) {
 			// Save the date range to Redux
-			dispatch(updateSearchFields({
-				dateRange: {
-					startDate: dateRange.startDate,
-					endDate: dateRange.endDate
-				}
-			}));
+			dispatch(
+				updateSearchFields({
+					dateRange: {
+						startDate: dateRange.startDate,
+						endDate: dateRange.endDate,
+					},
+				})
+			);
 			setShowDatePicker(false);
 			navigate("/book");
 		}
@@ -141,16 +145,16 @@ function BookingSummary() {
 							<Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
 								Select your stay dates:
 							</Typography>
-							
+
 							{dateError && (
 								<Alert severity="error" sx={{ mb: 2 }}>
 									{dateError}
 								</Alert>
 							)}
-							
+
 							<DateTimePickerRange
 								value={dateRange}
-								minDate={new Date()}
+								minDate={new Date().setDate(new Date().getDate() - 1)}
 								onChange={handleDateRangeChange}
 								showTime={false}
 								numMonths={1}
@@ -167,13 +171,7 @@ function BookingSummary() {
 								<span>Check-out:</span>
 								<span>{dateRange.endDate.toLocaleDateString()}</span>
 							</Typography>
-							<Button 
-								variant="text" 
-								color="primary" 
-								size="small" 
-								onClick={() => setShowDatePicker(true)}
-								sx={{ mt: 1, p: 0 }}
-							>
+							<Button variant="text" color="primary" size="small" onClick={() => setShowDatePicker(true)} sx={{ mt: 1, p: 0 }}>
 								Change dates
 							</Button>
 						</Box>
@@ -186,15 +184,7 @@ function BookingSummary() {
 						<span style={{ fontWeight: "bold" }}>{convertPrice(totalAmount)} VND</span>
 					</Typography>
 
-					<Button 
-						variant="contained" 
-						color="primary" 
-						fullWidth 
-						size="large" 
-						startIcon={<Icon.ShoppingCart />} 
-						onClick={handleProceedToCheckout} 
-						sx={{ mt: 2 }}
-					>
+					<Button variant="contained" color="primary" fullWidth size="large" startIcon={<Icon.ShoppingCart />} onClick={handleProceedToCheckout} sx={{ mt: 2 }}>
 						Proceed to Book
 					</Button>
 				</>
