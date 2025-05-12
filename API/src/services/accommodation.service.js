@@ -36,10 +36,13 @@ export default {
 		const accommodationInstance = AccommodationClass.fromModel(accommodationModel);
 
 		console.log(accommodationInstance.toPlain());
+		
+		const rating = await accommodationInstance.getAvgRating();
 
 		return {
 			...accommodationInstance.toPlain(bookedCounts),
 			reviews: reviewsDataModel.map((review) => Review.fromModel(review).toPlain()),
+			rating,
 		};
 	},
 
