@@ -2,9 +2,11 @@ import { Card, CardMedia, CardContent, CardActions, Typography, Rating, Stack, B
 import { LocationOn, Hotel } from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice";
 import FavoriteButton from "../FavoriteButton/FavoriteButton";
+import { useNavigate } from "react-router-dom";
 
 // Modified version of HotelCard specifically for favorites page
 const FavoriteCard = ({ accommodation, onRemove }) => {
+	const navigate = useNavigate();
 	const { name = "Accommodation Name", rooms = [], isActive = true } = accommodation;
 
 	// Calculate how many amenity chips to show
@@ -113,7 +115,14 @@ const FavoriteCard = ({ accommodation, onRemove }) => {
 						{minPrice !== "N/A" ? `${convertPrice(minPrice)} VND` : "Price unavailable"}
 					</Typography>
 					<Stack direction="row" spacing={1}>
-						<Button variant="contained" size="small" color="primary" href={`/accommodation/detail/${accommodation.id}`}>
+						<Button
+							variant="contained"
+							size="small"
+							color="primary"
+							onClick={() => {
+								navigate(`/accommodation/detail/${accommodation.id}`);
+							}}
+						>
 							View Details
 						</Button>
 						<FavoriteButton accommodation={accommodation} onRemove={onRemove} size="small" />
