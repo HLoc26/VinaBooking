@@ -63,7 +63,7 @@ function Landing() {
 			{/* Hero Section */}
 			<Box
 				sx={{
-					backgroundImage: "url('https://via.placeholder.com/1920x600')",
+					backgroundImage: "url('/images/vietnam-hero-section.jpg')",
 					backgroundSize: "cover",
 					backgroundPosition: "center",
 					height: "400px",
@@ -74,7 +74,7 @@ function Landing() {
 					textAlign: "center",
 				}}
 			>
-				<Typography variant="h2" fontWeight="bold" color="black">
+				<Typography variant="h2" fontWeight="bold" color="#003262" sx={{ opacity: 1.0 }}>
 					Find Your Perfect Stay
 				</Typography>
 			</Box>
