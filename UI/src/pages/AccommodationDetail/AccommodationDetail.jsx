@@ -2,8 +2,6 @@ import * as React from "react";
 // MUI components
 import { Box, Tabs, Tab, Typography, IconButton, Rating, Stack, Chip, Button, Grid, List, ListItem, ListItemText, ListItemIcon, Divider, Container, Paper, Card, CardContent } from "@mui/material";
 // MUI icons
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -24,6 +22,7 @@ import axiosInstance from "../../app/axios";
 import AppImage from "../../components/ui/Image/Image";
 import { useSafeImageList } from "../../hooks/useSafeImageList";
 import FavoriteButton from "../../components/ui/FavoriteButton/FavoriteButton";
+import ReviewCard from "../../components/ui/ReviewCard/ReviewCard";
 
 function AccommodationDetail() {
 	const { aid } = useParams();
