@@ -1,64 +1,150 @@
+// ReviewCard.jsx
 import React, { useState, useCallback } from "react";
-import { ImageList, ImageListItem, Paper, Rating, Typography, Modal, Box, IconButton, CircularProgress } from "@mui/material";
+import { Card, CardHeader, Avatar, CardContent, Typography, Rating, CardActions, IconButton, Box, Modal, CircularProgress, useTheme } from "@mui/material";
+import { styled } from "@mui/system";
 import * as Icon from "@mui/icons-material";
-import AppImage from "../Image/Image";
 import { useSafeImageList } from "../../../hooks/useSafeImageList";
+import AppImage from "../Image/Image";
 
-function ReviewCard({ star, comment, reviewer, images = [], reviewDate = new Date() }) {
+const ExpandMore = styled((props) => {
+	const { expand, ...other } = props;
+	return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+	transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+	marginLeft: "auto",
+	transition: theme.transitions.create("transform", {
+		duration: theme.transitions.duration.shortest,
+	}),
+}));
+
+export default function ReviewCard({ star, comment = "", reviewer, images = [], reviewDate = new Date() }) {
+	const theme = useTheme();
+	const [expanded, setExpanded] = useState(false);
 	const [open, setOpen] = useState(false);
-	const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-	const [loading, setLoading] = useState(true); // Track loading state for the full image
+	const [selectedIndex, setSelectedIndex] = useState(0);
+	const [loading, setLoading] = useState(true);
 
 	const imagesList = useSafeImageList(images);
 
-	// Handlers
-	const handleOpen = useCallback((index) => {
-		setSelectedImageIndex(index);
-		setLoading(true); // Set loading to true when opening the modal
+	// Lấy tên reviewer
+	const reviewerName = typeof reviewer === "string" ? reviewer : reviewer?.name || "Unknown";
+
+	const initials = reviewerName
+		.split(" ")
+		.map((w) => w[0])
+		.slice(0, 2)
+		.join("")
+		.toUpperCase();
+
+	const handleExpandClick = () => setExpanded((prev) => !prev);
+
+	// Lightbox handlers
+	const handleOpen = useCallback((i) => {
+		setSelectedIndex(i);
+		setLoading(true);
 		setOpen(true);
 	}, []);
+	const handleClose = useCallback(() => setOpen(false), []);
+	const showPrev = useCallback(() => setSelectedIndex((i) => (i - 1 + imagesList.length) % imagesList.length), [imagesList.length]);
+	const showNext = useCallback(() => setSelectedIndex((i) => (i + 1) % imagesList.length), [imagesList.length]);
+	const handleImageLoad = useCallback(() => setLoading(false), []);
 
-	const handleClose = useCallback(() => {
-		setOpen(false);
-	}, []);
-
-	const handlePrevious = useCallback(() => {
-		setSelectedImageIndex((prev) => (prev - 1 + imagesList.length) % imagesList.length); // Loop to the last image
-		setLoading(true); // Reset loading state when navigating
-	}, [imagesList.length]);
-
-	const handleNext = useCallback(() => {
-		setSelectedImageIndex((prev) => (prev + 1) % imagesList.length); // Loop to the first image
-		setLoading(true); // Reset loading state when navigating
-	}, [imagesList.length]);
-
-	const handleImageLoad = useCallback(() => {
-		setLoading(false); // Set loading to false when the image is fully loaded
-	}, []);
+	// Border màu theo star
+	const borderColor = star >= 4 ? theme.palette.success.main : star >= 3 ? theme.palette.warning.main : theme.palette.error.main;
 
 	return (
-		<Paper elevation={2} sx={{ mb: 2, padding: 2 }}>
-			<Typography>
-				{reviewer} reviewed at{" "}
-				{new Intl.DateTimeFormat("en-US", {
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				}).format(new Date(reviewDate))}
-			</Typography>
-			<Rating readOnly value={star} precision={0.1} />
-			<ImageList cols={imagesList.length} rowHeight={150}>
-				{/* Mock images data */}
-				{imagesList.map((item, index) => (
-					<ImageListItem key={index} onClick={() => handleOpen(index)} sx={{ cursor: "pointer" }}>
-						<AppImage filename={item.filename} />
-					</ImageListItem>
-				))}
-			</ImageList>
-			<Typography>{comment}</Typography>
+		<>
+			<Card
+				elevation={3}
+				sx={{
+					with: "100%",
+					borderLeft: `5px solid ${borderColor}`,
+					display: "flex",
+					flexDirection: "column",
+					height: "100%",
+				}}
+			>
+				<CardHeader
+					avatar={<Avatar sx={{ bgcolor: theme.palette.primary.main }}>{initials}</Avatar>}
+					action={<Rating value={star} readOnly size="small" precision={0.1} />}
+					title={reviewerName}
+					subheader={new Intl.DateTimeFormat("en-US", {
+						year: "numeric",
+						month: "short",
+						day: "numeric",
+					}).format(new Date(reviewDate))}
+				/>
 
-			{/* Modal for full image */}
-			<Modal open={open} onClose={handleClose} aria-labelledby="image-modal" aria-describedby="fullsize-review-image">
+				<CardContent sx={{ flexGrow: 1 }}>
+					<Typography
+						paragraph
+						sx={{
+							display: "-webkit-box",
+							WebkitLineClamp: expanded ? "none" : 3,
+							WebkitBoxOrient: "vertical",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+						}}
+					>
+						{comment}
+					</Typography>
+
+					{imagesList.length > 0 && (
+						<Box
+							sx={{
+								display: "grid",
+								gridTemplateColumns: "repeat(3, 1fr)",
+								gap: 1,
+								mt: 1,
+							}}
+						>
+							{imagesList.map((img, idx) => (
+								<Box
+									key={idx}
+									onClick={() => handleOpen(idx)}
+									sx={{
+										width: "100%",
+										// tạo box vuông, padding-bottom = width
+										position: "relative",
+										pb: "100%",
+										overflow: "hidden",
+										borderRadius: 1,
+										cursor: "pointer",
+										"&:hover img": {
+											transform: "scale(1.1)",
+										},
+									}}
+								>
+									<AppImage
+										filename={img.filename}
+										alt=""
+										style={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											width: "100%",
+											height: "100%",
+											objectFit: "cover",
+											transition: "transform 0.3s",
+										}}
+									/>
+								</Box>
+							))}
+						</Box>
+					)}
+				</CardContent>
+
+				<CardActions disableSpacing>
+					{comment.length > 200 && (
+						<ExpandMore expand={expanded ? 1 : 0} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more">
+							<Icon.ExpandMore />
+						</ExpandMore>
+					)}
+				</CardActions>
+			</Card>
+
+			{/* Modal Lightbox */}
+			<Modal open={open} onClose={handleClose}>
 				<Box
 					sx={{
 						position: "absolute",
@@ -67,96 +153,47 @@ function ReviewCard({ star, comment, reviewer, images = [], reviewDate = new Dat
 						transform: "translate(-50%, -50%)",
 						bgcolor: "background.paper",
 						boxShadow: 24,
-						p: 4,
-						borderRadius: 2,
+						p: 2,
+						borderRadius: 1,
 						maxWidth: "90vw",
 						maxHeight: "90vh",
 						display: "flex",
-						flexDirection: "column",
 						alignItems: "center",
-						overflow: "hidden",
 					}}
 				>
-					<Box sx={{ position: "relative", width: "100%", height: "100%" }}>
-						<Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-							<IconButton
-								onClick={handlePrevious}
-								sx={{
-									position: "absolute",
-									left: 10,
-									zIndex: 1,
-									color: "black",
-									backgroundColor: "rgba(255, 255, 255, 0.7)",
-									"&:hover": {
-										backgroundColor: "rgba(255, 255, 255, 0.9)",
-									},
-								}}
-							>
-								<Icon.ArrowBackIosNew fontSize="medium" />
-							</IconButton>
+					<IconButton onClick={showPrev} sx={{ position: "absolute", left: 8, zIndex: 1 }}>
+						<Icon.ArrowBackIosNew />
+					</IconButton>
 
-							<Box
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									width: "500px",
-									height: "500px",
-								}}
-							>
-								{/* Show spinner while loading */}
-								{loading && <CircularProgress />}
-								<AppImage
-									type="review"
-									filename={imagesList[selectedImageIndex]?.filename}
-									alt="Full view"
-									style={{
-										maxWidth: "100%",
-										maxHeight: "70vh",
-										objectFit: "contain",
-										display: loading ? "none" : "block", // Hide image while loading
-									}}
-									onLoad={handleImageLoad} // Trigger when the image is fully loaded
-								/>
-							</Box>
-
-							<IconButton
-								onClick={handleNext}
-								sx={{
-									position: "absolute",
-									right: 10,
-									zIndex: 1,
-									color: "black",
-									backgroundColor: "rgba(255, 255, 255, 0.7)",
-									"&:hover": {
-										backgroundColor: "rgba(255, 255, 255, 0.9)",
-									},
-								}}
-							>
-								<Icon.ArrowForwardIos fontSize="medium" />
-							</IconButton>
-						</Box>
-
-						<IconButton
-							onClick={handleClose}
-							sx={{
-								position: "absolute",
-								top: -16,
-								right: -16,
-								color: "black",
-								backgroundColor: "rgba(255, 255, 255, 0.7)",
-								"&:hover": {
-									backgroundColor: "rgba(255, 255, 255, 0.9)",
-								},
+					<Box
+						sx={{
+							position: "relative",
+							width: { xs: "80vw", sm: "60vw" },
+							height: { xs: "80vh", sm: "60vh" },
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						{loading && <CircularProgress />}
+						<AppImage
+							filename={imagesList[selectedIndex]?.filename}
+							alt="Full image"
+							onLoad={handleImageLoad}
+							style={{
+								display: loading ? "none" : "block",
+								maxWidth: "100%",
+								maxHeight: "100%",
+								objectFit: "contain",
 							}}
-						>
-							<Icon.Close fontSize="small" />
-						</IconButton>
+						/>
 					</Box>
+
+					<IconButton onClick={showNext} sx={{ position: "absolute", right: 8, zIndex: 1 }}>
+						<Icon.ArrowForwardIos />
+					</IconButton>
 				</Box>
 			</Modal>
-		</Paper>
+		</>
 	);
 }
-
-export default ReviewCard;
