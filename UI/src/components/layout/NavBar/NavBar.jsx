@@ -63,14 +63,15 @@ function Navbar() {
 		<HideOnScroll>
 			<AppBar 
 				position="sticky" 
-				elevation={0}
+				elevation={4}
 				sx={{
 					background: 'linear-gradient(90deg, #1976d2 0%, #1565c0 100%)',
-					borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+					borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+					boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
 				}}
 			>
 				<Container maxWidth="xl">
-					<Toolbar disableGutters sx={{ py: 0.5 }}>
+					<Toolbar disableGutters sx={{ py: 0.8 }}>
 						{/* Logo */}
 						<Typography 
 							variant="h5" 
@@ -83,7 +84,8 @@ function Navbar() {
 								display: 'flex',
 								alignItems: 'center',
 								'&:hover': { 
-									textShadow: '0 0 10px rgba(255,255,255,0.5)' 
+									textShadow: '0 0 15px rgba(255,255,255,0.7)',
+									transform: 'translateY(-2px)'
 								},
 								transition: 'all 0.3s'
 							}} 
@@ -100,8 +102,14 @@ function Navbar() {
 								sx={{ 
 									opacity: isActive('/') ? 1 : 0.85,
 									fontWeight: isActive('/') ? 600 : 400,
-									'&:hover': { opacity: 1, transform: 'translateY(-2px)' },
-									transition: 'all 0.2s'
+									'&:hover': { 
+                                        opacity: 1, 
+                                        transform: 'translateY(-2px)',
+                                        textShadow: '0 0 10px rgba(255,255,255,0.5)'
+                                    },
+									transition: 'all 0.3s',
+                                    borderRadius: 2,
+                                    px: 2
 								}}
 								onClick={() => navigate("/")}
 							>
@@ -112,8 +120,14 @@ function Navbar() {
 								sx={{ 
 									opacity: isActive('/search') ? 1 : 0.85,
 									fontWeight: isActive('/search') ? 600 : 400,
-									'&:hover': { opacity: 1, transform: 'translateY(-2px)' },
-									transition: 'all 0.2s'
+									'&:hover': { 
+                                        opacity: 1, 
+                                        transform: 'translateY(-2px)',
+                                        textShadow: '0 0 10px rgba(255,255,255,0.5)'
+                                    },
+									transition: 'all 0.3s',
+                                    borderRadius: 2,
+                                    px: 2
 								}}
 								onClick={() => navigate("/search")}
 							>
@@ -125,8 +139,14 @@ function Navbar() {
 									sx={{ 
 										opacity: isActive('/saved') ? 1 : 0.85,
 										fontWeight: isActive('/saved') ? 600 : 400,
-										'&:hover': { opacity: 1, transform: 'translateY(-2px)' },
-										transition: 'all 0.2s'
+										'&:hover': { 
+                                            opacity: 1, 
+                                            transform: 'translateY(-2px)',
+                                            textShadow: '0 0 10px rgba(255,255,255,0.5)'
+                                        },
+										transition: 'all 0.3s',
+                                        borderRadius: 2,
+                                        px: 2
 									}}
 									onClick={() => navigate("/saved")} 
 									startIcon={<Icon.Favorite />}
@@ -141,14 +161,29 @@ function Navbar() {
 							{isLoggedIn ? (
 								<>
 									<Tooltip title="Notifications">
-										<IconButton sx={{ mr: 1, color: 'white', '&:hover': { transform: 'scale(1.1)' }, transition: 'all 0.2s' }}>
-											<Badge badgeContent={3} color="error">
+										<IconButton sx={{ 
+                                            mr: 1, 
+                                            color: 'white', 
+                                            '&:hover': { 
+                                                transform: 'scale(1.1)',
+                                                backgroundColor: 'rgba(255, 255, 255, 0.1)' 
+                                            }, 
+                                            transition: 'all 0.3s'
+                                        }}>
+											<Badge badgeContent={0} color="error">
 												<Icon.Notifications />
 											</Badge>
 										</IconButton>
 									</Tooltip>
 									<Box sx={{ display: { xs: 'none', sm: 'block' }, mr: 2 }}>
-										<Typography variant="body2" component="span" sx={{ fontWeight: 500 }}>
+										<Typography 
+                                            variant="body2" 
+                                            component="span" 
+                                            sx={{ 
+                                                fontWeight: 500,
+                                                textShadow: '0 0 5px rgba(0, 0, 0, 0.2)'
+                                            }}
+                                        >
 											{user?.name || "User"}
 										</Typography>
 									</Box>
@@ -159,8 +194,12 @@ function Navbar() {
 											sx={{ 
 												p: 0.5,
 												border: '2px solid rgba(255, 255, 255, 0.5)',
-												'&:hover': { transform: 'scale(1.1)' },
-												transition: 'all 0.2s'
+												'&:hover': { 
+                                                    transform: 'scale(1.1)',
+                                                    border: '2px solid rgba(255, 255, 255, 0.8)',
+                                                    boxShadow: '0 0 10px rgba(255, 255, 255, 0.3)'
+                                                },
+												transition: 'all 0.3s'
 											}}
 										>
 											<Avatar 
@@ -175,25 +214,66 @@ function Navbar() {
 										open={Boolean(anchorEl)}
 										onClose={handleMenuClose}
 										PaperProps={{
-											elevation: 3,
-											sx: { mt: 1.5, borderRadius: 2, minWidth: 180 }
+											elevation: 6,
+											sx: { 
+                                                mt: 1.5, 
+                                                borderRadius: 2, 
+                                                minWidth: 200,
+                                                overflow: 'hidden',
+                                                border: '1px solid rgba(0, 0, 0, 0.08)'
+                                            }
 										}}
 										transformOrigin={{ vertical: "top", horizontal: "right" }}
 										anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 									>
-										<MenuItem onClick={() => navigateTo("/profile")} sx={{ py: 1 }}>
-											<Icon.Person sx={{ mr: 1.5, fontSize: '1.25rem', color: '#666' }} />
+										<MenuItem 
+                                            onClick={() => navigateTo("/profile")} 
+                                            sx={{ 
+                                                py: 1.5,
+                                                '&:hover': { 
+                                                    backgroundColor: 'rgba(25, 118, 210, 0.08)'
+                                                },
+                                            }}
+                                        >
+											<Icon.Person sx={{ mr: 1.5, fontSize: '1.25rem', color: '#1976d2' }} />
 											Profile
 										</MenuItem>
-										<MenuItem onClick={() => navigateTo("/bookings")} sx={{ py: 1 }}>
-											<Icon.Book sx={{ mr: 1.5, fontSize: '1.25rem', color: '#666' }} />
+										<MenuItem 
+                                            onClick={() => navigateTo("/bookings")} 
+                                            sx={{ 
+                                                py: 1.5,
+                                                '&:hover': { 
+                                                    backgroundColor: 'rgba(25, 118, 210, 0.08)'
+                                                },
+                                            }}
+                                        >
+											<Icon.Book sx={{ mr: 1.5, fontSize: '1.25rem', color: '#1976d2' }} />
 											Bookings
 										</MenuItem>
-										<MenuItem onClick={() => navigateTo("/settings")} sx={{ py: 1 }}>
-											<Icon.Settings sx={{ mr: 1.5, fontSize: '1.25rem', color: '#666' }} />
+										<MenuItem 
+                                            onClick={() => navigateTo("/settings")} 
+                                            sx={{ 
+                                                py: 1.5,
+                                                '&:hover': { 
+                                                    backgroundColor: 'rgba(25, 118, 210, 0.08)'
+                                                },
+                                            }}
+                                        >
+											<Icon.Settings sx={{ mr: 1.5, fontSize: '1.25rem', color: '#1976d2' }} />
 											Settings
 										</MenuItem>
-										<MenuItem onClick={handleLogout} sx={{ py: 1, color: '#d32f2f' }}>
+										<MenuItem 
+                                            onClick={handleLogout} 
+                                            sx={{ 
+                                                py: 1.5, 
+                                                color: '#d32f2f',
+                                                borderTop: '1px solid rgba(0, 0, 0, 0.08)',
+                                                mt: 1,
+                                                '&:hover': { 
+                                                    backgroundColor: 'rgba(211, 47, 47, 0.08)'
+                                                },
+                                            }}
+                                        >
 											<Icon.Logout sx={{ mr: 1.5, fontSize: '1.25rem' }} />
 											Logout
 										</MenuItem>
@@ -211,10 +291,14 @@ function Navbar() {
 											borderColor: 'rgba(255, 255, 255, 0.5)',
 											textTransform: 'none',
 											px: 2,
+                                            fontWeight: 'bold',
 											'&:hover': { 
 												borderColor: 'white',
-												backgroundColor: 'rgba(255, 255, 255, 0.1)' 
-											}
+												backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+											},
+                                            transition: 'all 0.3s'
 										}}
 									>
 										Login
@@ -229,9 +313,13 @@ function Navbar() {
 											color: '#1976d2',
 											textTransform: 'none',
 											px: 2,
+                                            fontWeight: 'bold',
 											'&:hover': { 
 												backgroundColor: 'rgba(255, 255, 255, 0.9)',
-											}
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+											},
+                                            transition: 'all 0.3s'
 										}}
 									>
 										Sign Up
@@ -242,7 +330,13 @@ function Navbar() {
 							{/* Mobile Menu */}
 							<IconButton 
 								color="inherit" 
-								sx={{ display: { xs: "block", md: "none" }, ml: 1 }}
+								sx={{ 
+                                    display: { xs: "block", md: "none" }, 
+                                    ml: 1,
+                                    '&:hover': { 
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                                    }
+                                }}
 								onClick={handleMobileMenuOpen}
 							>
 								<Icon.Menu />
@@ -252,38 +346,45 @@ function Navbar() {
 								open={Boolean(mobileMenuAnchor)}
 								onClose={handleMobileMenuClose}
 								PaperProps={{
-									elevation: 3,
-									sx: { mt: 1.5, width: '100%', maxWidth: '300px' }
+									elevation: 6,
+									sx: { 
+                                        mt: 1.5, 
+                                        width: '100%', 
+                                        maxWidth: '300px',
+                                        borderRadius: 2,
+                                        overflow: 'hidden'
+                                    }
 								}}
 								transformOrigin={{ vertical: "top", horizontal: "right" }}
 								anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 							>
 								<MenuItem onClick={() => navigateTo("/")} sx={{ py: 1.5 }}>
-									<Icon.Home sx={{ mr: 2, color: '#666' }} />
+									<Icon.Home sx={{ mr: 2, color: '#1976d2' }} />
 									Home
 								</MenuItem>
 								<MenuItem onClick={() => navigateTo("/search")} sx={{ py: 1.5 }}>
-									<Icon.Search sx={{ mr: 2, color: '#666' }} />
+									<Icon.Search sx={{ mr: 2, color: '#1976d2' }} />
 									Explore
 								</MenuItem>
 								{isLoggedIn && (
 									<>
 										<MenuItem onClick={() => navigateTo("/saved")} sx={{ py: 1.5 }}>
-											<Icon.Favorite sx={{ mr: 2, color: '#666' }} />
+											<Icon.Favorite sx={{ mr: 2, color: '#1976d2' }} />
 											Saved Accommodations
 										</MenuItem>
 										<MenuItem onClick={() => navigateTo("/profile")} sx={{ py: 1.5 }}>
-											<Icon.Person sx={{ mr: 2, color: '#666' }} />
+											<Icon.Person sx={{ mr: 2, color: '#1976d2' }} />
 											Profile
 										</MenuItem>
 										<MenuItem onClick={() => navigateTo("/bookings")} sx={{ py: 1.5 }}>
-											<Icon.Book sx={{ mr: 2, color: '#666' }} />
+											<Icon.Book sx={{ mr: 2, color: '#1976d2' }} />
 											Bookings
 										</MenuItem>
 										<MenuItem onClick={() => navigateTo("/settings")} sx={{ py: 1.5 }}>
-											<Icon.Settings sx={{ mr: 2, color: '#666' }} />
+											<Icon.Settings sx={{ mr: 2, color: '#1976d2' }} />
 											Settings
 										</MenuItem>
+                                        <Box sx={{ my: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)' }} />
 										<MenuItem onClick={handleLogout} sx={{ py: 1.5, color: '#d32f2f' }}>
 											<Icon.Logout sx={{ mr: 2 }} />
 											Logout
@@ -292,7 +393,7 @@ function Navbar() {
 								)}
 								{!isLoggedIn && (
 									<MenuItem onClick={() => navigateTo("/register")} sx={{ py: 1.5, display: { xs: 'flex', sm: 'none' } }}>
-										<Icon.PersonAdd sx={{ mr: 2, color: '#666' }} />
+										<Icon.PersonAdd sx={{ mr: 2, color: '#1976d2' }} />
 										Sign Up
 									</MenuItem>
 								)}
