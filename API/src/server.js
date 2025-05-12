@@ -72,8 +72,11 @@ try {
 		throw new Error("Failed to connect to database after max retries");
 	}
 
-	app.listen(3000, "0.0.0.0", () => {
-		console.log("Listening on http://localhost:3000");
+	const HOST = process.env.HOST || "0.0.0.0";
+	const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+
+	app.listen(+process.env.PORT, process.env.HOST, () => {
+		console.log(`Listening on https://${HOST}:${PORT}`);
 	});
 } catch (error) {
 	console.error("Server initialization failed:", error.message);
