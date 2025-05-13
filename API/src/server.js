@@ -38,6 +38,7 @@ app.use((req, res, next) => {
 		logger.responseLog(res, duration);
 	});
 
+	// Proceed to next middleware
 	next();
 });
 
