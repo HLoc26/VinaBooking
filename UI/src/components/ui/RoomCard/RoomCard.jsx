@@ -50,7 +50,7 @@ function RoomCard({ room }) {
 	return (
 		<>
 			{/* Room Card (Preview) */}
-			<Paper elevation={3} sx={{ mb: 4, padding: 3, borderRadius: 2, width: "90%" }}>
+			<Paper elevation={3} sx={{ mb: 4, padding: 3, borderRadius: 2, width: "100%", boxSizing: "border-box" }}>
 				{/* Room Title */}
 				<Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
 					{name}
@@ -67,7 +67,7 @@ function RoomCard({ room }) {
 								textAlign: "center",
 								borderRadius: 2,
 								overflow: "hidden",
-								height: "250px",
+								height: "200px",
 								backgroundColor: "#f0f0f0",
 								cursor: "pointer",
 							}}
@@ -139,7 +139,7 @@ function RoomCard({ room }) {
 							</Grid>
 
 							{/* Quick Amenities Preview */}
-							<Box sx={{ mb: 2 }}>
+							<Box sx={{ mb: 1 }}>
 								<Typography variant="subtitle1" sx={{ mb: 1 }}>
 									<b>Amenities:</b>
 								</Typography>
@@ -179,7 +179,7 @@ function RoomCard({ room }) {
 							</Box>
 						</Box>
 
-						<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2, gap: 2, flexWrap: "wrap" }}>
+						<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
 							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 								<Button variant="outlined" color="primary" onClick={handleOpenModal} startIcon={<Icon.Info />}>
 									See details
