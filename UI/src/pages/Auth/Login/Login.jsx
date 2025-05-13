@@ -107,6 +107,32 @@ function Login() {
 				>
 					Return to Home Page
 				</Button>
+				
+				<Button
+					endIcon={<ArrowBackIcon sx={{ transform: 'rotate(180deg)' }} />}
+					variant="contained"
+					color="primary"
+					onClick={() => navigate('/register')}
+					sx={{
+						position: 'absolute',
+						top: -60,
+						right: 0,
+						zIndex: 1,
+						borderRadius: 2,
+						boxShadow: 3,
+						padding: '10px 20px',
+						backgroundColor: 'primary.dark',
+						'&:hover': {
+							transform: 'translateY(-2px)',
+							boxShadow: 5,
+							backgroundColor: 'primary.main',
+						},
+						transition: 'all 0.3s ease'
+					}}
+				>
+					Register
+				</Button>
+				
 				<Paper
 					elevation={6}
 					sx={{
