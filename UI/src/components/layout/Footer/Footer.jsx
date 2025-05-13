@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, Link, IconButton, Container, Divider, Button, Stack, Paper } from "@mui/material";
-import { Facebook, Twitter, Instagram, LinkedIn, Email, Phone, LocationOn, FlightTakeoff } from "@mui/icons-material";
+import { Facebook, Twitter, Instagram, LinkedIn, Email, LocationOn, FlightTakeoff } from "@mui/icons-material";
 
 function Footer() {
 	return (
@@ -123,9 +123,27 @@ function Footer() {
 							Contact Us
 						</Typography>
 						<Box sx={{ mt: 3 }}>
+							{/* Development Team */}
 							<Paper elevation={0} sx={{ 
 								p: 2.5, 
 								mb: 2, 
+								backgroundColor: 'rgba(255,255,255,0.05)', 
+								borderRadius: 2,
+								transition: 'transform 0.3s',
+								'&:hover': { transform: 'translateY(-5px)' }
+							}}>
+								<Box sx={{ display: 'flex', mb: 1 }}>
+									<LinkedIn sx={{ mr: 2, color: '#1976d2' }} />
+									<Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+										Development Team
+									</Typography>
+								</Box>
+								<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', ml: 4 }}>
+									Huu Loc - Nhat Quang - Quang Sang - Gia Huy
+								</Typography>
+							</Paper>
+							<Paper elevation={0} sx={{ 
+								p: 2.5, 
 								backgroundColor: 'rgba(255,255,255,0.05)', 
 								borderRadius: 2,
 								transition: 'transform 0.3s',
@@ -139,17 +157,6 @@ function Footer() {
 										</Typography>
 										<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
 											cbl.nguyennhatquang2809@gmail.com
-										</Typography>
-									</Box>
-								</Box>
-								<Box sx={{ display: 'flex', mb: 3 }}>
-									<Phone sx={{ mr: 2, color: '#1976d2' }} />
-									<Box>
-										<Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-											Phone
-										</Typography>
-										<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-											+84972947081
 										</Typography>
 									</Box>
 								</Box>
@@ -219,7 +226,9 @@ function Footer() {
 					}}
 				>
 					<Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-						&copy; {new Date().getFullYear()} VinaBooking. All rights reserved.
+						&copy; 2025 Vinabooking, HCMUTE
+						<br />
+						Huu Loc - Nhat Quang - Quang Sang - Gia Huy
 					</Typography>
 					<Box sx={{ display: 'flex', gap: 3 }}>
 						<Link href="#" sx={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '0.875rem', '&:hover': { color: '#1976d2' } }}>
