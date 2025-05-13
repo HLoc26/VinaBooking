@@ -7,7 +7,7 @@ export const getFavourite = createAsyncThunk("/favourites", async (_, { rejectWi
 		const accomms = await getFavouriteApi();
 		return accomms;
 	} catch (error) {
-		return rejectWithValue("Error retrieving favourite list");
+		return rejectWithValue(`Error retrieving favourite list ${error}`);
 	}
 });
 
