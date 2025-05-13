@@ -15,10 +15,9 @@ function BookingSummary() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const [dateRange, setDateRange] = React.useState({
-		startDate: new Date(),
-		endDate: new Date(new Date().setDate(new Date().getDate() + 1)), // Default to next day checkout
-	});
+	const reduxDateRange = useSelector(selectBookingDates);
+	const [dateRange, setDateRange] = React.useState(reduxDateRange);
+
 	const [showDatePicker, setShowDatePicker] = React.useState(false);
 	const [dateError, setDateError] = React.useState("");
 
@@ -97,22 +96,6 @@ function BookingSummary() {
 		navigate("/book");
 	};
 
-	const handleConfirmDates = () => {
-		if (validateDateRange()) {
-			// Save the date range to Redux
-			dispatch(
-				updateSearchFields({
-					dateRange: {
-						startDate: dateRange.startDate,
-						endDate: dateRange.endDate,
-					},
-				})
-			);
-			setShowDatePicker(false);
-			navigate("/book");
-		}
-	};
-
 	return (
 		<Paper
 			elevation={3}
@@ -121,7 +104,8 @@ function BookingSummary() {
 				borderRadius: 2,
 				position: "sticky",
 				top: 130,
-				width: 360,
+				width: "380px",
+				boxSizing: "border-box",
 			}}
 		>
 			<Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
@@ -140,42 +124,35 @@ function BookingSummary() {
 					</Typography>
 
 					{/* Date Range Section */}
-					{showDatePicker ? (
-						<Box sx={{ my: 3 }}>
-							<Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-								Select your stay dates:
-							</Typography>
+					<Box sx={{ my: 3 }}>
+						<Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+							Select your stay dates:
+						</Typography>
 
-							{dateError && (
-								<Alert severity="error" sx={{ mb: 2 }}>
-									{dateError}
-								</Alert>
-							)}
+						{dateError && (
+							<Alert severity="error" sx={{ mb: 2 }}>
+								{dateError}
+							</Alert>
+						)}
 
-							<DateTimePickerRange
-								value={dateRange}
-								minDate={new Date().setDate(new Date().getDate() - 1)}
-								onChange={handleDateRangeChange}
-								showTime={false}
-								numMonths={1}
-								direction="vertical"
-							/>
-						</Box>
-					) : (
-						<Box sx={{ my: 2 }}>
-							<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between" }}>
-								<span>Check-in:</span>
-								<span>{dateRange.startDate.toLocaleDateString()}</span>
-							</Typography>
-							<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between" }}>
-								<span>Check-out:</span>
-								<span>{dateRange.endDate.toLocaleDateString()}</span>
-							</Typography>
-							<Button variant="text" color="primary" size="small" onClick={() => setShowDatePicker(true)} sx={{ mt: 1, p: 0 }}>
-								Change dates
-							</Button>
-						</Box>
-					)}
+						<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between" }}>
+							<span>Check-in:</span>
+							<span>{dateRange.startDate.toLocaleDateString()}</span>
+						</Typography>
+						<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+							<span>Check-out:</span>
+							<span>{dateRange.endDate.toLocaleDateString()}</span>
+						</Typography>
+
+						<DateTimePickerRange
+							value={dateRange}
+							minDate={new Date().setDate(new Date().getDate() - 1)}
+							onChange={handleDateRangeChange}
+							showTime={false}
+							numMonths={1}
+							direction="vertical"
+						/>
+					</Box>
 
 					<Divider sx={{ my: 2 }} />
 

@@ -1,6 +1,27 @@
 import * as React from "react";
 // MUI components
-import { Box, Tabs, Tab, Typography, IconButton, Rating, Stack, Chip, Button, Grid, List, ListItem, ListItemText, ListItemIcon, Divider, Container, Paper, Card, CardContent, CircularProgress } from "@mui/material";
+import {
+	Box,
+	Tabs,
+	Tab,
+	Typography,
+	IconButton,
+	Rating,
+	Stack,
+	Chip,
+	Button,
+	Grid,
+	List,
+	ListItem,
+	ListItemText,
+	ListItemIcon,
+	Divider,
+	Container,
+	Paper,
+	Card,
+	CardContent,
+	CircularProgress,
+} from "@mui/material";
 // MUI icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -50,7 +71,7 @@ function AccommodationDetail() {
 		// Scroll to top of page with smooth behavior when changing tabs
 		window.scrollTo({
 			top: 0,
-			behavior: 'smooth'
+			behavior: "smooth",
 		});
 	};
 
@@ -99,7 +120,7 @@ function AccommodationDetail() {
 			// Scroll to top when navigating to previous tab
 			window.scrollTo({
 				top: 0,
-				behavior: 'smooth'
+				behavior: "smooth",
 			});
 		}
 	};
@@ -111,7 +132,7 @@ function AccommodationDetail() {
 			// Scroll to top when navigating to next tab
 			window.scrollTo({
 				top: 0,
-				behavior: 'smooth'
+				behavior: "smooth",
 			});
 		}
 	};
@@ -300,10 +321,10 @@ function AccommodationDetail() {
 						</CustomTabPanel>
 						{/* ========== ROOMS TAB ========== */}
 						<CustomTabPanel value={activeTab} index={1}>
-							<Grid container spacing={2}>
+							<Grid container spacing={2} sx={{ justifyContent: "space-between" }}>
 								{/* Room Cards Column - 2/3 width */}
-								<Grid item xs={12} md={8} lg={9}>
-									<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+								<Grid item size={8}>
+									<Box sx={{ display: "flex", flexDirection: "column" }}>
 										{rooms && rooms.length > 0 ? (
 											rooms.map((room) => <RoomCard key={room.id} room={room} />)
 										) : (
@@ -315,7 +336,7 @@ function AccommodationDetail() {
 								</Grid>
 
 								{/* Booking Summary Column - 1/3 width */}
-								<Grid item xs={12} md={4} lg={3}>
+								<Grid item size={4}>
 									<Box sx={{ position: { md: "sticky" }, top: { md: "120px" } }}>
 										<BookingSummary hideTitle={true} />
 									</Box>
@@ -379,7 +400,9 @@ function AccommodationDetail() {
 												</ListItemIcon>
 												<ListItemText
 													primary="Check-in / Check-out"
-													secondary={`Check-in: ${accommodation.policy.checkIn?.substring(0, 5) || "---"} | Check-out: ${accommodation.policy.checkOut?.substring(0, 5) || "---"}`}
+													secondary={`Check-in: ${accommodation.policy.checkIn?.substring(0, 5) || "---"} | Check-out: ${
+														accommodation.policy.checkOut?.substring(0, 5) || "---"
+													}`}
 													primaryTypographyProps={{ fontWeight: "medium" }}
 												/>
 											</ListItem>
@@ -403,7 +426,11 @@ function AccommodationDetail() {
 												<ListItemIcon>
 													<PaymentIcon color="success" />
 												</ListItemIcon>
-												<ListItemText primary="Prepayment" secondary={getPrepaymentDescription(accommodation.policy.prepay)} primaryTypographyProps={{ fontWeight: "medium" }} />
+												<ListItemText
+													primary="Prepayment"
+													secondary={getPrepaymentDescription(accommodation.policy.prepay)}
+													primaryTypographyProps={{ fontWeight: "medium" }}
+												/>
 											</ListItem>
 										</List>
 									) : (
