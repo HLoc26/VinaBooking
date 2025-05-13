@@ -11,6 +11,12 @@ const sequelize = new Sequelize(DATABASE, USERNAME, PASSWORD, {
 	host: HOST, // For docker, change to localhost if not using docker
 	port: PORT,
 	dialect: "mysql",
+	define: {
+		charset: "utf8mb4",
+		collate: "utf8mb4_unicode_ci",
+		underscored: true,
+		freezeTableName: true,
+	},
 	logging: false, // Change to true if want to check sql query
 });
 
