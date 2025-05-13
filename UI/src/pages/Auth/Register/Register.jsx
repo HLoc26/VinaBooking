@@ -9,6 +9,7 @@ import OTPInput from "../../../components/ui/OTPInput/OTPInput";
 import axios from "./../../../app/axios";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function Register() {
   const navigate = useNavigate();
@@ -193,7 +194,57 @@ function Register() {
         zIndex: -1,
       }
     }}>
-      <Box sx={{ maxWidth: 'md', width: '100%' }}>
+      <Box sx={{ maxWidth: 'md', width: '100%', position: 'relative' }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/')}
+          sx={{
+            position: 'absolute',
+            top: -60,
+            left: 0,
+            zIndex: 1,
+            borderRadius: 2,
+            boxShadow: 3,
+            padding: '10px 20px',
+            backgroundColor: 'primary.dark',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: 5,
+              backgroundColor: 'primary.main',
+            },
+            transition: 'all 0.3s ease'
+          }}
+        >
+          Return to Home Page
+        </Button>
+        
+        <Button
+          endIcon={<ArrowBackIcon sx={{ transform: 'rotate(180deg)' }} />}
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/login')}
+          sx={{
+            position: 'absolute',
+            top: -60,
+            right: 0,
+            zIndex: 1,
+            borderRadius: 2,
+            boxShadow: 3,
+            padding: '10px 20px',
+            backgroundColor: 'primary.dark',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: 5,
+              backgroundColor: 'primary.main',
+            },
+            transition: 'all 0.3s ease'
+          }}
+        >
+          Login
+        </Button>
+        
         <Paper
           elevation={6}
           sx={{
@@ -207,14 +258,6 @@ function Register() {
             position: 'relative',
           }}
         >
-          {activeStep > 0 && (
-            <Box sx={{ position: "absolute", top: 12, right: 12, zIndex: 10 }}>
-              <Button onClick={() => navigate("/login")} color="white" variant="text" sx={{ fontWeight: 'bold' }}>
-                Return to Login
-              </Button>
-            </Box>
-          )}
-
           <Box
             sx={{
               bgcolor: 'primary.main',
@@ -427,7 +470,7 @@ function Register() {
                   fontWeight: 'medium'
                 }}
               >
-                {activeStep === 0 ? "Return to Login" : "Back"}
+                {activeStep === 0 ? "Back" : "Back"}
               </Button>
 
               {activeStep !== steps.length - 1 ? (
