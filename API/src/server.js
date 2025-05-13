@@ -34,7 +34,12 @@ app.use((req, res, next) => {
 	// Log response details when the request is completed
 	res.on("finish", () => {
 		const duration = Date.now() - startTime;
-		console.log(`[Response] ${res.statusCode} (${duration}ms)`);
+
+		if (res.statusCode !== 200) {
+			console.error(`[Error] ${res.statusCode} - ${res.statusMessage}: ${req.originalUrl} (${duration}ms)`);
+		} else {
+			console.log(`[Response] ${res.statusCode} (${duration}ms): ${req.originalUrl}`);
+		}
 	});
 
 	next();
