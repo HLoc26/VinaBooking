@@ -26,15 +26,17 @@ export default {
 
 			res.cookie("jwt", token, {
 				httpOnly: true,
-				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
-				sameSite: "lax",
+				secure: true, // only send over HTTPS in production
+				sameSite: "none",
 				maxAge: maxAge,
+			}); // Only send user info in payload, not the JWT token
 			}); // Only send user info in payload, not the JWT token
 			return res.status(200).json({
 				success: true,
 				message: "Login success",
 				payload: {
 					user: result.payload.user,
+					rememberMe,
 					rememberMe,
 				},
 			});
