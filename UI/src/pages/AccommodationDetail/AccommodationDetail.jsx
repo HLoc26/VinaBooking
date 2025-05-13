@@ -317,7 +317,7 @@ function AccommodationDetail() {
 								{/* Booking Summary Column - 1/3 width */}
 								<Grid item xs={12} md={4} lg={3}>
 									<Box sx={{ position: { md: "sticky" }, top: { md: "120px" } }}>
-										<BookingSummary />
+										<BookingSummary hideTitle={true} />
 									</Box>
 								</Grid>
 							</Grid>
