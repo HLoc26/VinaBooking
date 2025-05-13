@@ -120,12 +120,13 @@ function Footer() {
 					{/* Contact Info */}
 					<Grid item xs={12} md={4}>
 						<Typography variant="h6" fontWeight="bold" gutterBottom sx={{ position: 'relative', pb: 1.5, '&::after': { content: '""', position: 'absolute', left: 0, bottom: 0, width: '40px', height: '2px', backgroundColor: '#1976d2' } }}>
-							Contact Us
+							Connect With Us
 						</Typography>
-						<Box sx={{ mt: 3 }}>
+						<Box>
 							{/* Development Team */}
 							<Paper elevation={0} sx={{ 
 								p: 2.5, 
+								mt: 3,
 								mb: 2, 
 								backgroundColor: 'rgba(255,255,255,0.05)', 
 								borderRadius: 2,

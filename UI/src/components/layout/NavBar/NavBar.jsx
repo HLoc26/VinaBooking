@@ -52,9 +52,9 @@ function Navbar() {
 			position="fixed" 
 			elevation={4}
 			sx={{
-				background: 'linear-gradient(90deg, #1976d2 0%, #1565c0 100%)',
-				borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-				boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+				background: 'linear-gradient(90deg, #2196f3 0%, #1976d2 50%, #0d47a1 100%)',
+				borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+				boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
 			}}
 		>
 			<Container maxWidth="xl">
