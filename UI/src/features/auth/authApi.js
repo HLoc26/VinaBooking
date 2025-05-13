@@ -2,11 +2,8 @@ import axiosInstance from "../../app/axios";
 
 export const loginApi = async (credentials) => {
 	try {
-		console.log("Attempting login");
-
 		// Check if credentials are valid
 		if (!credentials || !credentials.email || !credentials.password) {
-			console.error("Missing credentials");
 			throw new Error("Email and password are required");
 		}
 
@@ -19,7 +16,6 @@ export const loginApi = async (credentials) => {
 
 		// Make sure credentials are sent with credentials option to include cookies
 		const response = await axiosInstance.post("/auth/login", payload, { withCredentials: true });
-		console.log("Login request completed");
 
 		// Extract only the user data from the response
 		if (response.data && response.data.success) {
@@ -48,13 +44,12 @@ export const logoutApi = async () => {
 
 export const getCurrentUserApi = async () => {
 	try {
-		console.log("Getting current user");
 		const response = await axiosInstance.get("/auth/me", { withCredentials: true });
-		
+
 		if (response.data && response.data.success) {
 			return response.data.payload;
 		}
-		
+
 		throw new Error(response.data?.error?.message || "Failed to get user data");
 	} catch (error) {
 		console.error("Get current user API error occurred:", error.message);

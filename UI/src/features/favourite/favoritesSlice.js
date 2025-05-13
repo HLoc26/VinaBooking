@@ -7,7 +7,6 @@ export const getFavourite = createAsyncThunk("/favourites", async (_, { rejectWi
 		const accomms = await getFavouriteApi();
 		return accomms;
 	} catch (error) {
-		console.log("Error getting favourite list", error.message);
 		return rejectWithValue("Error retrieving favourite list");
 	}
 });
@@ -28,7 +27,6 @@ export const addFavourite = createAsyncThunk("/favourites/add", async (accomm, {
 
 export const removeFavourite = createAsyncThunk("/favourites/remove", async (accomm, { rejectWithValue }) => {
 	try {
-		console.log("HEHE REMOVEEEEE", accomm.id, typeof accomm.id);
 		const success = await removeFavouriteApi(accomm.id);
 
 		if (success) {
