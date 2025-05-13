@@ -9,6 +9,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import HomeIcon from '@mui/icons-material/Home';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function Login() {
 	const dispatch = useDispatch();
@@ -80,7 +82,31 @@ function Login() {
 				zIndex: -1,
 			}
 		}}>
-			<Box sx={{ maxWidth: 'sm', width: '100%' }}>
+			<Box sx={{ maxWidth: 'sm', width: '100%', position: 'relative' }}>
+				<Button
+					startIcon={<ArrowBackIcon />}
+					variant="contained"
+					color="primary"
+					onClick={() => navigate('/')}
+					sx={{
+						position: 'absolute',
+						top: -60,
+						left: 0,
+						zIndex: 1,
+						borderRadius: 2,
+						boxShadow: 3,
+						padding: '10px 20px',
+						backgroundColor: 'primary.dark',
+						'&:hover': {
+							transform: 'translateY(-2px)',
+							boxShadow: 5,
+							backgroundColor: 'primary.main',
+						},
+						transition: 'all 0.3s ease'
+					}}
+				>
+					Return to Home Page
+				</Button>
 				<Paper
 					elevation={6}
 					sx={{
