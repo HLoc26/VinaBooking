@@ -47,6 +47,11 @@ function AccommodationDetail() {
 
 	const handleChangeTab = (e, newValue) => {
 		setActiveTab(newValue);
+		// Scroll to top of page with smooth behavior when changing tabs
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
 	};
 
 	function a11yProps(index) {
@@ -91,6 +96,11 @@ function AccommodationDetail() {
 	const handlePreviousTab = () => {
 		if (activeTab > 0) {
 			setActiveTab(activeTab - 1);
+			// Scroll to top when navigating to previous tab
+			window.scrollTo({
+				top: 0,
+				behavior: 'smooth'
+			});
 		}
 	};
 
@@ -98,6 +108,11 @@ function AccommodationDetail() {
 	const handleNextTab = () => {
 		if (activeTab < tabLabels.length - 1) {
 			setActiveTab(activeTab + 1);
+			// Scroll to top when navigating to next tab
+			window.scrollTo({
+				top: 0,
+				behavior: 'smooth'
+			});
 		}
 	};
 	const tabLabels = ["Overview", "Rooms", "Amenities", "Policy", "Reviews"];
