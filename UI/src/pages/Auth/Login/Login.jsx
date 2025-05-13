@@ -271,6 +271,28 @@ function Login() {
 						</Box>
 					</Box>
 				</Paper>
+				
+				{/* Copyright text */}
+				<Typography 
+					variant="caption" 
+					align="center" 
+					sx={{ 
+						color: 'white', 
+						opacity: 0.8,
+						position: 'fixed',
+						bottom: 20,
+						left: 0,
+						right: 0,
+						width: '100%',
+						fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+						letterSpacing: 0.5,
+						fontSize: '0.75rem',
+						fontWeight: 400
+					}}
+				>
+					© 2025 VinaBooking, HCMUTE<br />
+					Huu Loc - Nhat Quang - Quang Sang - Gia Huy
+				</Typography>
 			</Box>
 		</Container>
 	);
