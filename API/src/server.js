@@ -35,13 +35,29 @@ app.use((req, res, next) => {
 	res.on("finish", () => {
 		const duration = Date.now() - startTime;
 
+		// Check if the response status is not 200
 		if (res.statusCode !== 200) {
-			console.error(`[Error] ${res.statusCode} - ${res.statusMessage}: ${req.originalUrl} (${duration}ms)`);
+			let errorDetails = `[Error] ${res.statusCode} ${res.statusMessage || ""} - ${req.originalUrl} (${duration}ms)`;
+
+			// Log additional error details if status code is 4xx or 5xx
+			if (res.statusCode >= 400 && res.statusCode < 500) {
+				errorDetails += `\nClient Error: Likely an issue with the request sent by the client.`;
+			} else if (res.statusCode >= 500) {
+				errorDetails += `\nServer Error: Something went wrong on the server side.`;
+			}
+
+			// Log the error
+			console.error(errorDetails);
+
+			// Optionally, you can send an error response to the client if needed
+			// res.status(res.statusCode).json({ message: 'Something went wrong, please try again.' });
 		} else {
+			// Log the success response if status code is 200
 			console.log(`[Response] ${res.statusCode} (${duration}ms): ${req.originalUrl}`);
 		}
 	});
 
+	// Proceed to next middleware
 	next();
 });
 
