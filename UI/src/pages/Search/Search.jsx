@@ -14,7 +14,6 @@ function Search() {
 	const [filteredResults, setFilteredResults] = useState([]);
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate(); // Initialize useNavigate
-
 	// Extract query parameters to pre-fill the search bar
 	const initialSearchData = {
 		location: {
@@ -25,8 +24,8 @@ function Search() {
 			locationLabel: searchParams.get("locationLabel") || "",
 		},
 		dateRange: {
-			startDate: new Date(searchParams.get("startDate") || ""),
-			endDate: new Date(searchParams.get("endDate") || ""),
+			startDate: searchParams.get("startDate") ? new Date(searchParams.get("startDate")) : new Date(),
+			endDate: searchParams.get("endDate") ? new Date(searchParams.get("endDate")) : new Date(),
 		},
 		occupancy: {
 			rooms: parseInt(searchParams.get("roomCount"), 10) || 1,
@@ -34,32 +33,49 @@ function Search() {
 			children: parseInt(searchParams.get("childrenCount"), 10) || 0,
 		},
 	};
-
+	
 	useEffect(() => {
 		const fetchSearchResults = async () => {
 			const params = new URLSearchParams(searchParams);
+			
+			// Check if any search parameters exist
+			const hasSearchParams = Array.from(params.keys()).length > 0;
 
-			// Format lại startDate và endDate nếu có
+			// Format startDate and endDate properly
 			const startDateRaw = params.get("startDate");
 			const endDateRaw = params.get("endDate");
 
 			if (startDateRaw) {
 				const parsed = new Date(decodeURIComponent(startDateRaw));
-				params.set("startDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
+				if (!isNaN(parsed.getTime())) {
+					params.set("startDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
+				}
 			}
 			if (endDateRaw) {
 				const parsed = new Date(decodeURIComponent(endDateRaw));
-				params.set("endDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
+				if (!isNaN(parsed.getTime())) {
+					params.set("endDate", parsed.toISOString().split("T")[0]); // YYYY-MM-DD
+				}
 			}
 
 			const query = params.toString();
-			console.group(query);
-			const response = await axiosInstance.get(`/accommodations/search?${query}`);
-			if (response.data.success) {
-				setSearchResults(response.data.payload);
-				setFilteredResults(response.data.payload); // Initialize filtered results
-			} else {
-				console.error(response.data.error);
+			console.log("Search query:", query);
+			
+			try {
+				// If no search parameters, fetch all accommodations via popular endpoint
+				const endpoint = hasSearchParams 
+					? `/accommodations/search?${query}` 
+					: '/accommodations/popular';
+					
+				const response = await axiosInstance.get(endpoint);
+				if (response.data.success) {
+					setSearchResults(response.data.payload);
+					setFilteredResults(response.data.payload); // Initialize filtered results
+				} else {
+					console.error(response.data.error);
+				}
+			} catch (error) {
+				console.error("Error fetching accommodations:", error);
 			}
 		};
 
@@ -69,7 +85,7 @@ function Search() {
 	const handleFilterChange = (filtered) => {
 		setFilteredResults(filtered);
 	};
-
+	
 	const handleSearch = React.useCallback(
 		(searchData) => {
 			const address = searchData.location;
@@ -96,8 +112,8 @@ function Search() {
 				postalCode: location.postalCode,
 				country: location.country,
 				locationLabel: label,
-				startDate,
-				endDate,
+				startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
+				endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
 				roomCount,
 				adultCount,
 				childrenCount,
@@ -112,12 +128,12 @@ function Search() {
 		<Box>
 			{/* Navbar */}
 			<Navbar />
-
+			
 			{/* Search Bar */}
 			<Box sx={{ marginTop: 10, padding: 2, backgroundColor: "#f5f5f5", borderBottom: "1px solid #ddd" }}>
 				<Container>
 					<SearchBar
-						initialData={initialSearchData} // Pass initial data to the search bar
+						initialData={initialSearchData}
 						onSearch={handleSearch}
 					/>
 				</Container>
@@ -133,7 +149,10 @@ function Search() {
 				{/* Search Results */}
 				<Box sx={{ flex: 3 }}>
 					<Typography variant="h4" fontWeight="bold" gutterBottom>
-						Search Results ({filteredResults.length})
+						{Array.from(searchParams.keys()).length > 0 
+							? `Search Results (${filteredResults.length})` 
+							: `All Available Accommodations (${filteredResults.length})`
+						}
 					</Typography>
 					{filteredResults.length > 0 ? (
 						<Grid container spacing={3} direction={"column"}>
@@ -145,7 +164,9 @@ function Search() {
 						</Grid>
 					) : (
 						<Typography variant="body1" color="text.secondary">
-							No results found matching your filters.
+							{Array.from(searchParams.keys()).length > 0 
+								? "No results found matching your filters." 
+								: "No accommodations available at the moment."}
 						</Typography>
 					)}
 				</Box>
