@@ -9,13 +9,33 @@ class AccommodationAmenity extends Amenity {
 	/**
 	 * @param {number} id
 	 * @param {string} name
-	 * @param {number} accommodationId
 	 * @param {EAccommodationAmenityType} type
 	 */
-	constructor(id, name, accommodationId, type) {
-		super(id, name);
-		this.accommodationId = accommodationId;
+	constructor({ id, name, type }) {
+		super({ id, name });
+		this.id = Number(id); // Ensure id is a number
 		this.type = type;
+	}
+
+	static fromModel(model) {
+		const amenityData = {
+			id: Number(model.Amenity?.id || model.id),
+			name: model.Amenity?.name || model.name || "Unknown Amenity",
+			type: model.type || "general",
+		};
+		return new AccommodationAmenity(amenityData);
+	}
+
+	toPlain() {
+		return {
+			id: Number(this.id),
+			name: this.name || "Unknown Amenity",
+			type: this.type,
+		};
+	}
+
+	toString() {
+		return this.name;
 	}
 }
 

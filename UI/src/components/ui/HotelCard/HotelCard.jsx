@@ -1,8 +1,10 @@
 import { Card, CardMedia, CardActions, CardContent, Typography, Rating, Stack, Button, Chip, Box } from "@mui/material";
 import { LocationOn } from "@mui/icons-material";
 import convertPrice from "../../../utils/convertPrice";
+import { useNavigate } from "react-router-dom";
 
-function HotelCard({ name = "Hotel Name", location = "Location", amenities = [], minPrice = "Price VND", rating = 4.5 }) {
+function HotelCard({ id, name = "Hotel Name", location = "Location", amenities = [], minPrice = "Price VND", rating = 4.5, thumbnail }) {
+	const navigate = useNavigate();
 	// Maximum total character length allowed for all visible chips combined
 	const maxTotalCharLength = 30; // Adjust this value based on your design needs
 
@@ -39,7 +41,7 @@ function HotelCard({ name = "Hotel Name", location = "Location", amenities = [],
 				borderRadius: 2,
 				boxShadow: 3,
 			}}
-			style={{ width: "100%" }}
+			style={{ width: "100%", height: "100%" }}
 		>
 			{/* Hotel Image */}
 			<CardMedia
@@ -50,7 +52,7 @@ function HotelCard({ name = "Hotel Name", location = "Location", amenities = [],
 					objectFit: "cover",
 					borderRadius: { xs: "8px 8px 0 0", md: "8px 0 0 8px" }, // Rounded corners
 				}}
-				image="https://th.bing.com/th/id/R.286b917dbac88394a863dd814ee19bda?rik=twiYWEn5m8hQ2A&pid=ImgRaw&r=0"
+				image={thumbnail || "/uploads/accommodation/default.jpg"}
 				alt={`${name} Image`}
 			/>
 
@@ -64,7 +66,7 @@ function HotelCard({ name = "Hotel Name", location = "Location", amenities = [],
 
 					{/* Rating */}
 					<Stack direction="row" alignItems="center" spacing={1} mb={1}>
-						<Rating value={rating} precision={0.5} readOnly />
+						<Rating value={rating} precision={0.1} readOnly />
 						<Typography variant="body2" color="text.secondary">
 							{rating} / 5
 						</Typography>
@@ -83,7 +85,7 @@ function HotelCard({ name = "Hotel Name", location = "Location", amenities = [],
 						</Typography>
 						<Stack direction="row" spacing={1} sx={{ overflow: "hidden", whiteSpace: "nowrap" }}>
 							{visibleAmenities.map((amenity, index) => (
-								<Chip key={index} label={amenity} size="small" color="primary" variant="outlined" />
+								<Chip key={index} label={amenity.name} size="small" color="primary" variant="outlined" />
 							))}
 							{remainingCount > 0 && <Chip label={`+${remainingCount}`} size="small" color="primary" variant="outlined" />}
 						</Stack>
@@ -103,7 +105,14 @@ function HotelCard({ name = "Hotel Name", location = "Location", amenities = [],
 						{convertPrice(minPrice)} VND
 					</Typography>
 					<Stack direction="row" spacing={1}>
-						<Button variant="contained" size="small" color="primary">
+						<Button
+							variant="contained"
+							size="small"
+							color="primary"
+							onClick={() => {
+								navigate(`/accommodation/detail/${id}`);
+							}}
+						>
 							Choose room
 						</Button>
 					</Stack>

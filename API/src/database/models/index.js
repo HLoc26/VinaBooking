@@ -3,10 +3,12 @@ import Room from "./Room.model.js";
 import Accommodation from "./Accommodation.model.js";
 import Address from "./Address.model.js";
 import Booking from "./Booking.model.js";
+import BookingItem from "./BookingItem.model.js";
 import Amenity from "./Amenity.model.js";
+import AccommodationAmenity from "./AccommodationAmenity.model.js";
+import RoomAmenity from "./RoomAmenity.model.js";
 import Review from "./Review.model.js";
 import Policy from "./Policy.model.js";
-import Invoice from "./Invoice.model.js";
 import SupportTicket from "./SupportTicket.model.js";
 import SystemAdmin from "./SystemAdmin.model.js";
 import ReviewReply from "./ReviewReply.model.js";
@@ -23,11 +25,13 @@ export {
     Room,
     Accommodation,
     Address,
+    BookingItem,
     Booking,
     Amenity,
+    AccommodationAmenity,
+    RoomAmenity,
     Review,
     Policy,
-    Invoice,
     SupportTicket,
     SystemAdmin,
     ReviewReply,

@@ -3,9 +3,10 @@ export { default as AccommodationAmenity, EAccommodationAmenityType } from "./Ac
 export { default as Address } from "./Address.js";
 export { default as Amenity } from "./Amenity.js";
 export { default as Booking } from "./Booking.js";
+export { default as EBookingStatus } from "./EBookingStatus.js";
 export { default as FavouriteList } from "./FavouriteList.js";
 export { default as Image } from "./Image.js";
-export { default as Invoice } from "./Invoice.js";
+export { default as BookingItem } from "./BookingItem.js";
 export { default as Notification } from "./Notification.js";
 export { default as Policy } from "./Policy.js";
 export { default as Review } from "./Review.js";
