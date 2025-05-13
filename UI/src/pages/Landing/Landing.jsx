@@ -112,16 +112,18 @@ function Landing() {
 			</Box>
 
 			{/* Search Bar */}
-			<Container sx={{ marginTop: -5, position: 'relative', zIndex: 2 }}>
+			<Container sx={{ marginTop: -5, position: 'relative', zIndex: 5 }}>
 				<Paper 
 					elevation={6}
 					sx={{
 						borderRadius: 3,
-						overflow: 'hidden',
 						transition: 'all 0.3s ease-in-out',
 						'&:hover': {
 							boxShadow: 10,
 						},
+						position: 'relative',
+						zIndex: 'auto',
+						overflow: 'visible'
 					}}
 				>
 					<SearchBar onSearch={handleSearch} />
