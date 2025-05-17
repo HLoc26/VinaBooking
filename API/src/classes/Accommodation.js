@@ -54,16 +54,14 @@ class Accommodation {
 	// 	return accommodation?.isActive ?? false;
 	// }
 
-	getAvailableRooms({ bookedRoomIds, adultCount, priceMin, priceMax }) {
-		// prettier-ignore
-		const a = this.rooms.filter(
-			(room) => (
-				room.inBookedRooms(bookedRoomIds) &&
-				room.canHost(adultCount) &&
-				room.inPriceRange(priceMin, priceMax)
-			)
+	async getAvailableRooms({ adultCount, priceMin, priceMax, startDate, endDate, roomCount }) {
+		const results = await Promise.all(
+			this.rooms.map(async (room) => {
+				const available = await room.isAvailable(adultCount, priceMin, priceMax, startDate, endDate, roomCount);
+				return available ? room : null;
+			})
 		);
-		return a;
+		return results.filter((room) => room !== null);
 	}
 
 	getRoomCount() {
