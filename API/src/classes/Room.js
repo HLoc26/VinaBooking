@@ -57,6 +57,22 @@ class Room {
 	// 	return room?.isActive ?? false;
 	// }
 
+	getBookedCount(bookingItems, startDate, endDate) {
+		return bookingItems.reduce((total, item) => {
+			const booking = item.Booking;
+			if (booking) {
+				const bookingStart = new Date(booking.startDate);
+				const bookingEnd = new Date(booking.endDate);
+				const checkIn = new Date(startDate);
+				const checkOut = new Date(endDate);
+				if (bookingStart <= checkOut && bookingEnd >= checkIn) {
+					return total + (item.count || 0);
+				}
+			}
+			return total;
+		}, 0);
+	}
+
 	async isAvailable(adultCount, priceMin, priceMax, startDate, endDate, roomCount) {
 		const bookedCount = await RoomRepository.getBookedCount(this.id, startDate, endDate);
 		const availableCount = this.count - bookedCount;
@@ -69,7 +85,6 @@ class Room {
 			return true;
 		}
 		return false;
-		// return this.canHost(adultCount) && (await this.inBookedRooms(bookedRoomIds)) && (await this.inPriceRange(priceMin, priceMax));
 	}
 
 	canHost(adultCount) {
