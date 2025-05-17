@@ -1,11 +1,20 @@
 import BookingService from "../services/booking.service.js";
+import BookingRequestBuilder from "../builders/BookingRequestBuilder.js";
 export default {
 	async bookRoom(req, res) {
 		try {
-			const { rooms, startDate, endDate, guestCount } = req.body;
+			const reqBody = req.body;
 			const guest = req.user;
 
-			const result = await BookingService.bookRoom({ rooms, guestId: guest.id, startDate, endDate, guestCount });
+			const builder = new BookingRequestBuilder() //
+				.withDateRange(reqBody.startDate, reqBody.endDate)
+				.withGuestCount(reqBody.guestCount)
+				.withRooms(reqBody.rooms)
+				.withGuestId(guest.id);
+
+			const data = builder.build();
+
+			const result = await BookingService.bookRoom(data);
 			return res.status(200).json({
 				success: true,
 				message: "Successfully booked",
