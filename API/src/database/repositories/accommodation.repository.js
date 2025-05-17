@@ -218,6 +218,16 @@ export const AccommodationRepository = {
 					required: true,
 				},
 				{
+					model: RoomModel,
+					include: [
+						{ model: ImageModel },
+						{
+							model: RoomAmenityModel,
+							include: [{ model: AmenityModel }],
+						},
+					],
+				},
+				{
 					model: ImageModel,
 					attributes: [["id", "imageId"], "filename"],
 					required: false,
