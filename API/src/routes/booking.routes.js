@@ -6,5 +6,6 @@ const bookingRouter = Router();
 
 bookingRouter.post("/", bookingController.bookRoom);
 bookingRouter.get("/", authMiddleware.decodeJwt, bookingController.viewBookings);
+bookingRouter.put("/:id/cancel", authMiddleware.decodeJwt, bookingController.cancelBooking);
 
 export default bookingRouter;
