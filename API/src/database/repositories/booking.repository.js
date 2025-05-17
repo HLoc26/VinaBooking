@@ -17,6 +17,10 @@ export const BookingRepository = {
 		return bookings;
 	},
 
+	async findOneById(bookingId) {
+		return await BookingModel.findOne({ where: { id: bookingId } });
+	},
+
 	// Find all bookings by userId
 	async findAllByUserId(userId) {
 		const bookings = await BookingModel.findAll({
@@ -42,5 +46,10 @@ export const BookingRepository = {
 
 	async findBookingItems(bookingId) {
 		return await BookingItemModel.findAll({ where: { bookingId: bookingId } });
+	},
+
+	async cancelBooking(bookingId) {
+		const [affectedRows] = await BookingModel.update({ status: EBookingStatus.CANCELED }, { where: { id: bookingId, status: { $ne: EBookingStatus.CANCELED } } });
+		return affectedRows;
 	},
 };
