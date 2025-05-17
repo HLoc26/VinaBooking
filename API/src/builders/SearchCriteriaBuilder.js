@@ -1,3 +1,5 @@
+import SearchCriteria from "../dtos/SearchCriteria.js";
+
 class SearchCriteriaBuilder {
 	constructor() {
 		this.criteria = {};
@@ -28,8 +30,31 @@ class SearchCriteriaBuilder {
 		return this;
 	}
 
+	withPromotionCode(promotionCode) {
+		return this;
+	}
+
 	build() {
-		return this.criteria;
+		return new SearchCriteria({
+			location: {
+				city: this.criteria.city,
+				state: this.criteria.state,
+				postalCode: this.criteria.postalCode,
+				country: this.criteria.country,
+			},
+			dateRange: {
+				startDate: this.criteria.startDate,
+				endDate: this.criteria.endDate,
+			},
+			occupancy: {
+				roomCount: this.criteria.roomCount,
+				adultCount: this.criteria.adultCount,
+			},
+			price: {
+				priceMin: this.criteria.priceMin,
+				priceMax: this.criteria.priceMax,
+			},
+		});
 	}
 }
 

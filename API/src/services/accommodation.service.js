@@ -33,13 +33,10 @@ export default {
 	},
 
 	async search(criteria) {
-		// prettier-ignore
-		const {
-			city, state, postalCode, country,
-			startDate, endDate,
-			roomCount, adultCount,
-			priceMin = 0, priceMax = Infinity
-		} = criteria;
+		const { city, state, postalCode, country } = criteria.location;
+		const { priceMin, priceMax } = criteria.price;
+		const { startDate, endDate } = criteria.getISODate();
+		const { adultCount, roomCount } = criteria.occupancy;
 
 		// Validate input
 		if (!startDate || !endDate) {
