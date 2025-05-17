@@ -48,10 +48,6 @@ class Room {
 		return Math.max(0, this.count - bookedCount);
 	}
 
-	async isAvailable(startDate, endDate, adultCount) {
-		return this.canHost(adultCount) && (await this.isEmptyBetween(startDate, endDate)) && (await this.isCurrentlyActive());
-	}
-
 	async isEmptyBetween(startDate, endDate) {
 		return await RoomRepository.isEmptyBetween(this.id, startDate, endDate);
 	}
@@ -61,8 +57,19 @@ class Room {
 	// 	return room?.isActive ?? false;
 	// }
 
-	async inBookedRooms(bookedRoomIds) {
-		return !bookedRoomIds.has(this.id) && (await this.isCurrentlyActive());
+	async isAvailable(adultCount, priceMin, priceMax, startDate, endDate, roomCount) {
+		const bookedCount = await RoomRepository.getBookedCount(this.id, startDate, endDate);
+		const availableCount = this.count - bookedCount;
+
+		if (
+			availableCount >= roomCount && // Check if enough rooms are available
+			this.canHost(adultCount) && // Check if the room can host the required number of adults
+			this.inPriceRange(priceMin, priceMax) // Check if the room is within the price range
+		) {
+			return true;
+		}
+		return false;
+		// return this.canHost(adultCount) && (await this.inBookedRooms(bookedRoomIds)) && (await this.inPriceRange(priceMin, priceMax));
 	}
 
 	canHost(adultCount) {
