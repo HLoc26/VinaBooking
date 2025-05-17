@@ -79,4 +79,15 @@ export default {
 		const bookings = await Promise.all(bookingModels.map(async (model) => await Booking.fromModel(model)));
 		return bookings;
 	},
+
+	async cancelBooking(bookingId, userId) {
+		const booking = await BookingRepository.findOneById(bookingId);
+		if (!booking) return "NOT_FOUND";
+
+		if (booking.userId !== userId) return "FORBIDDEN";
+		if (booking.status === EBookingStatus.CANCELED) return "ALREADY_CANCELED";
+
+		const affectedRows = await BookingRepository.cancelBooking(bookingId);
+		return affectedRows === 1;
+	},
 };
