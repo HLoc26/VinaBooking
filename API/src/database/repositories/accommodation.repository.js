@@ -52,19 +52,40 @@ export const AccommodationRepository = {
 					required: true,
 				},
 				{
-					model: ImageModel,
-					attributes: [["id", "imageId"], "filename"],
+					model: AccommodationAmenityModel,
 					required: false,
+					include: [
+						{
+							model: AmenityModel,
+							attributes: ["id", "name"],
+						},
+					],
 				},
+				{
+					model: RoomModel,
+					include: [
+						{ model: ImageModel },
+						{
+							model: RoomAmenityModel,
+							include: [{ model: AmenityModel }],
+						},
+					],
+				},
+				{ model: ImageModel },
+				{ model: PolicyModel },
 				{
 					model: ReviewModel,
-					attributes: [["id", "reviewId"], "star"],
-					required: false,
-				},
-				{
-					model: AccommodationAmenityModel,
-					include: [{ model: AmenityModel }],
-					required: false,
+					include: [
+						{
+							model: UserModel,
+							as: "reviewer",
+						},
+						{ model: ImageModel },
+						{
+							model: ReviewReplyModel,
+							include: [{ model: UserModel }],
+						},
+					],
 				},
 			],
 		});
