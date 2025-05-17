@@ -17,6 +17,15 @@ export const BookingRepository = {
 		return bookings;
 	},
 
+	// Find all bookings by userId
+	async findAllByUserId(userId) {
+		const bookings = await BookingModel.findAll({
+			where: { userId, status: { [Op.ne]: EBookingStatus.CANCELED } },
+			order: [["createdAt", "DESC"]],
+		});
+		return bookings;
+	},
+
 	async createNew(booking) {
 		booking = { ...booking, userId: booking.guest.id };
 		const bookingId = await BookingModel.create(booking);
