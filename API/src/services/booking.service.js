@@ -72,4 +72,11 @@ export default {
 			throw error;
 		}
 	},
+
+	// Get all bookings for a user
+	async getBookingList(userId) {
+		const bookingModels = await BookingRepository.findAllByUserId(userId);
+		const bookings = await Promise.all(bookingModels.map(async (model) => await Booking.fromModel(model)));
+		return bookings;
+	},
 };
