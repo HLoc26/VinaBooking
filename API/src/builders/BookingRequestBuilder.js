@@ -45,6 +45,10 @@ class BookingRequestBuilder {
 		return this;
 	}
 
+	withPromotionCode(promotionCode) {
+		return this;
+	}
+
 	build() {
 		if (!this.data.guestId) throw new Error("Guest ID is required.");
 		if (!this.data.startDate || !this.data.endDate) throw new Error("Date range is required.");
