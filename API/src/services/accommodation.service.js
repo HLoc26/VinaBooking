@@ -6,44 +6,30 @@ import { ReviewRepository } from "../database/repositories/review.repository.js"
 import AccommodationClass from "../classes/Accommodation.js";
 
 import { Accommodation, Review } from "../classes/index.js";
+import AccommodationResponseBuilder from "../builders/AccommodationResponseBuilder.js";
 
 export default {
 	async findById(id, startDate, endDate) {
 		const accommodationModel = await AccommodationRepository.getFullInfo(id, startDate, endDate);
-		const reviewsDataModel = await ReviewRepository.findByAccommodationId(id);
-
-		// Tính bookedCounts cho mỗi phòng
-		const bookedCounts = {};
-		accommodationModel.Rooms.forEach((room) => {
-			const items = Array.isArray(room.BookingItems) ? room.BookingItems : [];
-			bookedCounts[room.id] = items.reduce((total, item) => {
-				const booking = item.Booking;
-				if (booking) {
-					const bookingStart = new Date(booking.startDate);
-					const bookingEnd = new Date(booking.endDate);
-					const checkIn = new Date(startDate);
-					const checkOut = new Date(endDate);
-					if (bookingStart <= checkOut && bookingEnd >= checkIn) {
-						return total + (item.count || 0);
-					}
-				}
-				return total;
-			}, 0);
-		});
-
 		if (!accommodationModel) return null;
 
 		const accommodationInstance = AccommodationClass.fromModel(accommodationModel);
 
-		// console.log(accommodationInstance.toPlain());
+		const reviews = await ReviewRepository.findByAccommodationId(id);
 
-		const rating = await accommodationInstance.getAvgRating();
+		const bookedCount = accommodationInstance.computeBookedCounts(accommodationModel.Rooms, startDate, endDate); // tách logic tính bookedCounts vào trong class
 
-		return {
-			...accommodationInstance.toPlain(bookedCounts),
-			reviews: reviewsDataModel.map((review) => Review.fromModel(review).toPlain()),
-			rating,
-		};
+		const builder = new AccommodationResponseBuilder(accommodationInstance)
+			.withAddress()
+			.withImages()
+			.withRooms(accommodationInstance.rooms, bookedCount)
+			.withAmenities()
+			.withMinPrice()
+			.withPolicy()
+			.withReviews(reviews);
+
+		await builder.withRating();
+		return builder.build();
 	},
 
 	async search(criteria) {
@@ -70,13 +56,16 @@ export default {
 
 			// Filter available rooms in the accommodation
 			const availableRooms = await accommodation.getAvailableRooms({ adultCount, priceMin, priceMax, startDate, endDate, roomCount });
-
-			const minPrice = accommodation.getMinPrice();
-
-			const rating = await accommodation.getAvgRating();
 			// Add accommodation to results if it has enough available rooms
 			if (availableRooms.length > 0) {
-				results.push({ ...accommodation.toPlain(availableRooms), minPrice, rating });
+				const builder = await new AccommodationResponseBuilder(accommodation)
+					.withAddress()
+					.withAmenities()
+					.withImages()
+					.withMinPrice()
+					// withRating is async
+					.withRating();
+				results.push(builder.build());
 			}
 		}
 
@@ -96,18 +85,9 @@ export default {
 		// Process each accommodation using class methods
 		const processedAccommodations = await Promise.all(
 			accommodationInstances.map(async (accommodation) => {
-				const rating = await accommodation.getAvgRating();
-
-				await accommodation.loadRooms();
-
-				const minPrice = accommodation.getMinPrice();
-
-				return {
-					...accommodation.toPlain(),
-					rooms: undefined, // Does not need to get rooms
-					rating,
-					minPrice,
-				};
+				const builder = new AccommodationResponseBuilder(accommodation).withAmenities().withAddress().withImages().withMinPrice();
+				await builder.withRating();
+				return ret.build();
 			})
 		);
 
