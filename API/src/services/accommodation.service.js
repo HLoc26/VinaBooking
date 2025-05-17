@@ -35,8 +35,8 @@ export default {
 
 		const accommodationInstance = AccommodationClass.fromModel(accommodationModel);
 
-		console.log(accommodationInstance.toPlain());
-		
+		// console.log(accommodationInstance.toPlain());
+
 		const rating = await accommodationInstance.getAvgRating();
 
 		return {

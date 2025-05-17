@@ -1,4 +1,5 @@
 import Redis from "ioredis";
+import logger from "../helpers/Logger.js";
 
 class RedisClient {
 	constructor() {
@@ -9,15 +10,15 @@ class RedisClient {
 		this.client = new Redis(process.env.REDIS_CONN_STR);
 
 		this.client.on("connecting", () => {
-			console.log("Connecting to Redis Client");
+			logger.info("Connecting to Redis Client");
 		});
 
 		this.client.on("connect", () => {
-			console.log("Connected to Redis Client");
+			logger.success("Connected to Redis Client");
 		});
 
 		this.client.on("error", (err) => {
-			console.log("Error from Redis Client", err);
+			console.error("Error from Redis Client", err);
 		});
 
 		RedisClient.instance = this;
