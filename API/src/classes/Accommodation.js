@@ -54,6 +54,19 @@ class Accommodation {
 	// 	return accommodation?.isActive ?? false;
 	// }
 
+	computeBookedCounts(roomModels, startDate, endDate) {
+		const bookedCounts = {};
+
+		for (let i = 0; i < roomModels.length; i++) {
+			const model = roomModels[i];
+
+			const bookingItems = Array.isArray(model.BookingItems) ? model.BookingItems : [];
+			const room = this.rooms.find((room) => model.id === room.id);
+			bookedCounts[room.id] = room.getBookedCount(bookingItems, startDate, endDate);
+		}
+		return bookedCounts;
+	}
+
 	async getAvailableRooms({ adultCount, priceMin, priceMax, startDate, endDate, roomCount }) {
 		const results = await Promise.all(
 			this.rooms.map(async (room) => {
