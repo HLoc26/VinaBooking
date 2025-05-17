@@ -67,22 +67,9 @@ export default {
 		const results = [];
 		for (const accommodationModel of accommodations) {
 			const accommodation = Accommodation.fromModel(accommodationModel);
-			await accommodation.loadRooms();
 
 			// Filter available rooms in the accommodation
-			const availableRooms = [];
-			for (const room of accommodation.rooms) {
-				const bookedCount = await RoomRepository.getBookedCount(room.id, startDate, endDate);
-				const availableCount = room.count - bookedCount;
-
-				if (
-					availableCount >= roomCount && // Check if enough rooms are available
-					room.canHost(adultCount) && // Check if the room can host the required number of adults
-					room.inPriceRange(priceMin, priceMax) // Check if the room is within the price range
-				) {
-					availableRooms.push(room);
-				}
-			}
+			const availableRooms = await accommodation.getAvailableRooms({ adultCount, priceMin, priceMax, startDate, endDate, roomCount });
 
 			const minPrice = accommodation.getMinPrice();
 
