@@ -28,7 +28,6 @@ const bookingSlice = createSlice({
 					price: +room.price,
 					subtotal: room.quantity * +room.price,
 				};
-				console.log("State:", state.selectedRooms[room.id]);
 			} else {
 				// Remove room if quantity is 0
 				if (state.selectedRooms[room.id]) {

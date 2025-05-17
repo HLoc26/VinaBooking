@@ -11,7 +11,7 @@ Review.init(
 			primaryKey: true,
 		},
 		star: {
-			type: DataTypes.FLOAT,
+			type: DataTypes.INTEGER.UNSIGNED,
 			allowNull: false,
 			validate: {
 				min: 0,

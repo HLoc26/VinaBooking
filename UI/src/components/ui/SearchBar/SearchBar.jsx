@@ -48,7 +48,6 @@ function SearchBar({ initialData = {}, onSearch }) {
 		}
 		dispatch(updateSearchFields({ location, dateRange, occupancy }));
 		dispatch(resetBooking());
-		console.log("At search bar", dateRange);
 
 		if (onSearch) {
 			onSearch({ location, dateRange, occupancy });

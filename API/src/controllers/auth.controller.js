@@ -27,16 +27,16 @@ export default {
 
 			res.cookie("jwt", token, {
 				httpOnly: true,
-				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
-				sameSite: "lax",
+				secure: true, // only send over HTTPS in production
+				sameSite: "none",
 				maxAge: maxAge,
-			});			// Only send user info in payload, not the JWT token
+			}); // Only send user info in payload, not the JWT token
 			return res.status(200).json({
 				success: true,
 				message: "Login success",
 				payload: {
 					user: result.payload.user,
-					rememberMe
+					rememberMe,
 				},
 			});
 		} catch (err) {
@@ -61,18 +61,18 @@ export default {
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
-			return res.status(200).json({ 
-				success: true, 
-				message: "OTP sent to email. Please confirm to complete registration." 
+			return res.status(200).json({
+				success: true,
+				message: "OTP sent to email. Please confirm to complete registration.",
 			});
 		} catch (error) {
 			console.error("Registration initiation failed:", error);
-			return res.status(500).json({ 
-				success: false, 
-				error: { 
-					code: 500, 
-					message: "Internal Server Error" 
-				} 
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
 			});
 		}
 	},
@@ -85,18 +85,18 @@ export default {
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
-			return res.status(201).json({ 
-				success: true, 
-				message: "Account created successfully. You can now log in." 
+			return res.status(201).json({
+				success: true,
+				message: "Account created successfully. You can now log in.",
 			});
 		} catch (error) {
 			console.error("Registration confirmation failed:", error);
-			return res.status(500).json({ 
-				success: false, 
-				error: { 
-					code: 500, 
-					message: "Internal Server Error" 
-				} 
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
 			});
 		}
 	},
@@ -109,8 +109,8 @@ export default {
 					success: false,
 					error: {
 						code: 401,
-						message: "Not authenticated"
-					}
+						message: "Not authenticated",
+					},
 				});
 			}
 
@@ -121,14 +121,14 @@ export default {
 					success: false,
 					error: {
 						code: 404,
-						message: "User not found"
-					}
+						message: "User not found",
+					},
 				});
 			}
 
 			return res.status(200).json({
 				success: true,
-				payload: authService.sanitizeUser(user)
+				payload: authService.sanitizeUser(user),
 			});
 		} catch (error) {
 			console.error("Error in getCurrentUser:", error);
@@ -137,8 +137,8 @@ export default {
 				error: {
 					code: 500,
 					message: "Server error",
-					details: error.message
-				}
+					details: error.message,
+				},
 			});
 		}
 	},
@@ -149,12 +149,12 @@ export default {
 			res.clearCookie("jwt", {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === "production",
-				sameSite: "lax"
+				sameSite: "lax",
 			});
 
 			return res.status(200).json({
 				success: true,
-				message: "Logout successful"
+				message: "Logout successful",
 			});
 		} catch (error) {
 			console.error("Error in logout:", error);
@@ -163,9 +163,9 @@ export default {
 				error: {
 					code: 500,
 					message: "Server error",
-					details: error.message
-				}
+					details: error.message,
+				},
 			});
 		}
-	}
+	},
 };

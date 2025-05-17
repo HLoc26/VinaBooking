@@ -33,11 +33,11 @@ function Search() {
 			children: parseInt(searchParams.get("childrenCount"), 10) || 0,
 		},
 	};
-	
+
 	useEffect(() => {
 		const fetchSearchResults = async () => {
 			const params = new URLSearchParams(searchParams);
-			
+
 			// Check if any search parameters exist
 			const hasSearchParams = Array.from(params.keys()).length > 0;
 
@@ -59,14 +59,11 @@ function Search() {
 			}
 
 			const query = params.toString();
-			console.log("Search query:", query);
-			
+
 			try {
 				// If no search parameters, fetch all accommodations via popular endpoint
-				const endpoint = hasSearchParams 
-					? `/accommodations/search?${query}` 
-					: '/accommodations/popular';
-					
+				const endpoint = hasSearchParams ? `/accommodations/search?${query}` : "/accommodations/popular";
+
 				const response = await axiosInstance.get(endpoint);
 				if (response.data.success) {
 					setSearchResults(response.data.payload);
@@ -85,7 +82,7 @@ function Search() {
 	const handleFilterChange = (filtered) => {
 		setFilteredResults(filtered);
 	};
-	
+
 	const handleSearch = React.useCallback(
 		(searchData) => {
 			const address = searchData.location;
@@ -128,14 +125,11 @@ function Search() {
 		<Box>
 			{/* Navbar */}
 			<Navbar />
-			
+
 			{/* Search Bar */}
 			<Box sx={{ marginTop: 10, padding: 2, backgroundColor: "#f5f5f5", borderBottom: "1px solid #ddd" }}>
 				<Container>
-					<SearchBar
-						initialData={initialSearchData}
-						onSearch={handleSearch}
-					/>
+					<SearchBar initialData={initialSearchData} onSearch={handleSearch} />
 				</Container>
 			</Box>
 
@@ -149,10 +143,7 @@ function Search() {
 				{/* Search Results */}
 				<Box sx={{ flex: 3 }}>
 					<Typography variant="h4" fontWeight="bold" gutterBottom>
-						{Array.from(searchParams.keys()).length > 0 
-							? `Search Results (${filteredResults.length})` 
-							: `All Available Accommodations (${filteredResults.length})`
-						}
+						{Array.from(searchParams.keys()).length > 0 ? `Search Results (${filteredResults.length})` : `All Available Accommodations (${filteredResults.length})`}
 					</Typography>
 					{filteredResults.length > 0 ? (
 						<Grid container spacing={3} direction={"column"}>
@@ -164,9 +155,7 @@ function Search() {
 						</Grid>
 					) : (
 						<Typography variant="body1" color="text.secondary">
-							{Array.from(searchParams.keys()).length > 0 
-								? "No results found matching your filters." 
-								: "No accommodations available at the moment."}
+							{Array.from(searchParams.keys()).length > 0 ? "No results found matching your filters." : "No accommodations available at the moment."}
 						</Typography>
 					)}
 				</Box>

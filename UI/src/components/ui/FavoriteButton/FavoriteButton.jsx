@@ -18,7 +18,6 @@ const FavoriteButton = ({ accommodation, onRemove, ...props }) => {
 	const [openLoginModal, setOpenLoginModal] = useState(false);
 
 	const handleClick = () => {
-		console.log(isLoggedIn);
 		if (!isLoggedIn) {
 			setOpenLoginModal(true);
 			return;

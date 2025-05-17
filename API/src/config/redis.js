@@ -1,11 +1,7 @@
 // config/redis.js
 import Redis from "ioredis";
+import "dotenv/config";
 
-const redis = new Redis({
-	host: "redis",
-	port: process.env.REDIS_PORT || 6379,
-	password: process.env.REDIS_PASSWORD || "",
-	connectionTimeout: 10000, // 10 seconds
-});
+const redis = new Redis(process.env.REDIS_CONN_STR);
 
 export default redis; // default export
