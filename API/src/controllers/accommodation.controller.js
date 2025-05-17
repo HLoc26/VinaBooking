@@ -1,9 +1,10 @@
-import AccommodationService from "../services/accommodation.service.js";
+import accommodationService from "../services/accommodation.service.js";
 
 export default {
 	async getAccommodationDetail(req, res) {
 		try {
-			const id = parseInt(req.query.id, 10);
+			const id = parseInt(req.params.id, 10);
+			const {startDate, endDate} = req.query;
 
 			if (isNaN(id)) {
 				return res.status(400).json({
@@ -15,7 +16,7 @@ export default {
 				});
 			}
 
-			const accommodation = await AccommodationService.findById(id);
+			const accommodation = await accommodationService.findById(id, startDate, endDate);
 
 			if (!accommodation) {
 				return res.status(404).json({
@@ -37,6 +38,61 @@ export default {
 		} catch (error) {
 			console.error("Error getting accommodation detail:", error);
 			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
+			});
+		}
+	},
+
+	async search(req, res) {
+		try {
+			// Assume that we use VND for price
+			const { city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax } = req.query;
+
+			const ret = await accommodationService.search({
+				city,
+				state,
+				postalCode,
+				country,
+				startDate,
+				endDate,
+				roomCount,
+				adultCount,
+				priceMin,
+				priceMax,
+			});
+
+			res.status(200).json({
+				success: true,
+				message: `Successfully found ${ret.length} results.`,
+				payload: ret,
+			});
+		} catch (error) {
+			console.error("Search accommodation error", error);
+			res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
+			});
+		}
+	},
+
+	async getPopular(_, res) {
+		try {
+			const accommodations = await accommodationService.findPopular();
+			res.status(200).json({
+				success: true,
+				message: `Found ${accommodations.length} result`,
+				payload: accommodations,
+			});
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({
 				success: false,
 				error: {
 					code: 500,

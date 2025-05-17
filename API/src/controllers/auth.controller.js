@@ -1,80 +1,171 @@
 import authService from "../services/auth.service.js";
 import emailService from "../services/email.service.js";
+import User from "../classes/User.js";
+
 export default {
-  // Handles user authentication requests
-  async login(req, res) {
-      const { email, password } = req.body;
-      try {
-          const result = await authService.login(email, password);
-          if (!result.success) {
-              return res.status(result.error.code).json({ success: false, error: result.error });
-          }
-          return res.json({
-              success: true,
-              message: "Login success",
-              payload: result.payload,
-          });
-      } catch (err) {
-          console.error(err);
-          return res.status(500).json({ success: false, error: { code: 500, message: "Server error" } });
-      }
-  },
-  
-  // Handles requesting OTP
-	async requestOTP(req, res) {
-		const { email } = req.body;
+	// Handles user authentication requests
+	async login(req, res) {
+		const { email, password, rememberMe } = req.body;
 
 		try {
-      // Generate random OTP and save to Redis
-		  const otp = await authService.generateOTP(email);
-      
-			// Send OTP via email
-			await emailService.send({
-				to: email,
-				subject: "Your OTP Code",
-				html: `<h3>Your OTP is:</h3><p style="font-size: 20px; font-weight: bold;">${otp}</p><p>This OTP will expire in 5 minutes.</p>`,
-			});
+			const result = await authService.login(email, password, rememberMe);
 
-			res.status(200).json({ success: true, message: "OTP sent successfully to email.", payload: null });
+			if (!result.success) {
+				console.log(`[LOGIN] Authentication failed`);
+				return res.status(result.error.code).json({ success: false, error: result.error });
+			}
+
+			console.log(`[LOGIN] Authentication successful`);
+
+			// Set JWT as HTTP-only cookie
+			const token = result.payload.jwt;
+
+			// Set cookie expiration based on rememberMe flag
+			const maxAge = rememberMe
+				? 30 * 24 * 60 * 60 * 1000 // 30 days for "Remember Me"
+				: 24 * 60 * 60 * 1000; // 1 day for normal login
+
+			res.cookie("jwt", token, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
+				sameSite: "lax",
+				maxAge: maxAge,
+			});			// Only send user info in payload, not the JWT token
+			return res.status(200).json({
+				success: true,
+				message: "Login success",
+				payload: {
+					user: result.payload.user,
+					rememberMe
+				},
+			});
+		} catch (err) {
+			console.error(`[LOGIN] Server error during authentication`);
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Server error",
+					details: err.message,
+					stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+				},
+			});
+		}
+	},
+	async initiateRegistration(req, res) {
+		try {
+			const { name, phone, email, password, role, gender, dob } = req.body;
+
+			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob });
+
+			if (!result.success) {
+				return res.status(result.error.code).json({ success: false, error: result.error });
+			}
+			return res.status(200).json({ 
+				success: true, 
+				message: "OTP sent to email. Please confirm to complete registration." 
+			});
 		} catch (error) {
-			console.error("Failed to send OTP:", error);
-			res.status(500).json({ success: false, error: {code: 500, message: "Failed to send OTP email"}});
+			console.error("Registration initiation failed:", error);
+			return res.status(500).json({ 
+				success: false, 
+				error: { 
+					code: 500, 
+					message: "Internal Server Error" 
+				} 
+			});
+		}
+	},
+	async completeRegistration(req, res) {
+		try {
+			const { email, otp } = req.body;
+
+			const result = await authService.completeRegistration(email, otp);
+
+			if (!result.success) {
+				return res.status(result.error.code).json({ success: false, error: result.error });
+			}
+			return res.status(201).json({ 
+				success: true, 
+				message: "Account created successfully. You can now log in." 
+			});
+		} catch (error) {
+			console.error("Registration confirmation failed:", error);
+			return res.status(500).json({ 
+				success: false, 
+				error: { 
+					code: 500, 
+					message: "Internal Server Error" 
+				} 
+			});
 		}
 	},
 
-  // Handles OTP confirmation
-	async confirmOTP(req, res) {
-		const { email, otp } = req.body;
-    
-    try {
-      const result = await authService.validateOTP(email, otp);
-
-      if (!result.valid) {
-        return res.status(400).json({ success: false, error: {code: 400, message: result.message}});
-      }
-      res.status(200).json({ success: true, message: result.message, payload: null });
-    }
-    catch (error) {
-      console.error("Failed to confirm OTP:", error);
-			res.status(500).json({ success: false, error: {code: 500, message: "Failed to confirm OTP"}});
-    }
-	},
-
-	// Mail test route logic
-	async testMail(req, res) {
-		const { to, subject, message } = req.body;
-
+	async getCurrentUser(req, res) {
 		try {
-			await emailService.send({
-				to: to || "example@gmail.com", // Use a fixed email for testing
-				subject: subject || "Hello",
-				html: `<p>${message}</p>`,
-			});
+			// User information is already attached to req.user by the auth middleware
+			if (!req.user) {
+				return res.status(401).json({
+					success: false,
+					error: {
+						code: 401,
+						message: "Not authenticated"
+					}
+				});
+			}
 
-			res.status(200).json({ success: true, message: "Test email sent successfully!", payload: null });
+			// Get the complete user data
+			const user = await authService.getUserById(req.user.id);
+			if (!user) {
+				return res.status(404).json({
+					success: false,
+					error: {
+						code: 404,
+						message: "User not found"
+					}
+				});
+			}
+
+			return res.status(200).json({
+				success: true,
+				payload: authService.sanitizeUser(user)
+			});
 		} catch (error) {
-			console.error("Mail test error:", error);
-			res.status(500).json({ success: false, error: {code: 500, message: "Failed to send test email"}});
+			console.error("Error in getCurrentUser:", error);
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Server error",
+					details: error.message
+				}
+			});
 		}
 	},
+
+	async logout(req, res) {
+		try {
+			// Clear the JWT cookie
+			res.clearCookie("jwt", {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "lax"
+			});
+
+			return res.status(200).json({
+				success: true,
+				message: "Logout successful"
+			});
+		} catch (error) {
+			console.error("Error in logout:", error);
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Server error",
+					details: error.message
+				}
+			});
+		}
+	}
 };

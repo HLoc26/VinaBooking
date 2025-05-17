@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
+import authMiddleware from "../middlewares/auth.mdw.js";
 
 const authRouter = Router();
 
@@ -8,8 +9,9 @@ authRouter.get("/", (req, res) => {
 });
 
 authRouter.post("/login", authController.login);
-authRouter.post("/otp/request", authController.requestOTP);
-authRouter.post("/otp/confirm", authController.confirmOTP);
-authRouter.post("/mail/test", authController.testMail); // Mail test route, only dev env
+authRouter.post("/register", authController.initiateRegistration);
+authRouter.post("/register/complete", authController.completeRegistration);
+authRouter.post("/logout", authController.logout);
+authRouter.get("/me", authMiddleware.decodeJwt, authController.getCurrentUser);
 
 export default authRouter;

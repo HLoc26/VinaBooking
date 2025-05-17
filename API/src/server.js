@@ -1,16 +1,24 @@
 import express, { urlencoded } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import router from "./routes/index.routes.js";
 import sequelize from "./config/sequelize.js";
-import "./database/models/associations.js";
+import "./database/models/index.js";
 
 const app = express();
 
+// This line is important for parsing JSON request bodies!
+app.use(express.json());
+
 app.use(urlencoded({ extended: true }));
 
+// Add cookie-parser middleware to parse cookies
+app.use(cookieParser());
+
+// ======================= CORS =========================
 app.use(
 	cors({
-		origin: "http://localhost:5173",
+		origin: ["http://localhost:5173", "http://vinabooking.com"],
 		credentials: true,
 	})
 );

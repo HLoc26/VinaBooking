@@ -3,12 +3,32 @@
  * @class Policy
  */
 class Policy {
-	constructor(id, checkinTime, checkoutTime, cancellation, prepay) {
+	constructor({ id, checkIn, checkOut, cancellation, prepay }) {
 		this.id = id;
-		this.checkinTime = checkinTime;
-		this.checkoutTime = checkoutTime;
+		this.checkIn = checkIn;
+		this.checkOut = checkOut;
 		this.cancellation = cancellation; // Expecting value from ECancelPolicy
 		this.prepay = prepay; // Expecting value from EPrepayPolicy
+	}
+
+	static fromModel(model) {
+		return new Policy({
+			id: model.id,
+			checkIn: model.checkIn,
+			checkOut: model.checkOut,
+			cancellation: model.cancellation,
+			prepay: model.prepay,
+		});
+	}
+
+	toPlain() {
+		return {
+			id: this.id,
+			checkIn: this.checkIn,
+			checkOut: this.checkOut,
+			cancellation: this.cancellation,
+			prepay: this.prepay,
+		};
 	}
 }
 

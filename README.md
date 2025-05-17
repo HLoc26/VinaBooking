@@ -149,10 +149,10 @@ Once all services are running, access:
 
 ### 1. **Database (MySQL)**:
 
--   **Image**: `mysql:latest`
--   **Ports**: `3306:3306`
--   **Environment Variables**: Configured in .env
--   **Volumes**: Data is persisted in the `db_data` volume.
+- **Image**: `mysql:latest`
+- **Ports**: `3306:3306`
+- **Environment Variables**: Configured in .env
+- **Volumes**: Data is persisted in the `db_data` volume.
 
 ### 2. **Backend (API)**:
 
@@ -163,9 +163,9 @@ Once all services are running, access:
 
 ### 3. **Frontend (UI)**:
 
--   **Build Context**: UI
--   **Ports**: `5173:5173`
--   **Depends On**: The backend service must be running.
+- **Build Context**: UI
+- **Ports**: `5173:5173`
+- **Depends On**: The backend service must be running.
 
 ### 4. **Redis**:
 

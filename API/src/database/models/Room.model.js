@@ -36,6 +36,10 @@ Room.init(
 				min: 0,
 			},
 		},
+		count: {
+			type: DataTypes.INTEGER.UNSIGNED,
+			defaultValue: 1,
+		},
 		isActive: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true,

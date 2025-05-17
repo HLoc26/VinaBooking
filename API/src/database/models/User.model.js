@@ -1,6 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../../config/sequelize.js";
-import { EGender, ERole } from "../../classes/index.js";
+import { EGender, ERole } from "../../classes/User.js";
 
 class User extends Model {}
 
@@ -16,7 +16,7 @@ User.init(
 			type: DataTypes.STRING,
 		},
 		phone: {
-			type: DataTypes.STRING(10),
+			type: DataTypes.STRING(20),
 			unique: true,
 		},
 		email: {

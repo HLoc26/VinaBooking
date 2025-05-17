@@ -3,9 +3,9 @@ import AccommodationAmenity from "./AccommodationAmenity.model.js";
 import Address from "./Address.model.js";
 import Amenity from "./Amenity.model.js";
 import Booking from "./Booking.model.js";
+import BookingItem from "./BookingItem.model.js";
 import FavouriteList from "./FavouriteList.model.js";
 import Image from "./Image.model.js";
-import Invoice from "./Invoice.model.js";
 import Notification from "./Notification.model.js";
 import Policy from "./Policy.model.js";
 import Review from "./Review.model.js";
@@ -19,7 +19,6 @@ import User from "./User.model.js";
 // User associations
 User.hasMany(Booking, { foreignKey: "userId" });
 User.hasOne(FavouriteList, { as: "userFavourites", foreignKey: "userId" });
-User.hasMany(Invoice, { foreignKey: "userId" });
 User.hasMany(Notification, { foreignKey: "userId" });
 User.hasMany(Review, { foreignKey: "userId" });
 User.hasMany(ReviewReply, { foreignKey: "userId" });
@@ -33,13 +32,12 @@ Accommodation.hasMany(Image, { foreignKey: "accommodationId" });
 Accommodation.hasMany(Review, { foreignKey: "accommodationId" });
 Accommodation.hasMany(Room, { foreignKey: "accommodationId" });
 Accommodation.hasOne(Policy, { foreignKey: "accommodationId" });
-Accommodation.belongsToMany(User, {
-	through: FavouriteList,
-	foreignKey: "accommodationId",
-	otherKey: "userId",
-});
 Accommodation.belongsTo(User, { as: "owner", foreignKey: "ownerId" });
-
+Accommodation.belongsToMany(FavouriteList, {
+	through: "FavouriteItem",
+	foreignKey: "accommodationId",
+	otherKey: "favouriteListId",
+});
 // Address associations
 Address.belongsTo(Accommodation, { foreignKey: "accommodationId" });
 
@@ -56,21 +54,21 @@ RoomAmenity.belongsTo(Room, { foreignKey: "roomId" });
 RoomAmenity.belongsTo(Amenity, { foreignKey: "id" });
 
 // Booking associations
-Booking.belongsTo(Invoice, { foreignKey: "invoiceId" });
-Booking.belongsTo(Room, { foreignKey: "roomId" });
+Booking.hasMany(BookingItem, { foreignKey: "bookingId" });
 Booking.belongsTo(User, { foreignKey: "userId" });
 
 // FavouriteList associations
 FavouriteList.belongsTo(User, { foreignKey: "userId" });
+FavouriteList.belongsToMany(Accommodation, {
+	through: "FavouriteItem",
+	foreignKey: "favouriteListId",
+	otherKey: "accommodationId",
+});
 
 // Image associations
 Image.belongsTo(Accommodation, { foreignKey: "accommodationId" });
 Image.belongsTo(Review, { foreignKey: "reviewId" });
 Image.belongsTo(Room, { foreignKey: "roomId" });
-
-// Invoice associations
-Invoice.hasMany(Booking, { foreignKey: "invoiceId" });
-Invoice.belongsTo(User, { foreignKey: "userId" });
 
 // Notification associations
 Notification.belongsToMany(User, {
@@ -81,7 +79,7 @@ Notification.belongsToMany(User, {
 
 // Review associations
 Review.hasMany(Image, { foreignKey: "reviewId" });
-Review.belongsTo(User, { foreignKey: "userId" });
+Review.belongsTo(User, { as: "reviewer", foreignKey: "userId" });
 Review.belongsTo(Accommodation, { foreignKey: "accommodationId" });
 Review.hasMany(ReviewReply, { foreignKey: "reviewId" });
 
@@ -91,9 +89,9 @@ ReviewReply.belongsTo(User, { foreignKey: "userId" });
 
 // Room associations
 Room.belongsTo(Accommodation, { foreignKey: "accommodationId" });
-Room.hasMany(Booking, { foreignKey: "roomId" });
 Room.hasMany(Image, { foreignKey: "roomId" });
 Room.hasMany(RoomAmenity, { foreignKey: "roomId" });
+Room.hasMany(BookingItem, { foreignKey: "roomId" });
 
 // SupportTicket associations
 SupportTicket.belongsTo(User, { foreignKey: "userId" });
@@ -101,3 +99,11 @@ SupportTicket.belongsTo(SystemAdmin, { foreignKey: "adminId" });
 
 // SystemAdmin associations
 SystemAdmin.hasMany(SupportTicket, { foreignKey: "adminId" });
+
+// BookingItem associations
+BookingItem.belongsTo(Room, {
+	foreignKey: "roomId",
+});
+BookingItem.belongsTo(Booking, {
+	foreignKey: "bookingId",
+});
