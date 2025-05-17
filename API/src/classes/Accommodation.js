@@ -1,4 +1,3 @@
-import { RoomRepository } from "../database/repositories/room.repository.js";
 import { ReviewRepository } from "../database/repositories/review.repository.js";
 import Address from "./Address.js";
 import Room from "./Room.js";
@@ -42,11 +41,6 @@ class Accommodation {
 			}
 		});
 		return minPrice === Infinity ? 0 : minPrice;
-	}
-
-	async loadRooms() {
-		const roomModels = await RoomRepository.findByAccommodationId(this.id);
-		this.rooms = roomModels.map((roomModel) => Room.fromModel(roomModel));
 	}
 
 	// async isCurrentlyActive() {
@@ -107,11 +101,9 @@ class Accommodation {
 			name: this.name,
 			address: this.getLocationString(),
 			amenities: this.getSimplifiedAmenities(),
-			//amenities: this.amenities.map((amenity) => amenity.toPlain()),
 			rooms: this.rooms.map((room) => room.toPlain(bookedCounts[room.id] || 0)),
 			images: this.images.map((image) => image.toPlain()),
 			policy: this.policy ? this.policy.toPlain() : null,
-			//isActive: await this.isCurrentlyActive(),
 		};
 	}
 
@@ -121,7 +113,6 @@ class Accommodation {
 			name: this.name,
 			address: this.address,
 			rooms: rooms.map((room) => room.toPlain()),
-			//isActive: await this.isCurrentlyActive(),
 		};
 	}
 }
