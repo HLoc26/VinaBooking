@@ -42,4 +42,21 @@ export default {
 			});
 		}
 	},
+
+	async viewBookings(req, res) {
+		try {
+			const userId = req.user?.id;
+			if (!userId) {
+				return res.status(401).json({ success: false, error: { code: 401, message: "Unauthorized" } });
+			}
+			const bookings = await BookingService.getBookingList(userId);
+			if (!bookings || bookings.length === 0) {
+				return res.status(200).json({ success: true, message: "No bookings found", payload: [] });
+			}
+			return res.status(200).json({ success: true, message: "Successfully retrieved booking history", payload: bookings });
+		} catch (error) {
+			console.error("Error retrieving booking history:", error);
+			return res.status(500).json({ success: false, error: { code: 500, message: "Internal Server Error" } });
+		}
+	},
 };
