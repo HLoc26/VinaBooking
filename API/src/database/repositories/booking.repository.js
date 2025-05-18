@@ -49,7 +49,15 @@ export const BookingRepository = {
 	},
 
 	async cancelBooking(bookingId) {
-		const [affectedRows] = await BookingModel.update({ status: EBookingStatus.CANCELED }, { where: { id: bookingId, status: { $ne: EBookingStatus.CANCELED } } });
+		const [affectedRows] = await BookingModel.update(
+			{ status: EBookingStatus.CANCELED },
+			{
+				where: {
+					id: bookingId,
+					status: { [Op.ne]: EBookingStatus.CANCELED },
+				},
+			}
+		);
 		return affectedRows;
 	},
 };
