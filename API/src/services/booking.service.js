@@ -1,5 +1,6 @@
 import { Booking, Room, User, BookingItem } from "../classes/index.js";
 import { BookingRepository } from "../database/repositories/booking.repository.js";
+import { EBookingStatus } from "../classes/index.js";
 import sequelize from "../config/sequelize.js";
 
 export default {
