@@ -1,6 +1,7 @@
 import { Booking, Room, User, BookingItem } from "../classes/index.js";
 import { BookingRepository } from "../database/repositories/booking.repository.js";
 import sequelize from "../config/sequelize.js";
+import { BookingEvent, TravellerNotifier, OwnerNotifier } from "../observers/booking.observer.js";
 
 export default {
 	async bookRoom({ rooms, guestId, startDate, endDate, guestCount }) {
@@ -64,6 +65,21 @@ export default {
 
 			// Commit the transaction if everything succeeds
 			await transaction.commit();
+
+			// --- Observer Pattern: Notify traveller and owner ---
+			const bookingEvent = new BookingEvent();
+			bookingEvent.add(new TravellerNotifier());
+			bookingEvent.add(new OwnerNotifier());
+
+			// You may need to load owner info depending on your data model
+			const owner = booking.guest && booking.guest.owner ? booking.guest.owner : null;
+
+			await bookingEvent.notify({
+				travellerEmail: user.email,
+				ownerEmail: owner ? owner.email : undefined,
+				bookingInfo: returnObject,
+			});
+			// ---------------------------------------------------
 
 			return returnObject;
 		} catch (error) {
