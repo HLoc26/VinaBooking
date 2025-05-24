@@ -1,6 +1,7 @@
 import authService from "../services/auth.service.js";
 import emailService from "../services/email.service.js";
 import User from "../classes/User.js";
+import { UserManagementFacade } from "../facades/index.js";
 
 export default {
 	// Handles user authentication requests
@@ -8,7 +9,8 @@ export default {
 		const { email, password, rememberMe } = req.body;
 
 		try {
-			const result = await authService.login(email, password, rememberMe);
+			// Use facade for enhanced login with session management
+			const result = await UserManagementFacade.loginUser({ email, password, rememberMe });
 
 			if (!result.success) {
 				console.log(`[LOGIN] Authentication failed`);
@@ -30,13 +32,14 @@ export default {
 				secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
 				sameSite: "lax",
 				maxAge: maxAge,
-			});			// Only send user info in payload, not the JWT token
+			}); // Only send user info in payload, not the JWT token
 			return res.status(200).json({
 				success: true,
 				message: "Login success",
 				payload: {
 					user: result.payload.user,
-					rememberMe
+					rememberMe,
+					preferences: result.payload.preferences || null,
 				},
 			});
 		} catch (err) {
@@ -56,23 +59,33 @@ export default {
 		try {
 			const { name, phone, email, password, role, gender, dob } = req.body;
 
-			const result = await authService.initiateRegistration({ name, phone, email, password, role, gender, dob });
+			// Use facade for enhanced registration with validation and notifications
+			const result = await UserManagementFacade.registerUser({
+				name,
+				phone,
+				email,
+				password,
+				role,
+				gender,
+				dob,
+			});
 
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
-			return res.status(200).json({ 
-				success: true, 
-				message: "OTP sent to email. Please confirm to complete registration." 
+			return res.status(200).json({
+				success: true,
+				message: "OTP sent to email. Please confirm to complete registration.",
+				payload: result.payload,
 			});
 		} catch (error) {
 			console.error("Registration initiation failed:", error);
-			return res.status(500).json({ 
-				success: false, 
-				error: { 
-					code: 500, 
-					message: "Internal Server Error" 
-				} 
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
 			});
 		}
 	},
@@ -85,22 +98,21 @@ export default {
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
-			return res.status(201).json({ 
-				success: true, 
-				message: "Account created successfully. You can now log in." 
+			return res.status(201).json({
+				success: true,
+				message: "Account created successfully. You can now log in.",
 			});
 		} catch (error) {
 			console.error("Registration confirmation failed:", error);
-			return res.status(500).json({ 
-				success: false, 
-				error: { 
-					code: 500, 
-					message: "Internal Server Error" 
-				} 
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 500,
+					message: "Internal Server Error",
+				},
 			});
 		}
 	},
-
 	async getCurrentUser(req, res) {
 		try {
 			// User information is already attached to req.user by the auth middleware
@@ -109,26 +121,27 @@ export default {
 					success: false,
 					error: {
 						code: 401,
-						message: "Not authenticated"
-					}
+						message: "Not authenticated",
+					},
 				});
 			}
 
-			// Get the complete user data
-			const user = await authService.getUserById(req.user.id);
-			if (!user) {
+			// Use facade to get comprehensive user profile
+			const profile = await UserManagementFacade.getUserProfile(req.user.id);
+
+			if (!profile.success) {
 				return res.status(404).json({
 					success: false,
 					error: {
 						code: 404,
-						message: "User not found"
-					}
+						message: "User not found",
+					},
 				});
 			}
 
 			return res.status(200).json({
 				success: true,
-				payload: authService.sanitizeUser(user)
+				payload: profile.user,
 			});
 		} catch (error) {
 			console.error("Error in getCurrentUser:", error);
@@ -137,8 +150,8 @@ export default {
 				error: {
 					code: 500,
 					message: "Server error",
-					details: error.message
-				}
+					details: error.message,
+				},
 			});
 		}
 	},
@@ -149,12 +162,12 @@ export default {
 			res.clearCookie("jwt", {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === "production",
-				sameSite: "lax"
+				sameSite: "lax",
 			});
 
 			return res.status(200).json({
 				success: true,
-				message: "Logout successful"
+				message: "Logout successful",
 			});
 		} catch (error) {
 			console.error("Error in logout:", error);
@@ -163,9 +176,9 @@ export default {
 				error: {
 					code: 500,
 					message: "Server error",
-					details: error.message
-				}
+					details: error.message,
+				},
 			});
 		}
-	}
+	},
 };
