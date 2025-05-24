@@ -1,6 +1,5 @@
 import authService from "../services/auth.service.js";
-import emailService from "../services/email.service.js";
-import User from "../classes/User.js";
+import logger from "../helpers/Logger.js";
 
 export default {
 	// Handles user authentication requests
@@ -11,11 +10,11 @@ export default {
 			const result = await authService.login(email, password, rememberMe);
 
 			if (!result.success) {
-				console.log(`[LOGIN] Authentication failed`);
+				logger.error(`[LOGIN] Authentication failed`);
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
 
-			console.log(`[LOGIN] Authentication successful`);
+			logger.success(`[LOGIN] Authentication successful`);
 
 			// Set JWT as HTTP-only cookie
 			const token = result.payload.jwt;
@@ -31,16 +30,18 @@ export default {
 				sameSite: "none",
 				maxAge: maxAge,
 			}); // Only send user info in payload, not the JWT token
+			}); // Only send user info in payload, not the JWT token
 			return res.status(200).json({
 				success: true,
 				message: "Login success",
 				payload: {
 					user: result.payload.user,
 					rememberMe,
+					rememberMe,
 				},
 			});
 		} catch (err) {
-			console.error(`[LOGIN] Server error during authentication`);
+			logger.error(`[LOGIN] Server error during authentication`);
 			return res.status(500).json({
 				success: false,
 				error: {
@@ -64,9 +65,12 @@ export default {
 			return res.status(200).json({
 				success: true,
 				message: "OTP sent to email. Please confirm to complete registration.",
+			return res.status(200).json({
+				success: true,
+				message: "OTP sent to email. Please confirm to complete registration.",
 			});
 		} catch (error) {
-			console.error("Registration initiation failed:", error);
+			logger.error("Registration initiation failed:", error);
 			return res.status(500).json({
 				success: false,
 				error: {
@@ -88,9 +92,12 @@ export default {
 			return res.status(201).json({
 				success: true,
 				message: "Account created successfully. You can now log in.",
+			return res.status(201).json({
+				success: true,
+				message: "Account created successfully. You can now log in.",
 			});
 		} catch (error) {
-			console.error("Registration confirmation failed:", error);
+			logger.error("Registration confirmation failed:", error);
 			return res.status(500).json({
 				success: false,
 				error: {
@@ -131,7 +138,7 @@ export default {
 				payload: authService.sanitizeUser(user),
 			});
 		} catch (error) {
-			console.error("Error in getCurrentUser:", error);
+			logger.error("Error in getCurrentUser:", error);
 			return res.status(500).json({
 				success: false,
 				error: {
@@ -157,7 +164,7 @@ export default {
 				message: "Logout successful",
 			});
 		} catch (error) {
-			console.error("Error in logout:", error);
+			logger.error("Error in logout:", error);
 			return res.status(500).json({
 				success: false,
 				error: {

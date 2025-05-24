@@ -1,20 +1,21 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import logger from "../helpers/Logger.js";
 
 export default {
 	decodeJwt(req, res, next) {
 		try {
 			let token;
-			
+
 			// Check for token in cookies (preferred method)
 			if (req.cookies && req.cookies.jwt) {
 				token = req.cookies.jwt;
-			} 
+			}
 			// Fall back to Authorization header if cookie isn't present
-			else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+			else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
 				token = req.headers.authorization.split(" ")[1];
 			}
-			
+
 			if (!token) {
 				return res.status(401).json({
 					success: false,
@@ -26,7 +27,7 @@ export default {
 			req.user = user;
 			next();
 		} catch (error) {
-			console.log("JWT verification error:", error.message);
+			logger.error("JWT verification error:", error.message);
 
 			if (error.name === "TokenExpiredError") {
 				return res.status(401).json({
