@@ -90,7 +90,7 @@ export default {
 				message: "Account created successfully. You can now log in.",
 			});
 		} catch (error) {
-			logger.error("Registration confirmation failed:", error);
+			logger.error(`Registration confirmation failed:${error}`);
 			return res.status(500).json({
 				success: false,
 				error: {
