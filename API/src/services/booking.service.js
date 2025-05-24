@@ -1,8 +1,7 @@
 import { Booking, Room, User, BookingItem } from "../classes/index.js";
 import { BookingRepository } from "../database/repositories/booking.repository.js";
 import sequelize from "../config/sequelize.js";
-import { BookingEvent, TravellerNotifier, OwnerNotifier } from "../observers/booking.observer.js";
-
+import { BookingEvent, TravellerNotifier, OwnerNotifier } from "../observers/index.js";
 export default {
 	async bookRoom({ rooms, guestId, startDate, endDate, guestCount }) {
 		// Validate input
