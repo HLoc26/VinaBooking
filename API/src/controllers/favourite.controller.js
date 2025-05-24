@@ -1,25 +1,18 @@
-import FavouriteService from "../services/favourite.service.js";
+import { HotelBookingFacade } from "../facades/index.js";
 
-export default {	async getFavouriteList(req, res) {
+export default {
+	async getFavouriteList(req, res) {
 		try {
 			const userId = req.user?.id;
 			if (!userId) return res.status(401).json({ success: false, error: { code: 401, message: "Unauthorized" } });
 
-			const favList = await FavouriteService.findByUserId(userId);
+			// Use facade to get comprehensive user dashboard including favorites
+			const dashboard = await HotelBookingFacade.getUserDashboard(userId);
 
-			if (!favList) {
-				return res.status(404).json({
-					success: false,
-					error: {
-						code: 404,
-						message: "FavouriteList not found",
-					},
-				});
-			}
 			return res.status(200).json({
 				success: true,
 				message: "Successfully retrieved user favourite list",
-				payload: favList,
+				payload: dashboard.favorites,
 			});
 		} catch (error) {
 			console.error("Error retrieving favourite list:", error);
@@ -50,13 +43,17 @@ export default {	async getFavouriteList(req, res) {
 				});
 			}
 
-			// Call the service to add the accommodation to the user's favourites
-			const result = await FavouriteService.add(userId, accommodationId);
+			// Use facade to manage favorites with enhanced features
+			const result = await HotelBookingFacade.manageFavorites(userId, accommodationId, "add");
 
-			if (result) {
+			if (result.success) {
 				return res.status(200).json({
 					success: true,
 					message: "Successfully added to favourites",
+					payload: {
+						favorites: result.favorites,
+						recommendations: result.recommendations,
+					},
 				});
 			} else {
 				return res.status(400).json({
@@ -78,7 +75,6 @@ export default {	async getFavouriteList(req, res) {
 			});
 		}
 	},
-
 	async removeFromFavourite(req, res) {
 		try {
 			// Extract userId from request object
@@ -97,14 +93,17 @@ export default {	async getFavouriteList(req, res) {
 				});
 			}
 
-			// Call the service to remove the accommodation from the user's favourites
-			// The service will check if the accommodation is in the list and remove it if it is
-			const result = await FavouriteService.remove(userId, accommodationId);
+			// Use facade to manage favorites with enhanced features
+			const result = await HotelBookingFacade.manageFavorites(userId, accommodationId, "remove");
 
-			if (result) {
+			if (result.success) {
 				return res.status(200).json({
 					success: true,
 					message: "Successfully removed from favourites",
+					payload: {
+						favorites: result.favorites,
+						recommendations: result.recommendations,
+					},
 				});
 			} else {
 				return res.status(400).json({
