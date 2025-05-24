@@ -52,7 +52,7 @@ function HotelCard({ id, name = "Hotel Name", location = "Location", amenities =
 					objectFit: "cover",
 					borderRadius: { xs: "8px 8px 0 0", md: "8px 0 0 8px" }, // Rounded corners
 				}}
-				image={thumbnail || "/uploads/accommodation/default.jpg"}
+				image={thumbnail || `${import.meta.env.VITE_STATIC_PATH}/uploads/accommodation/default.jpg`}
 				alt={`${name} Image`}
 			/>
 

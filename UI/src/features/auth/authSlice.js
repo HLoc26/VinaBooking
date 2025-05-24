@@ -3,15 +3,12 @@ import { loginApi, logoutApi, getCurrentUserApi } from "./authApi";
 
 export const login = createAsyncThunk("auth/login", async (credentials, { rejectWithValue }) => {
 	try {
-		console.log("Auth slice login thunk called");
-
 		// Validate credentials
 		if (!credentials || !credentials.email || !credentials.password) {
 			return rejectWithValue("Email and password are required");
 		}
 
 		const data = await loginApi(credentials);
-		console.log("Login succeeded");
 
 		// JWT is now handled by HTTP-only cookies
 
@@ -25,16 +22,13 @@ export const login = createAsyncThunk("auth/login", async (credentials, { reject
 // Add restoreSession thunk to check if user is already authenticated
 export const restoreSession = createAsyncThunk("auth/restoreSession", async (_, { rejectWithValue }) => {
 	try {
-		console.log("Attempting to restore session");
 		const userData = await getCurrentUserApi();
 
-		console.log("Session restored successfully");
 		return {
 			user: userData,
 			rememberMe: true, // Assume remembered if session exists
 		};
 	} catch (error) {
-		console.log("Session restoration failed:", error.message);
 		// Don't show errors to the user for session restoration attempts
 		return rejectWithValue("No active session found");
 	}
@@ -44,7 +38,6 @@ export const restoreSession = createAsyncThunk("auth/restoreSession", async (_, 
 export const logoutUser = createAsyncThunk("auth/logoutUser", async (_, { rejectWithValue }) => {
 	try {
 		await logoutApi();
-		console.log("Logout successful");
 		return true;
 	} catch (error) {
 		console.error("Logout failed:", error.message);
