@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../classes/User.js";
 import { User as UserModel } from "../database/models/index.js";
-import emailService from "./email.service.js";
+import NodeMailerClient from "../clients/NodeMailerClient.js";
 import RedisClient from "../clients/RedisClient.js";
 
 export default {
@@ -118,11 +118,11 @@ export default {
 		if (existingUser) {
 			return { success: false, error: { code: 409, message: "Email already exists." } };
 		}
-
+		// Validator: step 1
 		await redis.setex(`pending_user:${userData.email}`, 300, JSON.stringify(userData));
 
 		const otp = await this.generateOTP(userData.email);
-		await emailService.sendOTP(userData.email, otp);
+		await NodeMailerClient.sendOTP(userData.email, otp);
 
 		return { success: true };
 	},
