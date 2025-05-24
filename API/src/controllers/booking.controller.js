@@ -1,17 +1,26 @@
 import BookingService from "../services/booking.service.js";
+import { HotelBookingFacade } from "../facades/index.js";
+
 export default {
 	async bookRoom(req, res) {
 		try {
 			const { rooms, startDate, endDate, guestCount } = req.body;
 			const guest = req.user;
 
-			const result = await BookingService.bookRoom({ rooms, guestId: guest.id, startDate, endDate, guestCount });
+			// Use facade for complete booking workflow
+			const result = await HotelBookingFacade.completeBooking({
+				rooms,
+				guestId: guest.id,
+				startDate,
+				endDate,
+				guestCount,
+				guestEmail: guest.email,
+			});
+
 			return res.status(200).json({
 				success: true,
 				message: "Successfully booked",
-				payload: {
-					booking: result,
-				},
+				payload: result,
 			});
 		} catch (error) {
 			console.error(error);
@@ -30,6 +39,15 @@ export default {
 					error: {
 						code: 400,
 						message: "Room is not available.",
+					},
+				});
+			}
+			if (error.message === "User not found") {
+				return res.status(404).json({
+					success: false,
+					error: {
+						code: 404,
+						message: "User not found.",
 					},
 				});
 			}
