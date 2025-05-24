@@ -30,7 +30,6 @@ export default {
 				sameSite: "none",
 				maxAge: maxAge,
 			}); // Only send user info in payload, not the JWT token
-			}); // Only send user info in payload, not the JWT token
 			return res.status(200).json({
 				success: true,
 				message: "Login success",
