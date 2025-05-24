@@ -1,10 +1,12 @@
 import accommodationService from "../services/accommodation.service.js";
+import { HotelBookingFacade, SearchDiscoveryFacade } from "../facades/index.js";
 
 export default {
 	async getAccommodationDetail(req, res) {
 		try {
 			const id = parseInt(req.params.id, 10);
-			const {startDate, endDate} = req.query;
+			const { startDate, endDate } = req.query;
+			const userId = req.user?.id; // Get user ID from auth middleware if available
 
 			if (isNaN(id)) {
 				return res.status(400).json({
@@ -16,24 +18,18 @@ export default {
 				});
 			}
 
-			const accommodation = await accommodationService.findById(id, startDate, endDate);
-
-			if (!accommodation) {
-				return res.status(404).json({
-					success: false,
-					error: {
-						code: 404,
-						message: "Accommodation not found",
-					},
-				});
-			}
+			// Use facade for comprehensive accommodation details
+			const result = await HotelBookingFacade.getAccommodationDetails({
+				accommodationId: id,
+				startDate,
+				endDate,
+				userId,
+			});
 
 			return res.status(200).json({
 				success: true,
 				message: "Successfully retrieved accommodation detail",
-				payload: {
-					accommodation,
-				},
+				payload: result,
 			});
 		} catch (error) {
 			console.error("Error getting accommodation detail:", error);
@@ -46,29 +42,37 @@ export default {
 			});
 		}
 	},
-
 	async search(req, res) {
 		try {
 			// Assume that we use VND for price
-			const { city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax } = req.query;
+			const { city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax, amenities, minRating, sortBy, page, limit } = req.query;
 
-			const ret = await accommodationService.search({
+			const userId = req.user?.id; // Get user ID from auth middleware if available
+
+			// Use facade for intelligent search with personalization
+			const result = await SearchDiscoveryFacade.intelligentSearch({
 				city,
 				state,
 				postalCode,
 				country,
 				startDate,
 				endDate,
-				roomCount,
-				adultCount,
-				priceMin,
-				priceMax,
+				roomCount: parseInt(roomCount) || 1,
+				adultCount: parseInt(adultCount) || 1,
+				priceMin: priceMin ? parseFloat(priceMin) : undefined,
+				priceMax: priceMax ? parseFloat(priceMax) : undefined,
+				amenities: amenities ? amenities.split(",") : [],
+				minRating: minRating ? parseFloat(minRating) : undefined,
+				sortBy: sortBy || "relevance",
+				page: parseInt(page) || 1,
+				limit: parseInt(limit) || 20,
+				userId,
 			});
 
 			res.status(200).json({
 				success: true,
-				message: `Successfully found ${ret.length} results.`,
-				payload: ret,
+				message: `Successfully found ${result.filteredResultCount} results.`,
+				payload: result,
 			});
 		} catch (error) {
 			console.error("Search accommodation error", error);
