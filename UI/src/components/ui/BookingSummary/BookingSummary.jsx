@@ -15,9 +15,7 @@ function BookingSummary() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const reduxDateRange = useSelector(selectBookingDates);
-	const [dateRange, setDateRange] = React.useState(reduxDateRange);
-
+	const [dateRange, setDateRange] = React.useState(bookingDates);
 	const [showDatePicker, setShowDatePicker] = React.useState(false);
 	const [dateError, setDateError] = React.useState("");
 
@@ -48,6 +46,15 @@ function BookingSummary() {
 	const handleDateRangeChange = (newRange) => {
 		setDateRange(newRange);
 		setDateError("");
+		// Dispatch updated date range to Redux
+		dispatch(
+			updateSearchFields({
+				dateRange: {
+					startDate: newRange.startDate,
+					endDate: newRange.endDate,
+				},
+			})
+		);
 	};
 
 	// Validate date range
@@ -64,7 +71,7 @@ function BookingSummary() {
 			return false;
 		}
 
-		// Check if end date is after start date
+		// Check if end date is after start datesymbols
 		if (endDate <= startDate) {
 			setDateError("Check-out date must be after check-in date");
 			return false;
@@ -82,16 +89,6 @@ function BookingSummary() {
 			setShowDatePicker(true);
 			return;
 		}
-
-		// Save the date range to Redux
-		dispatch(
-			updateSearchFields({
-				dateRange: {
-					startDate: dateRange.startDate,
-					endDate: dateRange.endDate,
-				},
-			})
-		);
 
 		navigate("/book");
 	};
