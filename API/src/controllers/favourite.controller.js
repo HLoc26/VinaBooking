@@ -1,6 +1,9 @@
 import FavouriteService from "../services/favourite.service.js";
+import AddFavouriteCommand from "../classes/commands/AddFavouriteCommand.js";
+import RemoveFavouriteCommand from "../classes/commands/RemoveFavouriteCommand.js";
 
-export default {	async getFavouriteList(req, res) {
+export default {
+	async getFavouriteList(req, res) {
 		try {
 			const userId = req.user?.id;
 			if (!userId) return res.status(401).json({ success: false, error: { code: 401, message: "Unauthorized" } });
@@ -50,8 +53,9 @@ export default {	async getFavouriteList(req, res) {
 				});
 			}
 
-			// Call the service to add the accommodation to the user's favourites
-			const result = await FavouriteService.add(userId, accommodationId);
+			// Create and execute command
+			const command = new AddFavouriteCommand(FavouriteService, userId, accommodationId);
+			const result = await command.execute();
 
 			if (result) {
 				return res.status(200).json({
@@ -97,9 +101,9 @@ export default {	async getFavouriteList(req, res) {
 				});
 			}
 
-			// Call the service to remove the accommodation from the user's favourites
-			// The service will check if the accommodation is in the list and remove it if it is
-			const result = await FavouriteService.remove(userId, accommodationId);
+			// Create and execute command
+			const command = new RemoveFavouriteCommand(FavouriteService, userId, accommodationId);
+			const result = await command.execute();
 
 			if (result) {
 				return res.status(200).json({
