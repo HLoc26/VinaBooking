@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../classes/User.js";
-import redis from "../config/redis.js";
 import { User as UserModel } from "../database/models/index.js";
-import emailService from "./email.service.js";
+import NodeMailerClient from "../clients/NodeMailerClient.js";
+import RedisClient from "../clients/RedisClient.js";
 
 export default {
 	// Authenticates a user and generates a JWT token
@@ -73,6 +73,7 @@ export default {
 	},
 
 	async generateOTP(identifier) {
+		const redis = RedisClient.getClient();
 		const otp = Math.floor(100000 + Math.random() * 900000).toString();
 		await redis.setex(`otp:${identifier}`, 300, otp);
 		await redis.setex(`otp_attempts:${identifier}`, 600, 0);
@@ -80,6 +81,8 @@ export default {
 	},
 
 	async validateOTP(identifier, submittedOtp) {
+		const redis = RedisClient.getClient();
+
 		const otpKey = `otp:${identifier}`;
 		const attemptsKey = `otp_attempts:${identifier}`;
 
@@ -110,20 +113,22 @@ export default {
 	},
 
 	async initiateRegistration(userData) {
+		const redis = RedisClient.getClient();
 		const existingUser = await User.findByEmail(userData.email); // Use User class method
 		if (existingUser) {
 			return { success: false, error: { code: 409, message: "Email already exists." } };
 		}
-
+		// Validator: step 1
 		await redis.setex(`pending_user:${userData.email}`, 300, JSON.stringify(userData));
 
 		const otp = await this.generateOTP(userData.email);
-		await emailService.sendOTP(userData.email, otp);
+		await NodeMailerClient.sendOTP(userData.email, otp);
 
 		return { success: true };
 	},
 
 	async completeRegistration(email, otp) {
+		const redis = RedisClient.getClient();
 		const validOtp = await this.validateOTP(email, otp);
 		if (!validOtp.valid) {
 			return { success: false, error: { code: 400, message: validOtp.message } };
@@ -155,5 +160,5 @@ export default {
 			console.error("Error fetching user by ID:", error);
 			return null;
 		}
-	}
+	},
 };
