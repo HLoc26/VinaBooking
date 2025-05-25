@@ -63,7 +63,7 @@ function Landing() {
 			{/* Hero Section */}
 			<Box
 				sx={{
-					position: 'relative',
+					position: "relative",
 					backgroundImage: "url('/images/vietnam-hero-section.jpg')",
 					backgroundSize: "cover",
 					backgroundPosition: "center",
@@ -73,34 +73,36 @@ function Landing() {
 					alignItems: "center",
 					color: "#fff",
 					textAlign: "center",
-					'&::before': {
+					"&::before": {
 						content: '""',
-						position: 'absolute',
+						position: "absolute",
 						top: 0,
 						left: 0,
 						right: 0,
 						bottom: 0,
-						backgroundColor: 'rgba(255, 255, 255, 0.2)',
+						backgroundColor: "rgba(255, 255, 255, 0.2)",
 						opacity: 0.7,
 						zIndex: 0,
-					}
+					},
 				}}
 			>
-				<Box sx={{ 
-					zIndex: 1, 
-					backgroundColor: 'rgba(255, 255, 255, 0.8)',
-					padding: 4,
-					borderRadius: 3,
-					maxWidth: '80%'
-				}}>
-					<Typography 
-						variant="h2" 
-						fontWeight="bold" 
-						color="primary" 
-						sx={{ 
+				<Box
+					sx={{
+						zIndex: 1,
+						backgroundColor: "rgba(255, 255, 255, 0.8)",
+						padding: 4,
+						borderRadius: 3,
+						maxWidth: "80%",
+					}}
+				>
+					<Typography
+						variant="h2"
+						fontWeight="bold"
+						color="primary"
+						sx={{
 							opacity: 1.0,
 							mb: 2,
-							textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+							textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
 						}}
 					>
 						Find Your Perfect Stay
@@ -112,18 +114,18 @@ function Landing() {
 			</Box>
 
 			{/* Search Bar */}
-			<Container sx={{ marginTop: -5, position: 'relative', zIndex: 5 }}>
-				<Paper 
+			<Container sx={{ marginTop: -5, position: "relative", zIndex: 5 }}>
+				<Paper
 					elevation={6}
 					sx={{
 						borderRadius: 3,
-						transition: 'all 0.3s ease-in-out',
-						'&:hover': {
+						transition: "all 0.3s ease-in-out",
+						"&:hover": {
 							boxShadow: 10,
 						},
-						position: 'relative',
-						zIndex: 'auto',
-						overflow: 'visible'
+						position: "relative",
+						zIndex: "auto",
+						overflow: "visible",
 					}}
 				>
 					<SearchBar onSearch={handleSearch} />
@@ -133,49 +135,45 @@ function Landing() {
 			{/* Featured Hotels */}
 			<Box sx={{ marginTop: 8, marginBottom: 6 }}>
 				<Container>
-					<Typography 
-						variant="h4" 
-						fontWeight="bold" 
-						gutterBottom 
+					<Typography
+						variant="h4"
+						fontWeight="bold"
+						gutterBottom
 						color="primary"
 						sx={{
 							pb: 2,
-							borderBottom: '2px solid',
-							borderColor: 'primary.light',
-							display: 'inline-block',
-							mb: 4
+							borderBottom: "2px solid",
+							borderColor: "primary.light",
+							display: "inline-block",
+							mb: 4,
 						}}
 					>
 						Featured Hotels
 					</Typography>
 					<Grid container spacing={3} sx={{ justifyContent: "center", gap: { xs: 2, md: 4 } }}>
 						{featuredHotels.map((hotel, index) => (
-							<Grid item key={index} xs={12} sm={10} md={5.8} sx={{ 
-								transition: 'transform 0.3s',
-								'&:hover': {
-									transform: 'translateY(-5px)'
-								}
-							}}>
-								<Paper 
-									elevation={3} 
-									sx={{ 
+							<Grid
+								key={index}
+								sx={{
+									transition: "transform 0.3s",
+									"&:hover": {
+										transform: "translateY(-5px)",
+									},
+								}}
+							>
+								<Paper
+									elevation={3}
+									sx={{
 										borderRadius: 3,
-										overflow: 'hidden',
-										height: '100%',
-										transition: 'all 0.3s ease-in-out',
-										'&:hover': {
+										overflow: "hidden",
+										height: "100%",
+										transition: "all 0.3s ease-in-out",
+										"&:hover": {
 											boxShadow: 8,
 										},
 									}}
 								>
-									<HotelCard 
-										id={hotel.id} 
-										name={hotel.name} 
-										amenities={hotel.amenities} 
-										location={hotel.address} 
-										minPrice={hotel.minPrice} 
-										rating={hotel.rating} 
-									/>
+									<HotelCard id={hotel.id} name={hotel.name} amenities={hotel.amenities} location={hotel.address} minPrice={hotel.minPrice} rating={hotel.rating} />
 								</Paper>
 							</Grid>
 						))}
