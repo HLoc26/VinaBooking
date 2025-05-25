@@ -33,8 +33,9 @@ function Landing() {
 
 			const label = address.locationLabel;
 
-			const startDate = searchData.dateRange.startDate;
-			const endDate = searchData.dateRange.endDate;
+			// Convert Date objects to strings for URL parameters
+			const startDate = searchData.dateRange.startDate instanceof Date ? searchData.dateRange.startDate.toISOString() : searchData.dateRange.startDate;
+			const endDate = searchData.dateRange.endDate instanceof Date ? searchData.dateRange.endDate.toISOString() : searchData.dateRange.endDate;
 
 			const roomCount = searchData.occupancy.rooms;
 			const adultCount = searchData.occupancy.adults;

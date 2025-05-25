@@ -15,7 +15,10 @@ function BookingSummary() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const [dateRange, setDateRange] = React.useState(bookingDates);
+	const [dateRange, setDateRange] = React.useState({
+		startDate: new Date(),
+		endDate: new Date(),
+	});
 	const [showDatePicker, setShowDatePicker] = React.useState(false);
 	const [dateError, setDateError] = React.useState("");
 
@@ -26,6 +29,7 @@ function BookingSummary() {
 	React.useEffect(() => {
 		if (bookingDates && bookingDates.startDate && bookingDates.endDate) {
 			try {
+				// Convert ISO strings back to Date objects for the date picker
 				const startDate = new Date(bookingDates.startDate);
 				const endDate = new Date(bookingDates.endDate);
 
@@ -38,6 +42,11 @@ function BookingSummary() {
 				}
 			} catch (error) {
 				console.error("Error parsing dates from Redux:", error);
+				// Fallback to current dates if parsing fails
+				setDateRange({
+					startDate: new Date(),
+					endDate: new Date(),
+				});
 			}
 		}
 	}, [bookingDates]);
@@ -46,12 +55,13 @@ function BookingSummary() {
 	const handleDateRangeChange = (newRange) => {
 		setDateRange(newRange);
 		setDateError("");
-		// Dispatch updated date range to Redux
+
+		// Convert Date objects to ISO strings before dispatching to Redux
 		dispatch(
 			updateSearchFields({
 				dateRange: {
-					startDate: newRange.startDate,
-					endDate: newRange.endDate,
+					startDate: newRange.startDate.toISOString(),
+					endDate: newRange.endDate.toISOString(),
 				},
 			})
 		);
@@ -71,7 +81,7 @@ function BookingSummary() {
 			return false;
 		}
 
-		// Check if end date is after start datesymbols
+		// Check if end date is after start date
 		if (endDate <= startDate) {
 			setDateError("Check-out date must be after check-in date");
 			return false;
@@ -84,8 +94,15 @@ function BookingSummary() {
 		// If no rooms are selected, don't navigate
 		if (selectedRoomsCount === 0) return;
 
-		// Check if we have valid dates in Redux
-		if (!bookingDates || !validateDateRange()) {
+		// Validate current date range
+		if (!validateDateRange()) {
+			setShowDatePicker(true);
+			return;
+		}
+
+		// Check if we have valid dates in Redux (they should be updated by now)
+		if (!bookingDates || !bookingDates.startDate || !bookingDates.endDate) {
+			setDateError("Please select valid dates");
 			setShowDatePicker(true);
 			return;
 		}

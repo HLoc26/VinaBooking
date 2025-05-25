@@ -46,10 +46,24 @@ function SearchBar({ initialData = {}, onSearch }) {
 			setModalOpen(true); // Open the modal
 			return;
 		}
-		dispatch(updateSearchFields({ location, dateRange, occupancy }));
+
+		// Convert Date objects to ISO strings for Redux serialization
+		const serializedDateRange = {
+			startDate: dateRange.startDate.toISOString(),
+			endDate: dateRange.endDate.toISOString(),
+		};
+
+		dispatch(
+			updateSearchFields({
+				location,
+				dateRange: serializedDateRange,
+				occupancy,
+			})
+		);
 		dispatch(resetBooking());
 
 		if (onSearch) {
+			// Pass the original Date objects to onSearch for immediate use
 			onSearch({ location, dateRange, occupancy });
 		}
 	};
