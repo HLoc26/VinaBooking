@@ -20,6 +20,7 @@ class OwnerNotifier extends BookingObserver {
 		const nodemailer = NodeMailerClient.getClient();
 		const { ownerEmail, bookingInfo } = eventData;
 		if (!ownerEmail) return;
+		console.log("Sending email to owner:", ownerEmail);
 		await nodemailer.sendMail({
 			from: `"VinaBooking" <${process.env.MAIL_USER}>`,
 			to: ownerEmail,
