@@ -84,7 +84,7 @@ export default {
 			accommodationInstances.map(async (accommodation) => {
 				const builder = new AccommodationResponseBuilder(accommodation).withAmenities().withAddress().withImages().withMinPrice();
 				await builder.withRating();
-				return ret.build();
+				return builder.build();
 			})
 		);
 
