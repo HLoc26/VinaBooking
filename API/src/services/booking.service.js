@@ -58,15 +58,14 @@ export default {
 
 				// Save the BookingItem to the database within the transaction
 				await bookingItem.save(bookingRecord.id, transaction);
-				// Fetch owner email for the first room (assuming all rooms belong to the same accommodation/owner)
 			}
 
-			const owner = await UserRepository.findAccommodationOwnerByRoomId(rooms[Object.keys(rooms)[0]]);
-			console.log("Owner:", owner);
-			let ownerEmail = undefined;
-			if (owner && owner.email) {
-				ownerEmail = owner.email;
+			// Fetch owner email for the first room (assuming all rooms belong to the same accommodation/owner)
+			const owner = await UserRepository.findAccommodationOwnerByRoomId(Object.keys(rooms)[0]);
+			if (!owner || !owner.email) {
+				throw new Error("Owner not found");
 			}
+			const ownerEmail = owner.email;
 			// Return the booking record with associated booking items
 			const returnObject = await Booking.fromModel(bookingRecord);
 
@@ -83,7 +82,7 @@ export default {
 
 			await bookingEvent.notify({
 				travellerEmail: user.email,
-				ownerEmail: owner ? owner.email : undefined,
+				ownerEmail: ownerEmail,
 				bookingInfo: returnObject,
 			});
 			// ---------------------------------------------------
