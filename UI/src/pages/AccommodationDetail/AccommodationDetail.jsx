@@ -323,7 +323,7 @@ function AccommodationDetail() {
 						<CustomTabPanel value={activeTab} index={1}>
 							<Grid container spacing={2} sx={{ justifyContent: "space-between" }}>
 								{/* Room Cards Column - 2/3 width */}
-								<Grid item size={8}>
+								<Grid size={8}>
 									<Box sx={{ display: "flex", flexDirection: "column" }}>
 										{rooms && rooms.length > 0 ? (
 											rooms.map((room) => <RoomCard key={room.id} room={room} />)
@@ -336,8 +336,8 @@ function AccommodationDetail() {
 								</Grid>
 
 								{/* Booking Summary Column - 1/3 width */}
-								<Grid item size={4}>
-									<Box sx={{ position: { md: "sticky" }, top: { md: "120px" } }}>
+								<Grid size={4}>
+									<Box sx={{ position: { md: "sticky" }, top: { md: "140px" }, marginBottom: "2em" }}>
 										<BookingSummary hideTitle={true} />
 									</Box>
 								</Grid>
@@ -354,7 +354,7 @@ function AccommodationDetail() {
 							) : (
 								<Grid container spacing={3} sx={{ mt: 2 }}>
 									{Object.entries(groupedAmenities).map(([type, list]) => (
-										<Grid item xs={12} sm={6} md={4} lg={3} key={type}>
+										<Grid key={type}>
 											<Paper elevation={2} sx={{ p: 2, borderRadius: 2 }}>
 												<Typography variant="subtitle1" gutterBottom sx={{ fontWeight: "bold", color: "primary.main" }}>
 													{formatTypeLabel(type)}

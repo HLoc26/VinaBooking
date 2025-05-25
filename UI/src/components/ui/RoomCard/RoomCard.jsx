@@ -59,7 +59,7 @@ function RoomCard({ room }) {
 				{/* Room Content */}
 				<Grid container spacing={3}>
 					{/* Image Section */}
-					<Grid item size={4}>
+					<Grid size={4}>
 						<Box
 							onClick={handleOpenModal}
 							sx={{

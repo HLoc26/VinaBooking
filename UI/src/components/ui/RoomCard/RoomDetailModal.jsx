@@ -54,7 +54,7 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 
 				<Grid container spacing={3}>
 					{/* Image Gallery Section */}
-					<Grid item md={6}>
+					<Grid>
 						<Box
 							sx={{
 								position: "relative",
@@ -116,7 +116,7 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 					</Grid>
 
 					{/* Full Room Details Section */}
-					<Grid item xs={12} md={6}>
+					<Grid>
 						<Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
 							Room Details
 						</Typography>
@@ -160,7 +160,7 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 						</Typography>
 						<Grid container spacing={2}>
 							{groupedAmenities.base && (
-								<Grid item sm={4}>
+								<Grid>
 									<Typography variant="subtitle2" fontWeight="bold">
 										Basic
 									</Typography>
@@ -177,7 +177,7 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 								</Grid>
 							)}
 							{groupedAmenities.bathroom && (
-								<Grid item sm={4}>
+								<Grid>
 									<Typography variant="subtitle2" fontWeight="bold">
 										Bathroom
 									</Typography>
@@ -194,7 +194,7 @@ function RoomDetailModal({ room, modalOpen, handleCloseModal }) {
 								</Grid>
 							)}
 							{groupedAmenities.facility && (
-								<Grid item sm={4}>
+								<Grid>
 									<Typography variant="subtitle2" fontWeight="bold">
 										Facilities
 									</Typography>
