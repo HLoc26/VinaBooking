@@ -352,14 +352,31 @@ function AccommodationDetail() {
 							{Object.keys(groupedAmenities).length === 0 ? (
 								<Typography>No amenities available</Typography>
 							) : (
-								<Grid container spacing={3} sx={{ mt: 2 }}>
+								<Grid container spacing={3} sx={{ mt: 2, display: "flex", flexDirection: "row", alignItems: "stretch", justifyContent: "center" }}>
 									{Object.entries(groupedAmenities).map(([type, list]) => (
-										<Grid key={type}>
-											<Paper elevation={2} sx={{ p: 2, borderRadius: 2 }}>
-												<Typography variant="subtitle1" gutterBottom sx={{ fontWeight: "bold", color: "primary.main" }}>
+										<Grid key={type} sx={{ width: "30%" }}>
+											<Paper
+												elevation={2}
+												sx={{
+													p: 2,
+													borderRadius: 2,
+													height: "100%",
+													display: "flex",
+													flexDirection: "column",
+												}}
+											>
+												<Typography
+													variant="subtitle1"
+													gutterBottom
+													sx={{
+														fontWeight: "bold",
+														color: "primary.main",
+														flexShrink: 0,
+													}}
+												>
 													{formatTypeLabel(type)}
 												</Typography>
-												<List dense>
+												<List dense sx={{ flexGrow: 1 }}>
 													{list.map((am) => {
 														const meta = amenityMeta[am.name] || amenityMeta["__default__"];
 														return (
