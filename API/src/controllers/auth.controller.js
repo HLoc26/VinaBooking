@@ -30,7 +30,6 @@ export default {
 				sameSite: "none",
 				maxAge: maxAge,
 			}); // Only send user info in payload, not the JWT token
-			}); // Only send user info in payload, not the JWT token
 			return res.status(200).json({
 				success: true,
 				message: "Login success",
@@ -65,9 +64,6 @@ export default {
 			return res.status(200).json({
 				success: true,
 				message: "OTP sent to email. Please confirm to complete registration.",
-			return res.status(200).json({
-				success: true,
-				message: "OTP sent to email. Please confirm to complete registration.",
 			});
 		} catch (error) {
 			logger.error("Registration initiation failed:", error);
@@ -89,9 +85,6 @@ export default {
 			if (!result.success) {
 				return res.status(result.error.code).json({ success: false, error: result.error });
 			}
-			return res.status(201).json({
-				success: true,
-				message: "Account created successfully. You can now log in.",
 			return res.status(201).json({
 				success: true,
 				message: "Account created successfully. You can now log in.",
