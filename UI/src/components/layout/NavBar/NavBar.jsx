@@ -191,7 +191,7 @@ function Navbar() {
 											transition: "all 0.3s",
 										}}
 									>
-										<Avatar alt={user?.name || "User"} src={user?.avatar || "https://via.placeholder.com/40"} sx={{ width: 32, height: 32 }} />
+										<Avatar alt={user?.name || "User"} src={user?.avatar} sx={{ width: 32, height: 32 }} />
 									</IconButton>
 								</Tooltip>
 								<Menu
