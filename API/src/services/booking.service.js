@@ -1,7 +1,8 @@
 import { Booking, Room, User, BookingItem } from "../classes/index.js";
 import { BookingRepository } from "../database/repositories/booking.repository.js";
 import sequelize from "../config/sequelize.js";
-
+import { BookingEvent, TravellerNotifier, OwnerNotifier } from "../observers/index.js";
+import { UserRepository } from "../database/repositories/user.repository.js";
 export default {
 	async bookRoom({ rooms, guestId, startDate, endDate, guestCount }) {
 		// Validate input
@@ -59,11 +60,32 @@ export default {
 				await bookingItem.save(bookingRecord.id, transaction);
 			}
 
+			// Fetch owner email for the first room (assuming all rooms belong to the same accommodation/owner)
+			const owner = await UserRepository.findAccommodationOwnerByRoomId(Object.keys(rooms)[0]);
+			if (!owner || !owner.email) {
+				throw new Error("Owner not found");
+			}
+			const ownerEmail = owner.email;
 			// Return the booking record with associated booking items
 			const returnObject = await Booking.fromModel(bookingRecord);
 
 			// Commit the transaction if everything succeeds
 			await transaction.commit();
+
+			// --- Observer Pattern: Notify traveller and owner ---
+			const bookingEvent = new BookingEvent();
+			bookingEvent.add(new TravellerNotifier());
+			bookingEvent.add(new OwnerNotifier());
+
+			// You may need to load owner info depending on your data model
+			//const owner = booking.guest && booking.guest.owner ? booking.guest.owner : null;
+
+			await bookingEvent.notify({
+				travellerEmail: user.email,
+				ownerEmail: ownerEmail,
+				bookingInfo: returnObject,
+			});
+			// ---------------------------------------------------
 
 			return returnObject;
 		} catch (error) {
