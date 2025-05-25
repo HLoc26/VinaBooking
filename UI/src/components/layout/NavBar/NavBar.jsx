@@ -144,7 +144,7 @@ function Navbar() {
 					</Box>
 
 					{/* UserMenu */}
-					<Box sx={{ display: "flex", alignItems: "center" }}>
+					<Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
 						{isLoggedIn ? (
 							<>
 								<Tooltip title="Notifications">
