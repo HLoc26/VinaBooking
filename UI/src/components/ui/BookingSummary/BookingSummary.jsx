@@ -114,68 +114,47 @@ function BookingSummary() {
 
 			<Divider sx={{ my: 2 }} />
 
-			{selectedRoomsCount > 0 ? (
-				<>
-					<Typography variant="body1" sx={{ mb: 1 }}>
-						Selected rooms: <b>{selectedRoomsCount}</b>
-					</Typography>
-					<Typography variant="body1" sx={{ mb: 2 }}>
-						Total quantity: <b>{totalQuantity}</b>
-					</Typography>
+			<>
+				<Typography variant="body1" sx={{ mb: 1 }}>
+					Selected rooms: <b>{selectedRoomsCount}</b>
+				</Typography>
+				<Typography variant="body1" sx={{ mb: 1 }}>
+					Total quantity: <b>{totalQuantity}</b>
+				</Typography>
 
-					{/* Date Range Section */}
-					<Box sx={{ my: 3 }}>
-						<Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-							Select your stay dates:
-						</Typography>
-
-						{dateError && (
-							<Alert severity="error" sx={{ mb: 2 }}>
-								{dateError}
-							</Alert>
-						)}
-
-						<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between" }}>
-							<span>Check-in:</span>
-							<span>{dateRange.startDate.toLocaleDateString()}</span>
-						</Typography>
-						<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-							<span>Check-out:</span>
-							<span>{dateRange.endDate.toLocaleDateString()}</span>
-						</Typography>
-
-						<DateTimePickerRange
-							value={dateRange}
-							minDate={new Date().setDate(new Date().getDate() - 1)}
-							onChange={handleDateRangeChange}
-							showTime={false}
-							numMonths={1}
-							direction="vertical"
-						/>
-					</Box>
-
-					<Divider sx={{ my: 2 }} />
-
-					<Typography variant="h6" sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-						<span>TOTAL:</span>
-						<span style={{ fontWeight: "bold" }}>{convertPrice(totalAmount)} VND</span>
+				{/* Date Range Section */}
+				<Box sx={{ mb: 3 }}>
+					<Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+						Select your stay dates:
 					</Typography>
 
-					<Button variant="contained" color="primary" fullWidth size="large" startIcon={<Icon.ShoppingCart />} onClick={handleProceedToCheckout} sx={{ mt: 2 }}>
-						Proceed to Book
-					</Button>
-				</>
-			) : (
-				<Box sx={{ textAlign: "center", py: 3 }}>
-					<Icon.ShoppingCartOutlined fontSize="large" color="action" />
-					<Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-						No rooms selected
-					</Typography>
-					<Typography variant="body2" color="text.secondary">
-						Use the quantity controls to add rooms to your booking
-					</Typography>
+					{dateError && (
+						<Alert severity="error" sx={{ mb: 2 }}>
+							{dateError}
+						</Alert>
+					)}
+
+					<DateTimePickerRange
+						value={dateRange}
+						minDate={new Date().setDate(new Date().getDate() - 1)}
+						onChange={handleDateRangeChange}
+						showTime={false}
+						numMonths={1}
+						direction="horizontal"
+					/>
 				</Box>
-			)}
+
+				<Divider sx={{ my: 2 }} />
+
+				<Typography variant="h6" sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+					<span>TOTAL:</span>
+					<span style={{ fontWeight: "bold" }}>{convertPrice(totalAmount)} VND</span>
+				</Typography>
+
+				<Button variant="contained" color="primary" fullWidth size="large" startIcon={<Icon.ShoppingCart />} onClick={handleProceedToCheckout} sx={{ mt: 2 }}>
+					Proceed to Book
+				</Button>
+			</>
 		</Paper>
 	);
 }
