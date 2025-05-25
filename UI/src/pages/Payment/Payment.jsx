@@ -53,8 +53,6 @@ const Payment = () => {
 
 			const response = await axiosInstance.post("/booking", requestBody);
 
-			console.log(response.data);
-
 			if (response.data.success) {
 				setPaymentSuccess(true);
 			} else {
