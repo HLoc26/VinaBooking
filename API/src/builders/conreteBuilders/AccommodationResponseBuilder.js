@@ -1,5 +1,6 @@
 import { Review } from "../../classes/index.js";
 import IAccommodationBuilder from "../builders/IAccommodationBuilder.js";
+import AccommodationResponse from "../../dtos/AccommodationResponse.js";
 
 class AccommodationResponseBuilder extends IAccommodationBuilder {
 	constructor(accommodation) {
@@ -52,7 +53,7 @@ class AccommodationResponseBuilder extends IAccommodationBuilder {
 	}
 
 	build() {
-		return this.data;
+		return new AccommodationResponse(this.data);
 	}
 }
 
