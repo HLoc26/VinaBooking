@@ -62,9 +62,11 @@ export default {
 			const result = await command.execute();
 
 			// Save command to Redis history
-			const commandData = { type: "AddFavouriteCommand", userId, accommodationId };
-			await redis.lpush(`command:history:${userId}`, JSON.stringify(commandData));
-			await redis.ltrim(`command:history:${userId}`, 0, HISTORY_LIMIT - 1);
+            const commandData = { type: "AddFavouriteCommand", userId, accommodationId };
+			const multi = redis.multi();
+			multi.lpush(`command:history:${userId}`, JSON.stringify(commandData));
+			multi.ltrim(`command:history:${userId}`, 0, HISTORY_LIMIT - 1);
+			await multi.exec();
 
 			if (result) {
 				return res.status(200).json({
@@ -116,9 +118,11 @@ export default {
 			const result = await command.execute();
 
 			// Save command to Redis history
-			const commandData = { type: "RemoveFavouriteCommand", userId, accommodationId };
-			await redis.lpush(`command:history:${userId}`, JSON.stringify(commandData));
-			await redis.ltrim(`command:history:${userId}`, 0, HISTORY_LIMIT - 1);
+            const commandData = { type: "RemoveFavouriteCommand", userId, accommodationId };
+			const multi = redis.multi();
+			multi.lpush(`command:history:${userId}`, JSON.stringify(commandData));
+			multi.ltrim(`command:history:${userId}`, 0, HISTORY_LIMIT - 1);
+			await multi.exec();
 
 			if (result) {
 				return res.status(200).json({
