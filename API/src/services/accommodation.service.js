@@ -23,7 +23,8 @@ export default {
 		const builder = new AccommodationResponseBuilder(accommodationInstance);
 		const director = new AccommodationDirector(builder);
 
-		return await director.buildForDetail();
+		console.log();
+		return await director.buildForDetail(accommodationInstance.rooms, bookedCount, reviews);
 	},
 
 	async search(criteria) {
