@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Container, Typography, Box, Stack, CircularProgress, Alert, Divider, Grid, Snackbar } from "@mui/material";
+import { Container, Typography, Box, Stack, CircularProgress, Alert, Divider, Snackbar, Alert as MuiAlert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import FavoriteCard from "../../components/ui/FavoriteCard/FavoriteCard";
 import Navbar from "../../components/layout/NavBar/NavBar";
-import { getFavourite } from "../../features/favourite/favoritesSlice";
+import { getFavourite, removeFavourite, undoFavourite } from "../../features/favourite/favoritesSlice";
 
 const FavoritesPage = () => {
 	const dispatch = useDispatch();
@@ -15,6 +15,8 @@ const FavoritesPage = () => {
 
 	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 	const [initialLoad, setInitialLoad] = useState(true);
+	const [canUndo, setCanUndo] = useState(false); // Quản lý trạng thái undo
+	const [isUndoing, setIsUndoing] = useState(false); // Ngăn nhấn Ctrl + Z nhiều lần
 
 	// Get auth state from Redux
 	const { isLoggedIn, loading: authLoading, user } = useSelector((state) => state.auth);
@@ -33,6 +35,43 @@ const FavoritesPage = () => {
 		return () => clearTimeout(timer);
 	}, []);
 
+	// Handle Ctrl + Z to Undo
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+			if (event.ctrlKey && event.key === "z" && canUndo && !isUndoing) {
+				event.preventDefault();
+				setIsUndoing(true);
+				console.log(
+					"Attempting undo, current favourites:",
+					favorites.map((item) => item.id)
+				);
+				dispatch(undoFavourite())
+					.unwrap()
+					.then(() => {
+						setSnackbar({
+							open: true,
+							message: "Favorite accommodation restored",
+							severity: "success",
+						});
+					})
+					.catch((error) => {
+						setSnackbar({
+							open: true,
+							message: error || "Action cannot be undone",
+							severity: "error",
+						});
+					})
+					.finally(() => {
+						setIsUndoing(false);
+						setCanUndo(false); // Tắt undo sau khi thực hiện
+					});
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [dispatch, canUndo, isUndoing, favorites]);
+
 	// Close snackbar
 	const handleCloseSnackbar = () => {
 		setSnackbar({ ...snackbar, open: false });
@@ -41,25 +80,19 @@ const FavoritesPage = () => {
 	// Handle removing an accommodation from favorites
 	const handleRemove = async () => {
 		try {
-			if (!error) {
-				setSnackbar({
-					open: true,
-					message: "Accommodation removed from favorites",
-					severity: "success",
-				});
-			} else {
-				setSnackbar({
-					open: true,
-					message: error,
-					severity: "error",
-				});
-			}
-		} catch (err) {
-			console.error("Error removing from favorites:", err);
-			const errorMessage = err.response?.data?.error?.message || "Error removing accommodation from favorites. Please try again.";
+			await dispatch(removeFavourite(accommodation)).unwrap();
+			setCanUndo(true);
 			setSnackbar({
 				open: true,
-				message: errorMessage,
+				message: "Accommodation removed from favorites",
+				severity: "success",
+			});
+			// Tắt undo sau 10 giây
+			setTimeout(() => setCanUndo(false), 10000);
+		} catch (error) {
+			setSnackbar({
+				open: true,
+				message: error || "Error removing accommodation from favorites. Please try again.",
 				severity: "error",
 			});
 		}
@@ -127,13 +160,17 @@ const FavoritesPage = () => {
 				) : (
 					<Stack spacing={3}>
 						{favorites.map((accommodation) => (
-							<FavoriteCard key={accommodation.id} accommodation={accommodation} onRemove={handleRemove} />
+							<FavoriteCard key={accommodation.id} accommodation={accommodation} onRemove={() => handleRemove(accommodation)} />
 						))}
 					</Stack>
 				)}
 
 				{/* Notification Snackbar */}
-				<Snackbar open={snackbar.open} autoHideDuration={4000} onClose={handleCloseSnackbar} message={snackbar.message} anchorOrigin={{ vertical: "bottom", horizontal: "center" }} />
+				<Snackbar open={snackbar.open} autoHideDuration={4000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+					<MuiAlert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: "100%" }}>
+						{snackbar.message}
+					</MuiAlert>
+				</Snackbar>
 			</Container>
 		</>
 	);
