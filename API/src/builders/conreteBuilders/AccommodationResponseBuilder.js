@@ -3,6 +3,7 @@ import IAccommodationBuilder from "../builders/IAccommodationBuilder.js";
 
 class AccommodationResponseBuilder extends IAccommodationBuilder {
 	constructor(accommodation) {
+		super();
 		this.accommodation = accommodation;
 		this.data = {
 			id: accommodation.id,
