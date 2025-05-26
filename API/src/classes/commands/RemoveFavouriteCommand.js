@@ -9,12 +9,15 @@ class RemoveFavouriteCommand extends Command {
 	}
 
 	async execute() {
-		return await this.favouriteService.remove(this.userId, this.accommodationId);
+		await this.favouriteService.remove(this.userId, this.accommodationId);
+		const updatedList = await this.favouriteService.findByUserId(this.userId);
+		return { favouriteList: updatedList.accommodations };
 	}
 
 	async undo() {
-		// Hoàn tác bằng cách thêm lại cơ sở lưu trú vào danh sách yêu thích
-		return await this.favouriteService.add(this.userId, this.accommodationId);
+		await this.favouriteService.add(this.userId, this.accommodationId);
+		const updatedList = await this.favouriteService.findByUserId(this.userId);
+		return { favouriteList: updatedList.accommodations };
 	}
 }
 
