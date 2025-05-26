@@ -1,5 +1,5 @@
 import BookingService from "../services/booking.service.js";
-import BookingRequestBuilder from "../builders/BookingRequestBuilder.js";
+import BookingRequestBuilder from "../builders/conreteBuilders/BookingRequestBuilder.js";
 export default {
 	async bookRoom(req, res) {
 		try {

@@ -1,4 +1,4 @@
-import SearchCriteria from "../dtos/SearchCriteria.js";
+import SearchCriteria from "../../dtos/SearchCriteria.js";
 
 class SearchCriteriaBuilder {
 	constructor() {

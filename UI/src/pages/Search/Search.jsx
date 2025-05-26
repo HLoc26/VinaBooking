@@ -148,7 +148,7 @@ function Search() {
 					{filteredResults.length > 0 ? (
 						<Grid container spacing={3} direction={"column"}>
 							{filteredResults.map((result, index) => (
-								<Grid item xs={12} key={index}>
+								<Grid key={index}>
 									<HotelCard id={result.id} name={result.name} amenities={result.amenities} location={result.address} minPrice={result.minPrice} rating={result.rating} />
 								</Grid>
 							))}
