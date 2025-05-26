@@ -6,13 +6,13 @@ class INotificationAdapter {
 	}
 }
 
-class EmailNotificationAdapter extends INotificationAdapter {
+class EmailChannel extends INotificationAdapter {
 	async send(identifier, otp) {
 		return NotificationService.sendOTPEmail(identifier, otp);
 	}
 }
 
-class SmsNotificationAdapter extends INotificationAdapter {
+class SmsChannel extends INotificationAdapter {
 	async send(identifier, otp) {
 		// Future implementation for SMS
 		// const phone = formatPhoneNumber(identifier)
@@ -21,7 +21,7 @@ class SmsNotificationAdapter extends INotificationAdapter {
 	}
 }
 
-class ZaloNotificationAdapter extends INotificationAdapter {
+class ZaloChannel extends INotificationAdapter {
 	async send(identifier, otp) {
 		// Future implementation for Zalo
 		// const zaloId = toZaloId(identifier)
@@ -31,7 +31,7 @@ class ZaloNotificationAdapter extends INotificationAdapter {
 }
 
 export const NotificationAdapters = {
-	email: new EmailNotificationAdapter(),
-	sms: new SmsNotificationAdapter(),
-	zalo: new ZaloNotificationAdapter(),
+	email: new EmailChannel(),
+	sms: new SmsChannel(),
+	zalo: new ZaloChannel(),
 };
