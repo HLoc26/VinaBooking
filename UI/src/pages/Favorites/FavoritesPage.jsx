@@ -78,7 +78,7 @@ const FavoritesPage = () => {
 	};
 
 	// Handle removing an accommodation from favorites
-	const handleRemove = async () => {
+	const handleRemove = async (accommodation) => {
 		try {
 			await dispatch(removeFavourite(accommodation)).unwrap();
 			setCanUndo(true);
