@@ -29,8 +29,16 @@ export default {
 	// Add an accommodation to the user's favourite list
 	async add(userId, accommodationId) {
 		try {
-			// Find the user's favourite list
+			// Validate input parameters
+			if (!userId || !accommodationId) {
+				throw new Error("userId and accommodationId are required.");
+			}
+
+			// Check if the user has a favourite list
 			const favouriteListModel = await FavouriteRepository.findByUser(userId);
+			if (!favouriteListModel) {
+				throw new Error(`Favourite list for user ${userId} not found.`);
+			}
 
 			// Check if the accommodation exists
 			const accommodationModel = await AccommodationRepository.findById(accommodationId);
@@ -38,8 +46,8 @@ export default {
 				throw new Error(`Accommodation ${accommodationId} not found.`);
 			}
 
+			// Create instances of FavouriteList and Accommodation
 			const accommInstance = Accommodation.fromModel(accommodationModel);
-
 			const listInstance = FavouriteList.fromModel(favouriteListModel);
 
 			// Check if the accommodation is already in the user's favourite list
@@ -50,7 +58,6 @@ export default {
 
 			// Add the accommodation to the user's favourite list
 			listInstance.addAccommodation(accommInstance);
-
 			await FavouriteRepository.save(listInstance);
 
 			return true;
@@ -63,12 +70,25 @@ export default {
 	// Remove an accommodation from the user's favourite list
 	async remove(userId, accommodationId) {
 		try {
+			// Validate input parameters
+			if (!userId || !accommodationId) {
+				throw new Error("userId and accommodationId are required.");
+			}
+
+			// Check if the user has a favourite list
 			const favouriteListModel = await FavouriteRepository.findByUser(userId);
+			if (!favouriteListModel) {
+				throw new Error(`Favourite list for user ${userId} not found.`);
+			}
 
+			// Check if the accommodation exists
 			const accommodationModel = await AccommodationRepository.findById(accommodationId);
+			if (!accommodationModel) {
+				throw new Error(`Accommodation ${accommodationId} not found.`);
+			}
 
+			// Create instances of FavouriteList and Accommodation
 			const listInstance = FavouriteList.fromModel(favouriteListModel);
-
 			const accommInstance = Accommodation.fromModel(accommodationModel);
 
 			// Check if accommodation has been added to favorite list
@@ -77,13 +97,14 @@ export default {
 				throw new Error(`Accommodation ${accommodationId} is not in FavouriteList of user ${userId}.`);
 			}
 
+			// Remove the accommodation from the user's favourite list
 			listInstance.removeAccommodation(accommInstance);
-
 			await FavouriteRepository.save(listInstance);
+
 			return true;
 		} catch (error) {
 			console.error("Error in FavouriteService.remove:", error);
-			return false;
+			throw new Error(error.message);
 		}
 	},
 };
