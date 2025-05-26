@@ -1,18 +1,18 @@
 import { NotificationService } from "../services/notification.service.js";
 
-class NotificationAdapter {
+class INotificationAdapter {
 	async send(identifier, otp) {
 		throw new Error("send() not implemented");
 	}
 }
 
-class EmailNotificationAdapter extends NotificationAdapter {
+class EmailNotificationAdapter extends INotificationAdapter {
 	async send(identifier, otp) {
 		return NotificationService.sendOTPEmail(identifier, otp);
 	}
 }
 
-class SmsNotificationAdapter extends NotificationAdapter {
+class SmsNotificationAdapter extends INotificationAdapter {
 	async send(identifier, otp) {
 		// Future implementation for SMS
 		// const phone = formatPhoneNumber(identifier)
@@ -21,7 +21,7 @@ class SmsNotificationAdapter extends NotificationAdapter {
 	}
 }
 
-class ZaloNotificationAdapter extends NotificationAdapter {
+class ZaloNotificationAdapter extends INotificationAdapter {
 	async send(identifier, otp) {
 		// Future implementation for Zalo
 		// const zaloId = toZaloId(identifier)
