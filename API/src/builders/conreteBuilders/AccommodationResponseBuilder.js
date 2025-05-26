@@ -1,6 +1,7 @@
-import { Review } from "../classes/index.js";
+import { Review } from "../../classes/index.js";
+import IAccommodationBuilder from "../builders/IAccommodationBuilder.js";
 
-class AccommodationResponseBuilder {
+class AccommodationResponseBuilder extends IAccommodationBuilder {
 	constructor(accommodation) {
 		this.accommodation = accommodation;
 		this.data = {

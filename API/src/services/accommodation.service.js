@@ -6,7 +6,8 @@ import { ReviewRepository } from "../database/repositories/review.repository.js"
 import AccommodationClass from "../classes/Accommodation.js";
 
 import { Accommodation, Review } from "../classes/index.js";
-import AccommodationResponseBuilder from "../builders/AccommodationResponseBuilder.js";
+import AccommodationResponseBuilder from "../builders/conreteBuilders/AccommodationResponseBuilder.js";
+import AccommodationDirector from "../builders/directors/AccommodationDirector.js";
 
 export default {
 	async findById(id, startDate, endDate) {
@@ -19,17 +20,10 @@ export default {
 
 		const bookedCount = accommodationInstance.computeBookedCounts(accommodationModel.Rooms, startDate, endDate); // tách logic tính bookedCounts vào trong class
 
-		const builder = new AccommodationResponseBuilder(accommodationInstance)
-			.withAddress()
-			.withImages()
-			.withRooms(accommodationInstance.rooms, bookedCount)
-			.withAmenities()
-			.withMinPrice()
-			.withPolicy()
-			.withReviews(reviews);
+		const builder = new AccommodationResponseBuilder(accommodationInstance);
+		const director = new AccommodationDirector(builder);
 
-		await builder.withRating();
-		return builder.build();
+		return director.buildForDetail();
 	},
 
 	async search(criteria) {
@@ -55,14 +49,10 @@ export default {
 			const availableRooms = await accommodation.getAvailableRooms({ adultCount, priceMin, priceMax, startDate, endDate, roomCount });
 			// Add accommodation to results if it has enough available rooms
 			if (availableRooms.length > 0) {
-				const builder = await new AccommodationResponseBuilder(accommodation)
-					.withAddress()
-					.withAmenities()
-					.withImages()
-					.withMinPrice()
-					// withRating is async
-					.withRating();
-				results.push(builder.build());
+				const builder = new AccommodationResponseBuilder(accommodation);
+
+				const director = new AccommodationDirector(builder);
+				results.push(director.buildForSearch());
 			}
 		}
 
@@ -82,9 +72,9 @@ export default {
 		// Process each accommodation using class methods
 		const processedAccommodations = await Promise.all(
 			accommodationInstances.map(async (accommodation) => {
-				const builder = new AccommodationResponseBuilder(accommodation).withAmenities().withAddress().withImages().withMinPrice();
-				await builder.withRating();
-				return builder.build();
+				const builder = new AccommodationResponseBuilder(accommodation);
+				const director = new AccommodationDirector(builder);
+				return director.buildForPopular();
 			})
 		);
 
