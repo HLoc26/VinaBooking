@@ -1,13 +1,13 @@
 import RedisClient from "../clients/RedisClient.js";
 import OtpService from "../services/otp.service.js";
-import { NotificationAdapters } from "../adapter/notificationAdapter.js";
+import { NotificationStrategies } from "../strategies/notificationStrategy.js";
 
 class OtpFacade {
 	async generateAndSend(identifier, userData, channel = "email") {
 		try {
 			const otp = await OtpService.generate(identifier);
 			await RedisClient.getClient().setex(`pending_user:${identifier}`, 300, JSON.stringify(userData));
-			const strategy = NotificationAdapters[channel];
+			const strategy = NotificationStrategies[channel];
 			if (!strategy) {
 				throw new Error(`Unsupported notification channel: ${channel}`);
 			}
