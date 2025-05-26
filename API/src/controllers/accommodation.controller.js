@@ -1,5 +1,5 @@
 import accommodationService from "../services/accommodation.service.js";
-import SearchCriteriaBuilder from "../builders/SearchCriteriaBuilder.js";
+import SearchCriteriaBuilder from "../builders/conreteBuilders/SearchCriteriaBuilder.js";
 
 export default {
 	async getAccommodationDetail(req, res) {
