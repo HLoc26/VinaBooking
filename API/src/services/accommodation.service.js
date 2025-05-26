@@ -23,7 +23,7 @@ export default {
 		const builder = new AccommodationResponseBuilder(accommodationInstance);
 		const director = new AccommodationDirector(builder);
 
-		return director.buildForDetail();
+		return await director.buildForDetail();
 	},
 
 	async search(criteria) {
@@ -52,7 +52,7 @@ export default {
 				const builder = new AccommodationResponseBuilder(accommodation);
 
 				const director = new AccommodationDirector(builder);
-				results.push(director.buildForSearch());
+				results.push(await director.buildForSearch());
 			}
 		}
 
@@ -74,7 +74,7 @@ export default {
 			accommodationInstances.map(async (accommodation) => {
 				const builder = new AccommodationResponseBuilder(accommodation);
 				const director = new AccommodationDirector(builder);
-				return director.buildForPopular();
+				return await director.buildForPopular();
 			})
 		);
 
