@@ -21,7 +21,7 @@ function OTPInput({ length, value, onChange }) {
 	};
 
 	return (
-		<div style={{ display: "flex", gap: "10px" }}>
+		<div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
 			{Array.from({ length }).map((_, index) => (
 				<input
 					key={index}
