@@ -58,7 +58,7 @@ const FavoritesPage = () => {
 							if (newFavorites.length > prevFavorites.length) {
 								setSnackbar({
 									open: true,
-									message: "Đã khôi phục cơ sở lưu trú yêu thích",
+									message: "Favorite accommodation restored successfully",
 									severity: "success",
 								});
 							}
@@ -66,7 +66,7 @@ const FavoritesPage = () => {
 						.catch((error) => {
 							setSnackbar({
 								open: true,
-								message: error || "Không thể hoàn tác hành động",
+								message: error || "Unable to undo the action",
 								severity: "error",
 							});
 						})
@@ -96,7 +96,7 @@ const FavoritesPage = () => {
 		setCanUndo(true);
 		setSnackbar({
 			open: true,
-			message: "Đã xóa cơ sở lưu trú khỏi yêu thích",
+			message: "Accommodation removed from favorites",
 			severity: "success",
 		});
 		const timeout = setTimeout(() => setCanUndo(false), 10000);
@@ -136,10 +136,10 @@ const FavoritesPage = () => {
 			<Container maxWidth="lg" sx={{ py: 4, mt: 8 }}>
 				<Box mb={4}>
 					<Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-						Cơ sở lưu trú đã lưu
+						Saved Accommodations
 					</Typography>
 					<Typography variant="body1" color="text.secondary">
-						Xem và quản lý các cơ sở lưu trú yêu thích của bạn
+						View and manage your favorite accommodations
 					</Typography>
 					<Divider sx={{ mt: 2 }} />
 				</Box>
@@ -155,10 +155,10 @@ const FavoritesPage = () => {
 				) : favorites.length === 0 ? (
 					<Box textAlign="center" py={8}>
 						<Typography variant="h6" gutterBottom>
-							Bạn chưa lưu cơ sở lưu trú nào
+							You haven't saved any accommodations yet
 						</Typography>
 						<Typography variant="body1" color="text.secondary">
-							Khi tìm thấy nơi bạn thích, lưu chúng tại đây để dễ truy cập
+							When you find places you like, save them here for easy access
 						</Typography>
 					</Box>
 				) : (
