@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import FavoriteCard from "../../components/ui/FavoriteCard/FavoriteCard";
 import Navbar from "../../components/layout/NavBar/NavBar";
-import { getFavourite, removeFavourite, undoFavourite } from "../../features/favourite/favoritesSlice";
+import { getFavourite, undoFavourite } from "../../features/favourite/favoritesSlice";
 
 const FavoritesPage = () => {
 	const dispatch = useDispatch();
@@ -49,19 +49,24 @@ const FavoritesPage = () => {
 						"Attempting undo, current favourites:",
 						favorites.map((item) => item.id)
 					);
+					const prevFavorites = [...favorites.map((a) => a.id)];
 					dispatch(undoFavourite())
 						.unwrap()
-						.then(() => {
-							setSnackbar({
-								open: true,
-								message: "Đã khôi phục cơ sở lưu trú yêu thích",
-								severity: "success",
-							});
+						.then((result) => {
+							const newFavorites = result.map((a) => a.id);
+							// Only show snackbar if an item was added (undo RemoveFavouriteCommand)
+							if (newFavorites.length > prevFavorites.length) {
+								setSnackbar({
+									open: true,
+									message: "Favorite accommodation restored successfully",
+									severity: "success",
+								});
+							}
 						})
 						.catch((error) => {
 							setSnackbar({
 								open: true,
-								message: error || "Không thể hoàn tác hành động",
+								message: error || "Unable to undo the action",
 								severity: "error",
 							});
 						})
@@ -87,25 +92,15 @@ const FavoritesPage = () => {
 	};
 
 	// Handle removing an accommodation from favorites
-	const handleRemove = async (accommodation) => {
-		try {
-			await dispatch(removeFavourite(accommodation)).unwrap();
-			setCanUndo(true);
-			setSnackbar({
-				open: true,
-				message: "Đã xóa cơ sở lưu trú khỏi yêu thích",
-				severity: "success",
-			});
-			// Disable undo after 10 seconds
-			const timeout = setTimeout(() => setCanUndo(false), 10000);
-			setUndoTimeout(timeout);
-		} catch (error) {
-			setSnackbar({
-				open: true,
-				message: error || "Không thể xóa cơ sở lưu trú",
-				severity: "error",
-			});
-		}
+	const handleRemove = () => {
+		setCanUndo(true);
+		setSnackbar({
+			open: true,
+			message: "Accommodation removed from favorites",
+			severity: "success",
+		});
+		const timeout = setTimeout(() => setCanUndo(false), 10000);
+		setUndoTimeout(timeout);
 	};
 
 	// Show loading state if authenticating or fetching favourites
@@ -141,10 +136,10 @@ const FavoritesPage = () => {
 			<Container maxWidth="lg" sx={{ py: 4, mt: 8 }}>
 				<Box mb={4}>
 					<Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-						Cơ sở lưu trú đã lưu
+						Saved Accommodations
 					</Typography>
 					<Typography variant="body1" color="text.secondary">
-						Xem và quản lý các cơ sở lưu trú yêu thích của bạn
+						View and manage your favorite accommodations
 					</Typography>
 					<Divider sx={{ mt: 2 }} />
 				</Box>
@@ -160,16 +155,16 @@ const FavoritesPage = () => {
 				) : favorites.length === 0 ? (
 					<Box textAlign="center" py={8}>
 						<Typography variant="h6" gutterBottom>
-							Bạn chưa lưu cơ sở lưu trú nào
+							You haven't saved any accommodations yet
 						</Typography>
 						<Typography variant="body1" color="text.secondary">
-							Khi tìm thấy nơi bạn thích, lưu chúng tại đây để dễ truy cập
+							When you find places you like, save them here for easy access
 						</Typography>
 					</Box>
 				) : (
 					<Stack spacing={3}>
 						{favorites.map((accommodation) => (
-							<FavoriteCard key={accommodation.id} accommodation={accommodation} onRemove={() => handleRemove(accommodation)} />
+							<FavoriteCard key={accommodation.id} accommodation={accommodation} onRemove={handleRemove} />
 						))}
 					</Stack>
 				)}
