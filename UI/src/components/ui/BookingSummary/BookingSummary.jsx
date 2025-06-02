@@ -15,9 +15,10 @@ function BookingSummary() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const reduxDateRange = useSelector(selectBookingDates);
-	const [dateRange, setDateRange] = React.useState(reduxDateRange);
-
+	const [dateRange, setDateRange] = React.useState({
+		startDate: new Date(),
+		endDate: new Date(),
+	});
 	const [showDatePicker, setShowDatePicker] = React.useState(false);
 	const [dateError, setDateError] = React.useState("");
 
@@ -28,6 +29,7 @@ function BookingSummary() {
 	React.useEffect(() => {
 		if (bookingDates && bookingDates.startDate && bookingDates.endDate) {
 			try {
+				// Convert ISO strings back to Date objects for the date picker
 				const startDate = new Date(bookingDates.startDate);
 				const endDate = new Date(bookingDates.endDate);
 
@@ -40,6 +42,11 @@ function BookingSummary() {
 				}
 			} catch (error) {
 				console.error("Error parsing dates from Redux:", error);
+				// Fallback to current dates if parsing fails
+				setDateRange({
+					startDate: new Date(),
+					endDate: new Date(),
+				});
 			}
 		}
 	}, [bookingDates]);
@@ -48,6 +55,16 @@ function BookingSummary() {
 	const handleDateRangeChange = (newRange) => {
 		setDateRange(newRange);
 		setDateError("");
+
+		// Convert Date objects to ISO strings before dispatching to Redux
+		dispatch(
+			updateSearchFields({
+				dateRange: {
+					startDate: newRange.startDate.toISOString(),
+					endDate: newRange.endDate.toISOString(),
+				},
+			})
+		);
 	};
 
 	// Validate date range
@@ -77,21 +94,18 @@ function BookingSummary() {
 		// If no rooms are selected, don't navigate
 		if (selectedRoomsCount === 0) return;
 
-		// Check if we have valid dates in Redux
-		if (!bookingDates || !validateDateRange()) {
+		// Validate current date range
+		if (!validateDateRange()) {
 			setShowDatePicker(true);
 			return;
 		}
 
-		// Save the date range to Redux
-		dispatch(
-			updateSearchFields({
-				dateRange: {
-					startDate: dateRange.startDate,
-					endDate: dateRange.endDate,
-				},
-			})
-		);
+		// Check if we have valid dates in Redux (they should be updated by now)
+		if (!bookingDates || !bookingDates.startDate || !bookingDates.endDate) {
+			setDateError("Please select valid dates");
+			setShowDatePicker(true);
+			return;
+		}
 
 		navigate("/book");
 	};
@@ -114,68 +128,47 @@ function BookingSummary() {
 
 			<Divider sx={{ my: 2 }} />
 
-			{selectedRoomsCount > 0 ? (
-				<>
-					<Typography variant="body1" sx={{ mb: 1 }}>
-						Selected rooms: <b>{selectedRoomsCount}</b>
-					</Typography>
-					<Typography variant="body1" sx={{ mb: 2 }}>
-						Total quantity: <b>{totalQuantity}</b>
-					</Typography>
+			<>
+				<Typography variant="body1" sx={{ mb: 1 }}>
+					Selected rooms: <b>{selectedRoomsCount}</b>
+				</Typography>
+				<Typography variant="body1" sx={{ mb: 1 }}>
+					Total quantity: <b>{totalQuantity}</b>
+				</Typography>
 
-					{/* Date Range Section */}
-					<Box sx={{ my: 3 }}>
-						<Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-							Select your stay dates:
-						</Typography>
-
-						{dateError && (
-							<Alert severity="error" sx={{ mb: 2 }}>
-								{dateError}
-							</Alert>
-						)}
-
-						<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between" }}>
-							<span>Check-in:</span>
-							<span>{dateRange.startDate.toLocaleDateString()}</span>
-						</Typography>
-						<Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-							<span>Check-out:</span>
-							<span>{dateRange.endDate.toLocaleDateString()}</span>
-						</Typography>
-
-						<DateTimePickerRange
-							value={dateRange}
-							minDate={new Date().setDate(new Date().getDate() - 1)}
-							onChange={handleDateRangeChange}
-							showTime={false}
-							numMonths={1}
-							direction="vertical"
-						/>
-					</Box>
-
-					<Divider sx={{ my: 2 }} />
-
-					<Typography variant="h6" sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-						<span>TOTAL:</span>
-						<span style={{ fontWeight: "bold" }}>{convertPrice(totalAmount)} VND</span>
+				{/* Date Range Section */}
+				<Box sx={{ mb: 3 }}>
+					<Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+						Select your stay dates:
 					</Typography>
 
-					<Button variant="contained" color="primary" fullWidth size="large" startIcon={<Icon.ShoppingCart />} onClick={handleProceedToCheckout} sx={{ mt: 2 }}>
-						Proceed to Book
-					</Button>
-				</>
-			) : (
-				<Box sx={{ textAlign: "center", py: 3 }}>
-					<Icon.ShoppingCartOutlined fontSize="large" color="action" />
-					<Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-						No rooms selected
-					</Typography>
-					<Typography variant="body2" color="text.secondary">
-						Use the quantity controls to add rooms to your booking
-					</Typography>
+					{dateError && (
+						<Alert severity="error" sx={{ mb: 2 }}>
+							{dateError}
+						</Alert>
+					)}
+
+					<DateTimePickerRange
+						value={dateRange}
+						minDate={new Date().setDate(new Date().getDate() - 1)}
+						onChange={handleDateRangeChange}
+						showTime={false}
+						numMonths={1}
+						direction="horizontal"
+					/>
 				</Box>
-			)}
+
+				<Divider sx={{ my: 2 }} />
+
+				<Typography variant="h6" sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+					<span>TOTAL:</span>
+					<span style={{ fontWeight: "bold" }}>{convertPrice(totalAmount)} VND</span>
+				</Typography>
+
+				<Button variant="contained" color="primary" fullWidth size="large" startIcon={<Icon.ShoppingCart />} onClick={handleProceedToCheckout} sx={{ mt: 2 }}>
+					Proceed to Book
+				</Button>
+			</>
 		</Paper>
 	);
 }

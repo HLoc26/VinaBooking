@@ -1,12 +1,58 @@
 import { Card, CardMedia, CardActions, CardContent, Typography, Rating, Stack, Button, Chip, Box } from "@mui/material";
 import { LocationOn } from "@mui/icons-material";
+import { useRef, useEffect, useState } from "react";
 import convertPrice from "../../../utils/convertPrice";
 import { useNavigate } from "react-router-dom";
 
 function HotelCard({ id, name = "Hotel Name", location = "Location", amenities = [], minPrice = "Price VND", rating = 4.5, thumbnail }) {
 	const navigate = useNavigate();
-	// Maximum total character length allowed for all visible chips combined
-	const maxTotalCharLength = 30; // Adjust this value based on your design needs
+	const amenitiesContainerRef = useRef(null);
+	const [maxTotalCharLength, setMaxTotalCharLength] = useState(30);
+
+	// Calculate max character length based on container width
+	useEffect(() => {
+		const calculateMaxCharLength = () => {
+			if (amenitiesContainerRef.current) {
+				const containerWidth = amenitiesContainerRef.current.offsetWidth;
+
+				// Estimate characters that can fit based on container width
+				// Approximate: 8px per character + chip padding/margins
+				// Adjust these values based on your actual font size and chip styling
+				const avgCharWidth = 8; // pixels per character
+				const chipPadding = 24; // padding + margins per chip
+				const estimatedCharsPerPixel = 1 / (avgCharWidth + chipPadding / 10);
+
+				// Calculate based on container width with some buffer
+				const calculatedMaxChars = Math.floor(containerWidth * estimatedCharsPerPixel * 0.8);
+
+				// Set reasonable bounds
+				const minChars = 15;
+				const maxChars = 80;
+
+				setMaxTotalCharLength(Math.max(minChars, Math.min(maxChars, calculatedMaxChars)));
+			}
+		};
+
+		// Calculate on mount and resize
+		calculateMaxCharLength();
+
+		const handleResize = () => {
+			setTimeout(calculateMaxCharLength, 100); // Debounce resize
+		};
+
+		window.addEventListener("resize", handleResize);
+
+		// Also recalculate when container size changes
+		const resizeObserver = new ResizeObserver(calculateMaxCharLength);
+		if (amenitiesContainerRef.current) {
+			resizeObserver.observe(amenitiesContainerRef.current);
+		}
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+			resizeObserver.disconnect();
+		};
+	}, []);
 
 	// Calculate how many chips can fit based on character length
 	const calculateVisibleChips = (amenities) => {
@@ -14,7 +60,7 @@ function HotelCard({ id, name = "Hotel Name", location = "Location", amenities =
 		let visibleCount = 0;
 
 		for (let i = 0; i < amenities.length; i++) {
-			const amenityLength = amenities[i].length;
+			const amenityLength = amenities[i].name?.length || amenities[i].length || 0;
 			if (totalChars + amenityLength <= maxTotalCharLength) {
 				totalChars += amenityLength;
 				visibleCount++;
@@ -52,7 +98,7 @@ function HotelCard({ id, name = "Hotel Name", location = "Location", amenities =
 					objectFit: "cover",
 					borderRadius: { xs: "8px 8px 0 0", md: "8px 0 0 8px" }, // Rounded corners
 				}}
-				image={thumbnail || "/uploads/accommodation/default.jpg"}
+				image={thumbnail || `${import.meta.env.VITE_STATIC_PATH}/uploads/accommodation/default.jpg`}
 				alt={`${name} Image`}
 			/>
 
@@ -83,9 +129,9 @@ function HotelCard({ id, name = "Hotel Name", location = "Location", amenities =
 						<Typography variant="body2" fontWeight="bold" gutterBottom>
 							Amenities:
 						</Typography>
-						<Stack direction="row" spacing={1} sx={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+						<Stack ref={amenitiesContainerRef} direction="row" spacing={1} sx={{ overflow: "hidden", whiteSpace: "nowrap" }}>
 							{visibleAmenities.map((amenity, index) => (
-								<Chip key={index} label={amenity.name} size="small" color="primary" variant="outlined" />
+								<Chip key={index} label={amenity.name || amenity} size="small" color="primary" variant="outlined" />
 							))}
 							{remainingCount > 0 && <Chip label={`+${remainingCount}`} size="small" color="primary" variant="outlined" />}
 						</Stack>

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addFavouriteApi, getFavouriteApi, removeFavouriteApi } from "./favouriteApi";
+import { addFavouriteApi, getFavouriteApi, removeFavouriteApi, undoFavouriteApi } from "./favouriteApi";
 import { logoutUser } from "../auth/authSlice";
 
 export const getFavourite = createAsyncThunk("/favourites", async (_, { rejectWithValue }) => {
@@ -7,8 +7,7 @@ export const getFavourite = createAsyncThunk("/favourites", async (_, { rejectWi
 		const accomms = await getFavouriteApi();
 		return accomms;
 	} catch (error) {
-		console.log("Error getting favourite list", error.message);
-		return rejectWithValue("Error retrieving favourite list");
+		return rejectWithValue(`Error retrieving favourite list ${error}`);
 	}
 });
 
@@ -28,7 +27,6 @@ export const addFavourite = createAsyncThunk("/favourites/add", async (accomm, {
 
 export const removeFavourite = createAsyncThunk("/favourites/remove", async (accomm, { rejectWithValue }) => {
 	try {
-		console.log("HEHE REMOVEEEEE", accomm.id, typeof accomm.id);
 		const success = await removeFavouriteApi(accomm.id);
 
 		if (success) {
@@ -39,6 +37,15 @@ export const removeFavourite = createAsyncThunk("/favourites/remove", async (acc
 	} catch (error) {
 		console.error(`Fail to remove ${accomm.id} from favourite`);
 		return rejectWithValue(error.response?.data?.error?.message || error.message || "Fail to remove accomm from favourite");
+	}
+});
+
+export const undoFavourite = createAsyncThunk("/favourites/undo", async (_, { rejectWithValue }) => {
+	try {
+		const accomms = await undoFavouriteApi();
+		return accomms;
+	} catch (error) {
+		return rejectWithValue(error.response?.data?.error?.message || `Failed to undo favourite action: ${error.message}`);
 	}
 });
 
@@ -58,6 +65,7 @@ const favoritesSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
+			// Get Favourite
 			.addCase(getFavourite.fulfilled, (state, action) => {
 				state.accomms = action.payload;
 				state.loading = false;
@@ -72,6 +80,7 @@ const favoritesSlice = createSlice({
 				state.error = action.payload;
 				console.error("Error load favourites:", action.payload);
 			})
+			// Add Favourite
 			.addCase(addFavourite.fulfilled, (state, action) => {
 				const exists = state.accomms.some((a) => a.id === action.payload.id);
 				if (!exists) state.accomms.push(action.payload);
@@ -86,6 +95,7 @@ const favoritesSlice = createSlice({
 				state.error = action.payload;
 				console.error("Error add favourites:", action.payload);
 			})
+			// Remove Favourite
 			.addCase(removeFavourite.fulfilled, (state, action) => {
 				state.accomms = state.accomms.filter((a) => a.id !== action.payload);
 				state.loading = false;
@@ -100,6 +110,22 @@ const favoritesSlice = createSlice({
 				state.error = action.payload;
 				console.error("Error remove favourites:", action.payload);
 			})
+			// Undo Favourite
+			.addCase(undoFavourite.pending, (state) => {
+				state.loading = true;
+				state.error = "";
+			})
+			.addCase(undoFavourite.fulfilled, (state, action) => {
+				state.accomms = action.payload;
+				state.loading = false;
+				state.error = "";
+			})
+			.addCase(undoFavourite.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.payload;
+				console.error("Error undoing favourite:", action.payload);
+			})
+			// Logout
 			.addCase(logoutUser.fulfilled, (state) => {
 				state.accomms = [];
 				state.loading = false;

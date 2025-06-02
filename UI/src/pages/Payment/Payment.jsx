@@ -53,8 +53,6 @@ const Payment = () => {
 
 			const response = await axiosInstance.post("/booking", requestBody);
 
-			console.log(response.data);
-
 			if (response.data.success) {
 				setPaymentSuccess(true);
 			} else {
@@ -128,7 +126,7 @@ const Payment = () => {
 				)}
 
 				<Button variant="contained" color="primary" fullWidth onClick={handlePaymentConfirm} disabled={loading} startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}>
-					{loading ? "Processing..." : "Đã thanh toán"}
+					{loading ? "Processing..." : "Re-check"}
 				</Button>
 			</Paper>
 		</Box>

@@ -43,3 +43,17 @@ export const removeFavouriteApi = async (accommId) => {
 		throw error;
 	}
 };
+
+// Returns accommodations list if success
+export const undoFavouriteApi = async () => {
+    try {
+        const response = await axiosInstance.post("/favourite/undo");
+        if (response.data && response.data.success) {
+            return response.data.payload.accommodations;
+        }
+        throw new Error(response.data?.error?.message || "Failed to undo favourite action");
+    } catch (error) {
+        console.error("Error in undoFavouriteApi:", error);
+        throw error;
+    }
+};

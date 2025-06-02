@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../classes/User.js";
-import redis from "../config/redis.js";
 import { User as UserModel } from "../database/models/index.js";
-import emailService from "./email.service.js";
+import RedisClient from "../clients/RedisClient.js";
+import OtpFacade from "../facade/otpFacade.js";
+import Logger from "../helpers/Logger.js";
 
 export default {
 	// Authenticates a user and generates a JWT token
@@ -72,59 +73,23 @@ export default {
 		}
 	},
 
-	async generateOTP(identifier) {
-		const otp = Math.floor(100000 + Math.random() * 900000).toString();
-		await redis.setex(`otp:${identifier}`, 300, otp);
-		await redis.setex(`otp_attempts:${identifier}`, 600, 0);
-		return otp;
-	},
-
-	async validateOTP(identifier, submittedOtp) {
-		const otpKey = `otp:${identifier}`;
-		const attemptsKey = `otp_attempts:${identifier}`;
-
-		const storedOtp = await redis.get(otpKey);
-		if (!storedOtp) return { valid: false, message: "OTP expired or not found" };
-
-		// Get current attempt count (default to 0)
-		let attempts = parseInt(await redis.get(attemptsKey)) || 0;
-
-		// Too many attempts
-		if (attempts >= 5) {
-			await redis.del(otpKey); // Optional: delete OTP when locked
-			await redis.del(attemptsKey);
-			return { valid: false, message: "Too many incorrect attempts. OTP has been invalidated." };
-		}
-
-		// Check OTP match
-		if (storedOtp !== submittedOtp) {
-			await redis.set(attemptsKey, attempts + 1, "EX", 600); // reset expiry too
-			return { valid: false, message: `Incorrect OTP. Attempts remaining: ${4 - attempts}` };
-		}
-
-		// Success - delete OTP and attempts key
-		await redis.del(otpKey);
-		await redis.del(attemptsKey);
-
-		return { valid: true, message: "OTP verified successfully" };
-	},
-
 	async initiateRegistration(userData) {
-		const existingUser = await User.findByEmail(userData.email); // Use User class method
-		if (existingUser) {
-			return { success: false, error: { code: 409, message: "Email already exists." } };
+		try {
+			const existingUser = await User.findByEmail(userData.email); // Use User class method
+			if (existingUser) {
+				return { success: false, error: { code: 409, message: "Email already exists." } };
+			}
+
+			return await OtpFacade.generateAndSend(userData.email, userData, "email");
+		} catch (error) {
+			Logger.error(error);
+			throw error;
 		}
-
-		await redis.setex(`pending_user:${userData.email}`, 300, JSON.stringify(userData));
-
-		const otp = await this.generateOTP(userData.email);
-		await emailService.sendOTP(userData.email, otp);
-
-		return { success: true };
 	},
 
 	async completeRegistration(email, otp) {
-		const validOtp = await this.validateOTP(email, otp);
+		const redis = RedisClient.getClient();
+		const validOtp = await OtpFacade.validate(email, otp);
 		if (!validOtp.valid) {
 			return { success: false, error: { code: 400, message: validOtp.message } };
 		}
@@ -155,5 +120,5 @@ export default {
 			console.error("Error fetching user by ID:", error);
 			return null;
 		}
-	}
+	},
 };

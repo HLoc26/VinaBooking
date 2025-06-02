@@ -1,5 +1,4 @@
-import { User as UserModel } from "../models/index.js";
-
+import { User as UserModel, Room as RoomModel, Accommodation as AccommodationModel } from "../models/index.js";
 export const UserRepository = {
 	async findById(userId) {
 		return await UserModel.findOne({ where: { id: userId } });
@@ -18,5 +17,20 @@ export const UserRepository = {
 
 	async deleteById(id, transaction = null) {
 		return await UserModel.destroy({ where: { id }, transaction });
+	},
+	// Find the accommodation owner's email by roomId
+	async findAccommodationOwnerByRoomId(roomId) {
+		const room = await RoomModel.findOne({
+			where: { id: roomId },
+			include: {
+				model: AccommodationModel,
+				include: {
+					model: UserModel,
+					as: "owner",
+					attributes: ["id", "name", "email"],
+				},
+			},
+		});
+		return room && room.Accommodation && room.Accommodation.owner ? room.Accommodation.owner : null;
 	},
 };

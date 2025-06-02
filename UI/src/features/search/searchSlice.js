@@ -3,8 +3,8 @@ import { createSlice, createSelector } from "@reduxjs/toolkit";
 const initialState = {
 	location: {},
 	dateRange: {
-		startDate: new Date().toLocaleString("en-US", { day: "numeric", month: "long", year: "numeric" }),
-		endDate: new Date().toLocaleString("en-US", { day: "numeric", month: "long", year: "numeric" }),
+		startDate: new Date().toISOString(),
+		endDate: new Date().toISOString(),
 	},
 	occupancy: {
 		adults: 1,
@@ -13,7 +13,7 @@ const initialState = {
 	},
 };
 
-const bookingSlice = createSlice({
+const searchSlice = createSlice({
 	name: "search",
 	initialState,
 	reducers: {
@@ -21,9 +21,10 @@ const bookingSlice = createSlice({
 			const updates = action.payload;
 
 			if (updates.dateRange) {
+				// Store as ISO strings for serialization
 				state.dateRange = {
-					startDate: new Date(updates.dateRange.startDate).toLocaleString("en-US", { day: "numeric", month: "long", year: "numeric" }),
-					endDate: new Date(updates.dateRange.endDate).toLocaleString("en-US", { day: "numeric", month: "long", year: "numeric" }),
+					startDate: updates.dateRange.startDate,
+					endDate: updates.dateRange.endDate,
 				};
 			}
 
@@ -33,7 +34,7 @@ const bookingSlice = createSlice({
 	},
 });
 
-export const { updateSearchFields } = bookingSlice.actions;
+export const { updateSearchFields } = searchSlice.actions;
 
 export const selectSearchState = (state) => state.search;
 
@@ -43,4 +44,4 @@ export const selectSearchLocation = createSelector([selectSearchState], (search)
 
 export const selectSearchOccupancy = createSelector([selectSearchState], (search) => search.occupancy);
 
-export default bookingSlice.reducer;
+export default searchSlice.reducer;

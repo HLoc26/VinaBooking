@@ -59,7 +59,7 @@ function RoomCard({ room }) {
 				{/* Room Content */}
 				<Grid container spacing={3}>
 					{/* Image Section */}
-					<Grid item size={4}>
+					<Grid size={4}>
 						<Box
 							onClick={handleOpenModal}
 							sx={{
@@ -116,21 +116,21 @@ function RoomCard({ room }) {
 
 							{/* Key Room Info */}
 							<Grid container spacing={2} sx={{ mb: 2 }}>
-								<Grid item>
+								<Grid>
 									<Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 										<Icon.SquareFoot fontSize="small" />
 										<b>Size:</b> {size}m²
 									</Typography>
 								</Grid>
 
-								<Grid item>
+								<Grid>
 									<Typography sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 										<Icon.People fontSize="small" />
 										<b>Capacity:</b> {maxCapacity}
 									</Typography>
 								</Grid>
 
-								<Grid item>
+								<Grid>
 									<Typography sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
 										<Icon.AttachMoney fontSize="small" />
 										<b>Price:</b> {convertPrice(price)} VND

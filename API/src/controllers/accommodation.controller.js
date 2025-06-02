@@ -1,10 +1,11 @@
 import accommodationService from "../services/accommodation.service.js";
+import SearchCriteriaBuilder from "../builders/conreteBuilders/SearchCriteriaBuilder.js";
 
 export default {
 	async getAccommodationDetail(req, res) {
 		try {
 			const id = parseInt(req.params.id, 10);
-			const {startDate, endDate} = req.query;
+			const { startDate, endDate } = req.query;
 
 			if (isNaN(id)) {
 				return res.status(400).json({
@@ -50,20 +51,17 @@ export default {
 	async search(req, res) {
 		try {
 			// Assume that we use VND for price
-			const { city, state, postalCode, country, startDate, endDate, roomCount, adultCount, priceMin, priceMax } = req.query;
 
-			const ret = await accommodationService.search({
-				city,
-				state,
-				postalCode,
-				country,
-				startDate,
-				endDate,
-				roomCount,
-				adultCount,
-				priceMin,
-				priceMax,
-			});
+			const query = req.query;
+			const builder = new SearchCriteriaBuilder()
+				.withLocation(query)
+				.withDateRange(query.startDate, query.endDate)
+				.withOccupancy(query.roomCount, query.adultCount)
+				.withPriceRange(query.priceMin, query.priceMax);
+
+			const criteria = builder.build();
+
+			const ret = await accommodationService.search(criteria);
 
 			res.status(200).json({
 				success: true,
